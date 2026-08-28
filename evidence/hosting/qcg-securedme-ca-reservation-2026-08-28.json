@@ -1,0 +1,17 @@
+{
+  "contract": "webmcp-qcg.hosting-reservation.v1",
+  "captured_at": "2026-08-28",
+  "requested_domain": "qcg.securedme.ca",
+  "parent_domain": "securedme.ca",
+  "availability_snapshot": "available",
+  "operator": "securedme-cpanel-operator",
+  "preconditions_checked": true,
+  "plan_id": "fbf3633a84e68937d2ce0532",
+  "confirmation_valid": true,
+  "apply_status": "refused",
+  "error_code": "LIVE_MUTATION_DISABLED_A1",
+  "remote_mutation": false,
+  "secret_values_exposed": false,
+  "public_status": "planned_not_reserved",
+  "next_gate": "Enable an approved live cPanel mutation surface, apply the same scoped create-subdomain request, and confirm the domain in a fresh inventory before deployment."
+}

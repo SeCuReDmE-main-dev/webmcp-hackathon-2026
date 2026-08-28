@@ -92,12 +92,14 @@ The machine-readable receipt is
 - `docs/IDEA_PORTFOLIO.md` — three candidate lanes and their status.
 - `docs/decisions/` — dated decisions and reversibility conditions.
 - `docs/hackathon-build/` — current scope, specification, checklist and build notes.
+- `docs/design/` — binding QCG interface contract and the matching Google Stitch prompt.
 - `docs/ideas/` — one dossier per candidate.
 - `research/webmcp/` — preserved WebMCP/CCP reconnaissance and source registry.
 - `research/quantum/` — current four-surface quantum research.
 - `evidence/SOURCE_MANIFEST.md` — provenance and hashes for imported research.
 - `experiments/` — bounded executable probes and their commands.
 - `evidence/` — machine-readable receipts and source provenance.
+- `evidence/hosting/` — secret-free hosting reservation and deployment receipts.
 - `docs/journal/` — public day-by-day development journal.
 - `prototype/` — selected implementation surface as it becomes verified.
 - `devpost-submission.md` — working submission copy; explicitly unsubmitted.
