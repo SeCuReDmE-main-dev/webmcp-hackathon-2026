@@ -1,3 +1,5 @@
+![WebMCP-QCG: Quantum Call Gate](asset/thumbnail/thumbnail_devpost.png)
+
 # WebMCP Hackathon 2026
 
 Private decision and prototyping repository for a WebMCP hackathon project.
