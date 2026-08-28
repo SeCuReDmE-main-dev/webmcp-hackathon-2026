@@ -1,0 +1,11 @@
+{
+  "name": "qdk-public-api-spike",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "spike": "node spike.mjs"
+  },
+  "dependencies": {
+    "qsharp-lang": "1.31.0"
+  }
+}

@@ -16,8 +16,8 @@ The legacy MongoDB, Redis, Firebase, IONOS deployment, and GitHub App paths are 
 Use the central workspace environment file:
 
 ```powershell
-$env:QUANTECH_VID_ENV_FILE="C:\Users\jeans\Desktop\Case study\modele\.env"
-C:\Users\jeans\Desktop\Case study\modele\.venv\Scripts\python.exe -m uvicorn quantech_vid.api:app --host 127.0.0.1 --port 7476
+$env:QUANTECH_VID_ENV_FILE="C:\path\to\workspace\.env"
+.\.venv\Scripts\python.exe -m uvicorn quantech_vid.api:app --host 127.0.0.1 --port 7476
 ```
 
 Open the studio at `http://127.0.0.1:7476`.
@@ -25,10 +25,10 @@ Open the studio at `http://127.0.0.1:7476`.
 ## CLI
 
 ```powershell
-C:\Users\jeans\Desktop\Case study\modele\.venv\Scripts\python.exe -m quantech_vid doctor
-C:\Users\jeans\Desktop\Case study\modele\.venv\Scripts\python.exe -m quantech_vid validate-project .\projects\synthia-promo\project.json
-C:\Users\jeans\Desktop\Case study\modele\.venv\Scripts\python.exe -m quantech_vid capture-site https://synthia.securedme.ca --width 1440 --height 900
-C:\Users\jeans\Desktop\Case study\modele\.venv\Scripts\python.exe -m quantech_vid render-promo .\projects\synthia-promo\project.json --locale fr --profile landscape --output .\runtime\renders\synthia-fr-landscape
+.\.venv\Scripts\python.exe -m quantech_vid doctor
+.\.venv\Scripts\python.exe -m quantech_vid validate-project .\projects\synthia-promo\project.json
+.\.venv\Scripts\python.exe -m quantech_vid capture-site https://synthia.securedme.ca --width 1440 --height 900
+.\.venv\Scripts\python.exe -m quantech_vid render-promo .\projects\synthia-promo\project.json --locale fr --profile landscape --output .\runtime\renders\synthia-fr-landscape
 ```
 
 ## API
@@ -72,7 +72,7 @@ Load `plugins/chrome/dist` as an unpacked extension during local development.
 ## Tests
 
 ```powershell
-C:\Users\jeans\Desktop\Case study\modele\.venv\Scripts\python.exe -m pytest
+.\.venv\Scripts\python.exe -m pytest
 ```
 
 The test suite covers manifests, path safety, TTS cache keys, subtitle timing, job recovery/cancel behavior, API endpoints, and a real short render through MoviePy/FFmpeg.

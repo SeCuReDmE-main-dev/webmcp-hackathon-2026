@@ -1,0 +1,79 @@
+# WebMCP Quantum Call Gate - 30-source chapter matrix
+
+_Generated: 2026-08-27T22:15:25.523452+00:00_
+
+## Objective
+- Build a locked evidence corpus of exactly 30 non-webinar sources for the nine-chapter article.
+- Assign every source to exactly one chapter so that no citation silently supports two different editorial arguments.
+
+## Environment / Stack Context
+- Article language: French, first-person singular; the author remains responsible for every claim.
+- Project family selected: WebMCP plus quantum preflight/call-gate research; exact MVP design remains open pending the rest of the research.
+- Source policy: primary specifications, official documentation, official repositories, institutional reports, and original research papers; webinars excluded from the evidence corpus.
+
+## Research Questions
+- Which sources directly support each chapter's distinct claim surface?
+- Can the corpus remain globally unique while covering rules, WebMCP, architecture decisions, quantum ecosystems, compilation targets, browser execution, accessibility, provenance, and reproducibility?
+- Which conclusions are sourced facts and which remain editorial or architectural inferences?
+
+## Findings
+- Chapter 1 (3 sources): official rules, legal meaning of open source, and institutional open-science rationale.
+- Chapter 2 (4 sources): WebMCP draft specification, Chrome best practices, GoogleChromeLabs inspector/evals repository, and Lighthouse registered-tools audit.
+- Chapter 3 (3 sources): ADR discipline, NASA decision analysis, and OSF timestamped registrations.
+- Chapter 4 (5 sources): Qiskit, TorchQuantum, TensorFlow Quantum, Q#/QDK, and CUDA-Q are distinct execution and programming contracts.
+- Chapter 5 (3 sources): Qiskit Target, Primitives, and qiskit-fermions establish that target choice and scientific semantics precede execution.
+- Chapter 6 (3 sources): the qsharp npm/Wasm implementation proves browser execution, QIR bounds portability, and Cobweb proves a current WebMCP bridge to privileged local hardware.
+- Chapter 7 (4 sources): statevector memory growth, Colab's non-guaranteed limits, the global digital divide, and local-first architecture.
+- Chapter 8 (3 sources): the Sumi precedent, standards-based caching semantics, and W3C provenance.
+- Chapter 9 (2 sources): The Turing Way and NISO reproducibility definitions provide a measurable publication and proof discipline.
+- Critical eligibility finding: the official rules say the Hackathon is not open to residents of Quebec; this is stronger than merely being ineligible for a prize. This must be corrected or clarified in writing before the article describes an official entry.
+
+## Recommended Path
+- Use the assigned sources only in their designated chapters.
+- Use webinar timestamps as an educational viewing guide, never as the evidentiary basis for technical claims.
+- Label direct technical and legal statements as confirmed by primary sources; label cross-ecosystem design conclusions as architectural synthesis.
+- Do not rewrite the approved introduction until the author explicitly approves the eligibility correction.
+
+## Alternatives Considered
+- Reusing UNESCO and the Open Source Definition in chapter 9 was rejected because the author required strict source exclusivity.
+- Using webinar material as evidence was rejected because it is orientation material for human learners and usually restates stronger primary documentation.
+- Treating all quantum frameworks as interchangeable was rejected because their native abstractions, execution targets, and runtime contracts differ materially.
+
+## Risks / Unknowns
+- The exact Quantum Call Gate MVP remains intentionally open until the remaining research is complete.
+- Sumi's repository documents MCP and local simulation but does not by itself prove or disprove native WebMCP integration.
+- OSF preregistration is used as a transparent-process analogy, not as a mandatory hackathon practice.
+- RFC 9111 caching rules inspire evidence reuse semantics; they do not define a quantum-result cache.
+- QDK, CUDA-Q, Qiskit, TorchQuantum, TensorFlow Quantum, and qiskit-fermions are moving targets; versions and access dates must be retained in the final bibliography.
+
+## Sources
+- 01 | Ch.1 | OpenAI and Devpost, WebMCP Challenge Official Rules | https://webmcp.devpost.com/rules | confirmed by primary sources
+- 02 | Ch.1 | Open Source Initiative, The Open Source Definition | https://opensource.org/osd | confirmed by primary sources
+- 03 | Ch.1 | UNESCO, Recommendation on Open Science | https://www.unesco.org/en/legal-affairs/recommendation-open-science | confirmed by primary sources
+- 04 | Ch.2 | Web Machine Learning Community Group, WebMCP Draft Community Group Report | https://webmachinelearning.github.io/webmcp/ | confirmed by primary sources
+- 05 | Ch.2 | Chrome for Developers, WebMCP best practices | https://developer.chrome.com/docs/ai/webmcp/best-practices | confirmed by primary sources
+- 06 | Ch.2 | GoogleChromeLabs, webmcp-tools | https://github.com/GoogleChromeLabs/webmcp-tools | confirmed by primary sources
+- 07 | Ch.2 | Chrome Lighthouse, Registered WebMCP tools | https://developer.chrome.com/docs/lighthouse/agentic-browsing/registered-webmcp-tools | confirmed by primary sources
+- 08 | Ch.3 | UK DSIT and GDS, Architectural Decision Record Framework | https://www.gov.uk/government/publications/architectural-decision-record-framework/architectural-decision-record-framework | confirmed by primary sources
+- 09 | Ch.3 | NASA Systems Engineering Handbook, Decision Analysis | https://www.nasa.gov/reference/6-8-decision-analysis/ | confirmed by primary sources
+- 10 | Ch.3 | Open Science Framework, Registrations and Preregistrations | https://help.osf.io/article/330-welcome-to-registrations | primary platform behavior; editorial application is an analogy
+- 11 | Ch.4 | Javadi-Abhari et al., Quantum computing with Qiskit | https://arxiv.org/abs/2405.08810 | confirmed by primary sources
+- 12 | Ch.4 | MIT HAN Lab, TorchQuantum | https://github.com/mit-han-lab/torchquantum | confirmed by primary sources
+- 13 | Ch.4 | Broughton et al., TensorFlow Quantum: A Software Framework for Quantum Machine Learning | https://research.google/pubs/tensorflow-quantum-a-software-framework-for-quantum-machine-learning/ | confirmed by primary sources
+- 14 | Ch.4 | Microsoft Quantum, Introduction to Q# | https://learn.microsoft.com/en-us/azure/quantum/qsharp-overview | confirmed by primary sources
+- 15 | Ch.4 | NVIDIA, CUDA-Q Backends | https://nvidia.github.io/cuda-quantum/latest/using/backends/backends.html | confirmed by primary sources
+- 16 | Ch.5 | IBM Quantum, Represent quantum computers for the transpiler | https://quantum.cloud.ibm.com/docs/en/guides/represent-quantum-computers | confirmed by primary sources
+- 17 | Ch.5 | IBM Quantum, Qiskit Primitives API | https://quantum.cloud.ibm.com/docs/en/api/qiskit/primitives | confirmed by primary sources
+- 18 | Ch.5 | Qiskit, qiskit-fermions | https://github.com/Qiskit/qiskit-fermions | confirmed by primary sources
+- 19 | Ch.6 | Microsoft QDK, qsharp npm module | https://github.com/microsoft/qdk/tree/main/source/npm/qsharp | confirmed by primary sources
+- 20 | Ch.6 | QIR Alliance, Quantum Intermediate Representation specification | https://github.com/qir-alliance/qir-spec/blob/main/specification/README.md | confirmed by primary sources
+- 21 | Ch.6 | Andre Bandarra, Cobweb browser MicroPython IDE and WebMCP bridge | https://github.com/andreban/cobweb | confirmed by primary source code; production maturity remains limited
+- 22 | Ch.7 | Qiskit Aer, StatevectorSimulator | https://qiskit.github.io/qiskit-aer/stubs/qiskit_aer.StatevectorSimulator.html | confirmed by primary sources
+- 23 | Ch.7 | Google Colab, Frequently asked questions | https://research.google.com/colaboratory/intl/en-GB/faq.html | confirmed by primary sources
+- 24 | Ch.7 | ITU, Measuring digital development: Facts and Figures 2025 | https://www.itu.int/itu-d/reports/statistics/facts-figures-2025/ | confirmed by primary sources
+- 25 | Ch.7 | Kleppmann et al., Local-First Software: You Own Your Data, in spite of the Cloud | https://www.inkandswitch.com/local-first/static/local-first.pdf | confirmed by primary sources
+- 26 | Ch.8 | Chawdhury, Sumi / 1StopQuantum repository | https://github.com/dlyog/sumi | confirmed for repository-declared capabilities; no independent performance validation
+- 27 | Ch.8 | IETF, RFC 9111 HTTP Caching | https://www.rfc-editor.org/rfc/rfc9111.html | primary standard; quantum-cache application is architectural inference
+- 28 | Ch.8 | W3C, PROV-O: The PROV Ontology | https://www.w3.org/TR/prov-o/ | confirmed by primary sources
+- 29 | Ch.9 | The Turing Way Community, Guide for Reproducible Research | https://book.the-turing-way.org/reproducible-research/reproducible-research/ | confirmed by primary sources
+- 30 | Ch.9 | NISO RP-31-2021, Reproducibility Badging and Definitions | https://www.niso.org/publications/rp-31-2021-badging | confirmed by primary sources

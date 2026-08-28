@@ -1,0 +1,29 @@
+{
+  "schema": "webmcp-qcg.artifact-manifest.v1",
+  "created_at": "2026-08-28T16:05:00-04:00",
+  "timezone": "America/Toronto",
+  "artifacts": [
+    {"path":"prototype/webmcp-qcg/package-lock.json","sha256":"16c1655c6a5b2ac8f1538ec5477356f167c4202b5c4af6306ce5e021d3e2a12f","role":"reproducible dependency lock"},
+    {"path":"prototype/webmcp-qcg/src/webmcp.ts","sha256":"6aa64053305a63319d47a8b6f6bb70e0db8d38c00728b856cf757bae4fade518","role":"progressive native tool registration"},
+    {"path":"prototype/webmcp-qcg/src/services.ts","sha256":"22330b2b50238389dcee2d4ac1f5c1abd2cc765d28416675299cd800b1775488","role":"canonical policy and service layer"},
+    {"path":"prototype/webmcp-qcg/src/qsharp.worker.ts","sha256":"2794e29c880f920dc961b9d8ac123d203d5e164b53acdf37181733cda5e831ad","role":"bounded Q# WebAssembly worker"},
+    {"path":"prototype/webmcp-qcg/vercel.json","sha256":"c5964aae0cc9c83e427c2ef4096831ced0a843733cdf2e5852ed05af283221e3","role":"public deployment security headers"},
+    {"path":"evidence/browser/qcg-native-browser-proof-2026-08-28.json","sha256":"baaecb6425309ec7f82e62c9c9b4a485c6c542253844d66d1c58b429f6a5ede6","role":"local native browser trace"},
+    {"path":"evidence/browser/qcg-temporary-public-webmcp-proof-2026-08-28.json","sha256":"23eea699966be3e9f962807ed7916208f338dc99e2f58a0a253041764f0c1bd6","role":"temporary public origin trace"},
+    {"path":"research/webmcp/devpost-resources.registry.v1.json","sha256":"46cb70c01602da4bb39af915fb0e0c2016ce47a87f45f24ec22fab62f8d41417","role":"39-URL official resource registry"},
+    {"path":"research/webmcp/showcase-evidence.matrix.v1.md","sha256":"1cb9aefa5153dc708d6e5567bf8350b23c7c4e2f11c1a0069cc3fbc13ff93d28","role":"five-showcase transfer matrix"},
+    {"path":"docs/journal/webmcp-qcg.day-log.v1.jsonl","sha256":"6c17a1bdba3b8ddb6c997093d0a3f2b269558271ab8464f7011653bd987be96c","role":"append-only Day 3 journal"},
+    {"path":"docs/journal/DAY_4_THE_QUANTUM_CALL_I_DID_NOT_MAKE_EN_DRAFT.md","sha256":"677d03b2e6bc49b849e5b8402d16153c7a70a7ef0f940d2ba026a585d5639013","role":"English Day 4 article draft"},
+    {"path":".devpost-hackathon-state.json","sha256":"ad6d8e50d95d98ad4f51b25c0489092b0d25faa90efa3ce7f24061519fd4407e","role":"live Devpost state snapshot"},
+    {"path":"HACKATHON_STATE.json","sha256":"101f006675f35381290942f75241096ecc1d28c9520a1d2f91b175586804f46a","role":"project state"},
+    {"path":"devpost-submission.md","sha256":"6df8c01652e4babd41c4a175c58dd09150cf9ca848aaf1d91b04e201997102b5","role":"unsubmitted working copy"}
+  ],
+  "boundaries": {
+    "devpost_submitted": false,
+    "stable_public_url": false,
+    "temporary_public_preview": true,
+    "qpu_calls": 0,
+    "paid_api_calls": 0,
+    "provider_calls": 0
+  }
+}

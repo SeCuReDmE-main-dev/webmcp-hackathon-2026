@@ -19,4 +19,11 @@ artifacts/private/
 *.key
 *.p12
 *.pfx
+.firecrawl/
+.vercel/
 
+# Raw Deep Research exports are retained locally for audit, but they contain
+# non-portable citation markers and unverified statements. Publish only the
+# validated comparative synthesis and primary-source references.
+research/quantum/deep_research_9_39/deep-research-report-chatgpt.md
+research/quantum/deep_research_9_39/deep-research-report-gemini.md

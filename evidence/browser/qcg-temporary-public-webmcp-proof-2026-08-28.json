@@ -1,0 +1,78 @@
+{
+  "schema": "webmcp-qcg.public-preview-proof.v1",
+  "recorded_at": "2026-08-28T16:03:30-04:00",
+  "timezone": "America/Toronto",
+  "deployment": {
+    "provider": "Vercel anonymous temporary deployment",
+    "url": "https://temporary-express-coral-5r9ow5p.vercel.app",
+    "expires_at": "2026-08-28T21:02:08.336Z",
+    "stable_submission_url": false,
+    "claimed": false,
+    "http_status": 200,
+    "headers": {
+      "Origin-Agent-Cluster": "?1",
+      "Permissions-Policy": "tools=(self)"
+    }
+  },
+  "native_trace": {
+    "environment": "codex_in_app_browser",
+    "status": "pass",
+    "initial_native_tool_count": 2,
+    "calls": [
+      {
+        "name": "inspect_quantum_experiment",
+        "source": "webmcp",
+        "inspection_id": "inspect-simulatefirst",
+        "artifact_digest": "9e740ce4dfc250b6c25f30e14a4b28e706e7a0eb088a869d87a1a660c790f4f8"
+      },
+      {
+        "name": "evaluate_quantum_call",
+        "source": "webmcp",
+        "decision": "simulate_first",
+        "decision_id": "decision-simulatefirst1787947",
+        "reason_codes": ["LOCAL_SIMULATION_REQUIRED"],
+        "external_provider_calls": 0
+      },
+      {
+        "name": "visible_one_time_consent",
+        "source": "human",
+        "status": "completed"
+      },
+      {
+        "name": "run_bounded_qsharp_simulation",
+        "source": "webmcp",
+        "shots_requested": 64,
+        "shots_returned": 64,
+        "outcome_counts": {
+          "[One, One]": 33,
+          "[Zero, Zero]": 31
+        },
+        "bell_invariant": true,
+        "local_simulations": 1,
+        "external_provider_calls": 0,
+        "evidence_packet_id": "evidence-decisionsimulatefirs",
+        "digest": "cc9d5669cb3d15f75a27fb7a91fcd342178ff2f87f281dd49881dd2a250fef58"
+      },
+      {
+        "name": "export_quantum_evidence_report",
+        "source": "webmcp",
+        "format": "markdown",
+        "export_id": "export-evidencedecisionsimu",
+        "digest": "a824dc28568a7c4c4d2450c638e0602178766f654c1fd5760d2417c31168106d"
+      }
+    ]
+  },
+  "deployment_findings": {
+    "cloudflare_workers_attempt": "blocked",
+    "cloudflare_reason": "The 6,066,574-byte Q# WebAssembly asset exceeds the 5,242,880-byte per-file Workers Assets limit encountered by Wrangler.",
+    "vercel_temporary_attempt": "pass",
+    "final_hosting_decision": "pending authenticated stable deployment"
+  },
+  "safety": {
+    "qpu_calls": 0,
+    "paid_api_calls": 0,
+    "provider_network_calls": 0,
+    "claim_token_recorded": false,
+    "secrets_recorded": false
+  }
+}

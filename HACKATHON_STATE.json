@@ -1,17 +1,56 @@
 {
-  "project": "WebMCP Hackathon 2026",
-  "visibility": "private",
-  "updated_at": "2026-08-27",
-  "phase": "idea_evaluation",
+  "schema": "webmcp-qcg.hackathon-state.v2",
+  "project": "WebMCP Quantum Call Gate",
+  "repository": "https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026",
+  "visibility": "public",
+  "updated_at": "2026-08-28",
+  "phase": "day_3_native_vertical_slice_proven",
   "candidates": {
     "quantech_vid": "rejected_for_this_hackathon",
     "webccp": "deferred_bench",
-    "webmcp_quantum_connector": "active_research"
+    "webmcp_quantum_connector": "selected_as_webmcp_qcg"
   },
-  "provisional_combination": [1, 3, 9],
-  "selection_final": false,
-  "prototype_started": false,
+  "selected_project": "webmcp_quantum_call_gate",
+  "selected_concepts": [1, 3, 9],
+  "selection_final": true,
+  "mvp_contract_final": true,
+  "prototype": {
+    "status": "native_vertical_slice_passed",
+    "qsharp_lang_version": "1.31.0",
+    "node_wasm_elapsed_ms": 716,
+    "browser_worker_proven": true,
+    "native_webmcp_invocation_proven": true,
+    "native_webmcp_environment": "codex_in_app_browser",
+    "external_chrome_environment": "human_fallback_pass_native_flag_unavailable",
+    "tool_count": 4,
+    "scenario_count": 5,
+    "bounded_shots_requested": 64,
+    "bounded_shots_completed": 64,
+    "bell_invariant": true,
+    "local_simulations": 1,
+    "external_provider_calls": 0,
+    "automated_tests": 11
+  },
+  "deployment": {
+    "production_build_ready": true,
+    "stable_live_url": null,
+    "cloudflare_authenticated": false,
+    "cloudflare_workers_asset_limit_blocked": true,
+    "temporary_public_preview": "https://temporary-express-coral-5r9ow5p.vercel.app",
+    "temporary_public_preview_expires_at": "2026-08-28T21:02:08.336Z",
+    "temporary_public_native_webmcp_proven": true,
+    "status": "temporary_public_proof_passed_stable_hosting_pending"
+  },
   "paid_execution_authorized": false,
   "public_submission_authorized": false,
-  "next_gate": "score_ten_concepts_with_primary_source_evidence"
+  "devpost": {
+    "project_id": 1404828,
+    "project_created": true,
+    "state": "submission_draft",
+    "submitted": false,
+    "submitted_at": null,
+    "project_url": "https://devpost.com/software/webmcp-qcg-quantum-call-gate",
+    "video_url": ""
+  },
+  "next_gate": "deploy_stable_public_url_then_repeat_native_trace"
 }

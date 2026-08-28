@@ -1,0 +1,37 @@
+{
+  "schema": "webmcp-qcg.git-baseline.v1",
+  "captured_at": "2026-08-28T14:16:13-04:00",
+  "timezone": "America/Toronto",
+  "repository": "https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026",
+  "branch": "main",
+  "head": "c1588fd2361db089c12f103b2e38ad09759cf6c8",
+  "tracking": "origin/main",
+  "worktree_was_dirty": true,
+  "preservation_policy": "All pre-existing tracked and untracked project artifacts are user-owned and must be preserved.",
+  "tracked_changes": [
+    ".gitignore",
+    "HACKATHON_STATE.json",
+    "HACKATHON_STATUS.md",
+    "README.md",
+    "docs/ideas/01-quantech-vid/SOURCE_README_SNAPSHOT.md",
+    "research/quantum/2026-08-27-five-webinars.md",
+    "research/quantum/webmcp-quantum-four-surface-mvp.md"
+  ],
+  "untracked_project_roots": [
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md",
+    "docs/journal/",
+    "evidence/qdk-public-api-spike-2026-08-27.json",
+    "experiments/",
+    "output/",
+    "research/competitive/",
+    "research/quantum/FNP_QNN_TRANSFER_ANALYSIS.md",
+    "research/quantum/LOCAL_HARDWARE_EXECUTION_BUDGET.md",
+    "research/quantum/MULTI_BACKEND_PREFLIGHT_CONTRACT.md",
+    "research/quantum/QDK_ADOPTION_DECISION.md",
+    "research/quantum/deep_research_9_39/",
+    "research/quantum/webinars/",
+    "research/source_matrix_30_input.json"
+  ],
+  "destructive_actions_authorized": false
+}

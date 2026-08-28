@@ -1,0 +1,101 @@
+{
+  "schema": "webmcp-qcg.browser-proof.v1",
+  "recorded_at": "2026-08-28T15:31:00-04:00",
+  "timezone": "America/Toronto",
+  "prototype_url": "http://127.0.0.1:4173/",
+  "claim_boundary": {
+    "supported": "A WebMCP-capable browser agent discovered and invoked the QCG tools, which executed one bounded local Q# WebAssembly simulation after visible consent and made zero external provider calls.",
+    "not_supported": [
+      "QPU execution",
+      "provider submission",
+      "general quantum-cost savings",
+      "multi-provider conformance",
+      "a machine-verifiable result that remains absent from the DOM after invocation"
+    ],
+    "dom_contract": "The machine-verifiable decision record is absent before invocation; the detailed result becomes human-visible after invocation."
+  },
+  "codex_in_app_browser": {
+    "status": "pass",
+    "native_webmcp": true,
+    "registration_progression": {
+      "initial_tools": 2,
+      "after_evaluation": 3,
+      "after_visible_consent": 4,
+      "after_one_time_simulation": 3
+    },
+    "calls": [
+      {
+        "name": "inspect_quantum_experiment",
+        "source": "webmcp",
+        "status": "completed",
+        "inspection_id": "inspect-simulatefirst",
+        "artifact_digest": "9e740ce4dfc250b6c25f30e14a4b28e706e7a0eb088a869d87a1a660c790f4f8"
+      },
+      {
+        "name": "evaluate_quantum_call",
+        "source": "webmcp",
+        "status": "completed",
+        "decision": "simulate_first",
+        "decision_id": "decision-simulatefirst1787945",
+        "reason_codes": ["LOCAL_SIMULATION_REQUIRED"],
+        "external_provider_calls": 0
+      },
+      {
+        "name": "visible_one_time_consent",
+        "source": "human",
+        "status": "completed"
+      },
+      {
+        "name": "run_bounded_qsharp_simulation",
+        "source": "webmcp",
+        "status": "completed",
+        "run_id": "run-decisionsimulatefirs",
+        "shots_requested": 64,
+        "shots_completed": 64,
+        "outcomes": {
+          "[One, One]": 33,
+          "[Zero, Zero]": 31
+        },
+        "bell_invariant": true,
+        "local_simulations": 1,
+        "external_provider_calls": 0,
+        "evidence_id": "evidence-decisionsimulatefirs",
+        "evidence_digest": "9c1350fae4c9d0fe3b49023f70c140d65cef3d1b148f9ed7c7c67964ce539644"
+      },
+      {
+        "name": "export_quantum_evidence_report",
+        "source": "webmcp",
+        "status": "completed",
+        "format": "markdown",
+        "export_id": "export-evidencedecisionsimu",
+        "export_digest": "c6c3cbe90a3eaea5ce602de2251bb8b23e1f5f95a74d26dbfca7d01ee0cba0ee"
+      }
+    ],
+    "screenshots": [
+      {
+        "path": "evidence/browser/qcg-native-webmcp-qsharp-pass-2026-08-28.png",
+        "sha256": "0CE727E9A436341526AC6110F48D733A35C58BA7A46318AF4A6766471EBD9E22"
+      },
+      {
+        "path": "evidence/browser/qcg-native-webmcp-qsharp-receipt-2026-08-28.png",
+        "sha256": "5804D8A6CE5118C132E98CC573CEC85860A4522CE28EFC85C9E63482E5768AE3"
+      }
+    ]
+  },
+  "external_chrome": {
+    "status": "partial_environment_gate",
+    "page_loaded": true,
+    "document_model_context_available": false,
+    "ui_status": "Not available in this browser; the human interface remains fully functional.",
+    "native_invocation_attempted": false,
+    "reason": "The connected Chrome instance did not expose document.modelContext. The experimental WebMCP flag was not changed during this run.",
+    "required_follow_up": "Use Chrome 149 or later, enable chrome://flags/#enable-webmcp-testing, restart Chrome, then repeat the native invocation trace."
+  },
+  "safety": {
+    "qpu_calls": 0,
+    "paid_api_calls": 0,
+    "provider_network_calls": 0,
+    "raw_quantum_code_in_agent_contract": false,
+    "secrets_in_receipt": false
+  }
+}

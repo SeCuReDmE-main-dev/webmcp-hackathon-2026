@@ -25,6 +25,12 @@ Transformer plusieurs intuitions complémentaires en dix MVP réellement distinc
 
 ## Findings
 
+### 0. Processor selection is a first-class contract, not a hidden adapter detail
+
+**Confirmé par sources primaires.** Le segment 06:00–15:00 de *Run Quantum Circuits with Qiskit Primitives* distingue `map`, `optimize`, `execute` et `post-process`. Il montre qu'un circuit logique existe avant l'affectation des qubits virtuels aux qubits physiques, mais que la cible choisie impose ensuite ses opérations natives, sa topologie, son routage et ses contraintes d'erreur. Les [notes horodatées du webinaire 02](webinars/02-qiskit-primitives-processor-selection.md) réconcilient cette séquence avec les contrats actuels des quatre surfaces.
+
+Le manifeste doit par conséquent séparer `logical_experiment` et `target_bound_experiment`, puis joindre un `TargetCapabilityProfile` versionné. Qiskit, TorchQuantum et TensorFlow Quantum partagent parfois des classes de calcul classique comme CPU ou GPU, mais cela ne rend ni leurs simulateurs ni leurs cibles quantiques interchangeables. Azure rend la diversité des fournisseurs et profils QIR particulièrement visible; cette diversité existe aussi derrière les backends IBM et les processeurs ou périphériques Cirq.
+
 ### 1. `qiskit-fermions` est un excellent cas avancé, mais une fondation trop étroite
 
 **Confirmé par sources primaires.** Le projet fournit un pipeline fermionique cohérent et moderne : représentation parcimonieuse des opérateurs, conservation des groupes de termes, circuits fermioniques, mapping à la synthèse et sortie en `QuantumCircuit`. Il conserve ainsi l'information du problème plus longtemps que le workflow qui applique Jordan-Wigner avant de construire le circuit.
@@ -130,6 +136,18 @@ Outils WebMCP minimaux :
 Le chemin de démonstration : sélectionner un petit Fermi-Hubbard, le compiler avec `qiskit-fermions`, détecter qu'une simulation locale répond déjà à la question de comparaison de ressources, puis éviter un job distant. Le même manifeste est présenté aux trois autres adaptateurs, qui expliquent honnêtement pourquoi ils sont non applicables ou quelles transformations seraient nécessaires.
 
 Mesures de réussite : nombre d'appels distants évités, faux blocages, jobs incompatibles détectés, temps de préflight, réutilisation de résultats, qualité du rapport et traçabilité de chaque décision.
+
+## QDK browser adapter — executable evidence
+
+**Confirmé par un spike local reproductible.** Le paquet public stable `qsharp-lang@1.31.0` a été installé sans construire le dépôt QDK ni compiler Rust. Son API publique a compilé un programme Q# de Bell sans diagnostic et exécuté vingt tirs corrélés, sans résultat mixte, en moins d'une seconde sur la machine de développement. Cette preuve valide l'adoption du QDK comme adaptateur borné; elle ne prouve pas encore l'intégration dans un Web Worker ni l'invocation WebMCP native.
+
+Décision : charger le moteur QDK/WASM paresseusement derrière `QdkBrowserAdapter`; conserver notre propre routeur, les profils de capacité, le cache de preuves et la décision de préflight. Ne pas forker le QDK, reconstruire son compilateur, copier son interface Azure ou rendre Azure obligatoire.
+
+## Competitive boundary
+
+**Confirmé par surfaces publiques, recherche non exhaustive.** Sumi, construit avec Codex pour OpenAI Build Week, couvre déjà l'apprentissage quantique, Qiskit/Cirq, la génération et la visualisation de circuits, la simulation locale et un endpoint MCP optionnel. Ses surfaces publiques ne démontrent cependant ni `document.modelContext` ni une invocation WebMCP native. Ce précédent renforce la décision de ne pas construire un autre tuteur ou IDE : notre unité de valeur est la décision pré-exécution multi-backend, accompagnée d'une preuve observable.
+
+Les règles du WebMCP Challenge autorisent les projets préexistants seulement lorsqu'ils sont significativement étendus avec WebMCP pendant la période de soumission et que l'ancien travail est clairement séparé du nouveau. Un concurrent pourrait donc adapter un ancien projet, mais seul son ajout WebMCP serait évalué.
 
 ## Alternatives Considered
 
