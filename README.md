@@ -2,7 +2,8 @@
 
 # WebMCP Quantum Call Gate
 
-Open research and implementation journal for a WebMCP hackathon project.
+Decision, research, prototyping and implementation journal for the 2026 WebMCP
+hackathon project.
 
 **WebMCP-QCG** asks a deliberately narrow question before any quantum workload
 is executed: should this request reuse existing evidence, be refused, wait for
@@ -119,6 +120,8 @@ The machine-readable receipt is
 - Native WebMCP invocation: passed in ChatGPT/Codex's in-app browser.
 - External Chrome: human fallback passed; native testing awaits the Chrome 149+
   WebMCP flag and restart.
+- Expiring public preview: native WebMCP/Q# path passed with both security
+  headers; see the [public proof receipt](evidence/browser/qcg-temporary-public-webmcp-proof-2026-08-28.json).
 - Stable public deployment: pending authenticated hosting.
 - Devpost project `1404828`: `submission_draft`; not submitted.
 - License: MIT. Third-party packages retain their own licenses and notices.
