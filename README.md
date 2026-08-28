@@ -2,7 +2,7 @@
 
 # WebMCP Hackathon 2026
 
-Private decision and prototyping repository for a WebMCP hackathon project.
+decision and prototyping repository for a WebMCP hackathon project.
 
 The repository preserves three candidate lanes without pretending they are equally active:
 
