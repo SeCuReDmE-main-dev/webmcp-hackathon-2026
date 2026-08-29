@@ -66,7 +66,7 @@ Baseline: 18/18 automated tests and passing TypeScript/Vite build
 - [x] TypeScript and Vite production build pass with the Q# Worker and WASM asset.
 - [x] The four WebMCP quantum tools retain progressive registration.
 - [x] The human workflow works without WebMCP, the extension or Gemini.
-- [ ] One clean clone installs, tests and builds with documented commands.
+- [x] One clean clone installs, tests and builds with documented commands and reproduces all 13 release-manifest hashes.
 - [x] One real browser receipt shows the Winter interface and collaboration ledger.
 - [x] A protocol proof records a Codex observation, a distinct Gemini-labelled counter-analysis and human acknowledgement; if Gemini was not a live external client, the receipt says so explicitly.
 - [x] The quantum recommendation, consent and controlled-effect counters remain unchanged throughout the collaboration proof.

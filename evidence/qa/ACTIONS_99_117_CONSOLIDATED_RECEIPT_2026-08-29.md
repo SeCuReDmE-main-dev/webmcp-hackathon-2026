@@ -12,10 +12,13 @@ Status: release candidate validated locally; seasonal cPanel promotion blocked b
 - Production outputs include the Q# Worker, pinned `qsharp-lang@1.31.0` WASM,
   four seasonal SVGs, `.htaccess`, `_headers`, the Bell fixture, JavaScript and CSS.
 - `git diff --check` reports no whitespace errors.
-- The 50-file public change set scan found zero secret values, `.env` files,
+- The 52-file public change set scan found zero secret values, `.env` files,
   private paths, private-key markers or raw imported Q#.
 - Seasonal contrast passed every measured foreground/background gate; the
   minimum ratio is 7.65:1.
+- A clean clone of commit `0411c7237dc1f9f1d5be6b6e2d5a9d9c393993ed`
+  completed `npm ci`, passed 34/34 tests, built 127 modules and reproduced all
+  13 release-manifest hashes.
 
 ## Seasonal browser proof
 

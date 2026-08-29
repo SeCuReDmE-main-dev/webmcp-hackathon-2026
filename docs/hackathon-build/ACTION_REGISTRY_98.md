@@ -184,7 +184,7 @@ An action reaches `DONE` only when its evidence path exists and supports the sta
 | 112 | Build the unpacked MV3 QCG DevTools panel | Terra | DONE | Valid MV3 package under `companion/qcg-devtools-extension/`; manual installation remains an author gate |
 | 113 | Document shared-page attachment for Codex, Gemini and Antigravity | Root/Sol | DONE | `docs/DEVTOOLS_MULTI_AGENT_RUNBOOK.md`; official CLI flags and `pageIdRouting` verified 2026-08-29 |
 | 114 | Prove a structured Codex → Gemini → human exchange | Terra + Root | PARTIAL | Executable declared-identity protocol fixture passed with unchanged authority; live external Gemini and installed F12 panel remain manual gates |
-| 115 | Complete code, security, accessibility and visual QA | Terra + Luna | DONE | 34/34 tests, build, browser checks, AA contrast, public scan and consolidated receipt |
+| 115 | Complete code, security, accessibility and visual QA | Terra + Luna | DONE | 34/34 tests, clean clone with 13/13 release hashes, build, browser checks, AA contrast, public scan and consolidated receipt |
 | 116 | Deploy the seasonal application and distribute public-safe assets | Root + Luna | BLOCKED | Package and public-safe Winter captures complete; cPanel deploy plan returned `CPANEL_READ_FAILED` with `mutated=false` |
 | 117 | Finalize the Day 3–4 manuscript and update public drafts without submitting | Root/Sol | DONE | Mirrored 2,429-word Winter draft, README and Devpost draft; publication remains author-controlled |
 
