@@ -147,7 +147,7 @@ An action reaches `DONE` only when its evidence path exists and supports the sta
 | 90 | Create the public-safe research trace | Docs lane | DONE | `research/day4/PUBLIC_SAFE_TRACE_2026-08-29.md` |
 | 91 | Draft the English Day 4 market-relevance article | Docs lane | DONE | `WEBMCP_QCG_DAY_4_MARKET_RELEVANCE_EN_DRAFT.md` |
 | 92 | Use first-person singular and one canonical Codex disclosure | Docs lane | DONE | Disclosure count gate in article draft |
-| 93 | Record the 30-second live plus 2-minute NotebookLM video decision | Jean-Sébastien + Docs | DONE | `VIDEO_DECISION_2026-08-29.md` |
+| 93 | Record the 30-second live plus 2-minute NotebookLM video decision | Jean-Sébastien + Docs | DONE | `VIDEO_DECISION_2026-08-29.md`; `VIDEO_SCRIPT_AND_STORYBOARD_2026-08-29.md` |
 
 ## K. Devpost closure — 94 to 97
 
@@ -156,7 +156,7 @@ An action reaches `DONE` only when its evidence path exists and supports the sta
 | 94 | Preserve the complete Devpost description draft | Docs lane | DONE | `devpost-submission.md` |
 | 95 | Add the retained stable application URL | Jean-Sébastien + Hosting | DONE | `https://qcg.securedme.ca/`; passing live trace |
 | 96 | Upload the final public video under three minutes with audio | Jean-Sébastien | PENDING | Public video URL and QA receipt |
-| 97 | Review every field and explicitly authorize final submission | Jean-Sébastien | AUTHOR_GATE | Final checklist and direct author action |
+| 97 | Review every field and explicitly authorize final submission | Jean-Sébastien | AUTHOR_GATE | `FINAL_AUTHOR_REVIEW_CHECKLIST_2026-08-29.md`; direct author action |
 
 ## L. Deferred three-year editorial vision — 98
 

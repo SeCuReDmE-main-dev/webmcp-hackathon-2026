@@ -61,7 +61,7 @@ WebMCP is strongest here as a decision surface. The agent gains precise capabili
 
 ### What's next
 
-The next release gate is a stable public deployment followed by the same native trace at that URL. The longer roadmap adds versioned capability adapters for additional quantum ecosystems while keeping each native contract visible. External execution remains a separate, explicitly authorized product surface.
+The stable public deployment, live WebMCP smoke trace and clean-clone reproduction now pass. The immediate release gate is the public demo video followed by my final field-by-field review. The longer roadmap adds versioned capability adapters for additional quantum ecosystems while keeping every native contract visible. External execution remains a separate, explicitly authorized product surface.
 
 ## Required custom-field draft
 
