@@ -24,13 +24,13 @@
 
 - [x] Clean dependency installation
 - [x] Zero reported npm vulnerabilities
-- [x] 11 automated tests
+- [x] 18 automated tests
 - [x] Production build
 - [x] Native WebMCP discovery and invocation in the in-app browser
 - [x] Human fallback in external Chrome
-- [ ] Native WebMCP in external Chrome after enabling the Chrome 149+ flag
-- [x] Expiring public preview with required security headers
-- [x] Native trace repeated at the expiring public URL
+- [x] Native WebMCP in external Chrome through the official pinned `webmcp-evals` runner
+- [x] Stable cPanel deployment with required security headers
+- [x] Native trace repeated at the stable public URL
 - [ ] Stable public deployment
 
 ## Devpost

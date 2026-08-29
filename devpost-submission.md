@@ -3,11 +3,10 @@
 Status: **PREPARED DRAFT — NOT SUBMITTED**  
 Project ID: `1404828`  
 Project URL: <https://devpost.com/software/webmcp-qcg-quantum-call-gate>  
-Last live-state check: 2026-08-28
+Last live-state check: 2026-08-29
 
 ## Missing release inputs
 
-- Stable public application URL
 - Public YouTube demo under three minutes with audio
 - Final author review of every custom field
 - Explicit author authorization to submit
@@ -73,10 +72,10 @@ The next release gate is a stable public deployment followed by the same native 
 | Organization name | Not applicable for an individual submission |
 | App Status | New |
 | Existing-project extension | Not applicable; the repository began during the submission period |
-| Live URL | **PENDING stable deployment** |
+| Live URL | <https://qcg.securedme.ca/> |
 | Testing instructions | Open in ChatGPT's in-app browser. Ask the agent to list the available QCG tools, inspect `simulate-first`, evaluate it with 64 shots, grant the visible one-time consent in the page, run the bounded Q# simulation, and export Markdown evidence. Confirm Bell invariant PASS and external calls 0. Chrome testing requires Chrome 149+ with `chrome://flags/#enable-webmcp-testing` enabled and a restart. |
 | Public code repository | <https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026> |
-| Agents or clients tested | ChatGPT/Codex in-app browser: native discovery and four WebMCP invocations passed. Connected external Chrome: application and human fallback passed; native WebMCP remained unavailable because `document.modelContext` was absent in that instance. |
+| Agents or clients tested | ChatGPT/Codex in-app browser: native discovery and four WebMCP invocations passed. External Chrome through the official WebMCP eval runner: the retained HTTPS origin passed 2/2 smoke steps. The full human fallback also passed on the live origin. |
 | AI tools leveraged | OpenAI Codex served as the research partner for source mapping, contract design, implementation, tests, browser verification, evidence organization and editorial control. Independent ChatGPT and Gemini research reports supplied comparative inputs that were checked against primary sources. |
 | Learning derived | Significant |
 | Career AI value | Yes |
@@ -90,8 +89,8 @@ The next release gate is a stable public deployment followed by the same native 
 - [x] Native in-app-browser trace
 - [x] Machine-readable evidence receipt
 - [x] Expiring public preview passed with required security headers and native WebMCP trace
-- [ ] Stable live URL
-- [ ] Native trace repeated at live URL
+- [x] Stable live URL
+- [x] Native trace repeated at live URL
 - [ ] Public demo video under three minutes with audio
 - [ ] Final author review
 - [ ] Explicit author authorization to submit

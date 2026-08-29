@@ -6,8 +6,11 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc --noEmit && vite build",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "vitest run --pool=threads --maxWorkers=1 --no-file-parallelism",
+    "test:contracts": "vitest run src/services.test.ts --pool=threads --maxWorkers=1 --no-file-parallelism",
+    "eval:smoke": "npx -y webmcp-evals@0.0.4 --chrome-channel chrome --reporter console json --output-dir ../../evidence/qa/webmcp-evals smoke -u http://127.0.0.1:5173/?eval_fixture=simulate-first -e evals/qcg-smoke.json -v",
+    "eval:live": "npx -y webmcp-evals@0.0.4 --chrome-channel chrome --reporter console json --output-dir ../../evidence/qa/webmcp-evals-live smoke -u https://qcg.securedme.ca/?eval_fixture=simulate-first -e evals/qcg-smoke.json -v",
+    "test:watch": "vitest --pool=threads --maxWorkers=1 --no-file-parallelism"
   },
   "dependencies": {
     "@vitejs/plugin-react": "^6.1.1",

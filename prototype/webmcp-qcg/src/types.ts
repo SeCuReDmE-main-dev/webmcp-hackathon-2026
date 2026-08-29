@@ -6,8 +6,13 @@ export const decisions = [
   'ready_for_external_execution'
 ] as const
 
+export const humanChoices = ['accepted', 'overridden', 'deferred'] as const
+
 export type Decision = (typeof decisions)[number]
+export type HumanChoice = (typeof humanChoices)[number]
 export type AppPhase = 'empty' | 'partial' | 'active' | 'cancelled' | 'error' | 'recovery'
+export type AuthorityState = 'ready' | 'consent_required' | 'authorized' | 'expired' | 'revoked' | 'consumed'
+export type EvidenceState = 'known' | 'unknown' | 'stale'
 export type ToolName =
   | 'inspect_quantum_experiment'
   | 'evaluate_quantum_call'
@@ -18,81 +23,150 @@ export interface RequestedLimits {
   shots: number
   timeout_ms: number
   max_qubits: number
-  target: 'local_simulator' | 'external_unspecified'
+  target: 'local_simulator' | 'external_reference'
 }
 
-export interface ExecutionCounters {
-  inspections: number
-  evaluations: number
-  local_simulations: number
-  evidence_exports: number
-  external_provider_calls: number
+export interface CompilerEvidence {
+  name: 'qsharp-lang'
+  version: '1.31.0'
+  status: 'compiled' | 'invalid' | 'unverified'
+  diagnostic_count: number
+  diagnostics: string[]
+  profile_digest: string
+  bounded_entrypoint: boolean
+  estimated_qubits: number | null
 }
 
-export interface Inspection {
-  inspection_id: string
+export interface ArtifactManifest {
+  schema_version: 'webmcp-qcg.artifact-manifest.v2'
+  manifest_id: string
   artifact_id: string
+  file_name: string
   artifact_digest: string
-  artifact_kind: 'qsharp_bell' | 'openqasm' | 'unknown'
-  provenance: string
-  reason_codes: string[]
+  byte_size: number
+  format: 'qsharp'
+  provenance: 'human_import' | 'demo_fixture'
+  compiler: CompilerEvidence
   created_at: string
 }
 
-export interface Evaluation {
-  decision_id: string
-  inspection_id: string
+export interface TargetProfileSnapshot {
+  schema_version: 'webmcp-qcg.target-profile.v2'
+  profile_id: string
+  label: string
+  source: string
+  source_digest: string
+  captured_at: string
+  expires_at: string
+  evidence_state: EvidenceState
+  execution_surface: 'local_wasm' | 'external_reference'
+  max_qubits: number
+  compiler_profile_digest: string
+  submission_enabled: false
+}
+
+export interface AgentRecommendation {
+  schema_version: 'webmcp-qcg.recommendation.v2'
+  recommendation_id: string
+  manifest_id: string
+  target_profile_id: string
   decision: Decision
   reason_codes: string[]
-  next_action: string
+  unknowns: string[]
+  confidence: 'high' | 'medium' | 'low'
+  safer_alternative: string
   scientific_intent: string
+  observable: string
+  parameters_digest: string
   requested_limits: RequestedLimits
-  counters: ExecutionCounters
+  reuse_key: string
   expires_at: string
   valid: boolean
 }
 
-export interface EvidencePacket {
-  evidence_packet_id: string
-  inspection_id: string
-  decision_id: string
-  run_id?: string
-  bell_invariant?: boolean
-  shots_requested?: number
-  shots_returned?: number
-  outcome_counts?: Record<string, number>
-  counters: ExecutionCounters
+export interface HumanDecision {
+  schema_version: 'webmcp-qcg.human-decision.v2'
+  human_decision_id: string
+  recommendation_id: string
+  choice: HumanChoice
+  justification: string
+  override: boolean
+  decided_at: string
+}
+
+export interface ConsentToken {
+  consent_id: string
+  recommendation_id: string
+  created_at: string
+  expires_at: string
+  used: boolean
+  revoked_at?: string
+}
+
+export interface EffectCounters {
+  inspections: number
+  evaluations: number
+  local_simulations: number
+  metadata_validations: number
+  qpu_submissions: 0
+  evidence_exports: number
+}
+
+export interface SimulationEvidence {
+  run_id: string
+  bell_invariant: boolean
+  shots_requested: number
+  shots_returned: number
+  outcome_counts: Record<string, number>
+  completed_at: string
+}
+
+export interface EvidenceReceipt {
+  schema_version: 'webmcp-qcg.evidence-receipt.v2'
+  receipt_id: string
+  manifest: ArtifactManifest
+  target_profile: TargetProfileSnapshot
+  recommendation: AgentRecommendation
+  human_decision: HumanDecision | null
+  simulation: SimulationEvidence | null
+  effects: EffectCounters
   digest: string
   created_at: string
+  updated_at: string
+  migration?: { from: 'webmcp.qcg.evidence.v1'; source_digest: string }
 }
 
 export interface Invocation {
   id: string
-  tool: ToolName | 'human'
+  tool: ToolName | 'human' | 'system'
   status: 'completed' | 'cancelled' | 'error'
   timestamp: string
   summary: string
-  source: 'human' | 'webmcp'
+  source: 'human' | 'webmcp' | 'system'
 }
 
 export interface QcgState {
   phase: AppPhase
-  artifactId?: string
-  inspection?: Inspection
-  evaluation?: Evaluation
-  consent: boolean
-  evidence?: EvidencePacket
-  counters: ExecutionCounters
+  authority_state: AuthorityState
+  activeArtifactId?: string
+  manifest?: ArtifactManifest
+  targetProfile?: TargetProfileSnapshot
+  recommendation?: AgentRecommendation
+  humanDecision?: HumanDecision
+  consent?: ConsentToken
+  receipt?: EvidenceReceipt
+  effects: EffectCounters
   invocations: Invocation[]
   error?: string
 }
 
-export const zeroCounters = (): ExecutionCounters => ({
+export const zeroEffects = (): EffectCounters => ({
   inspections: 0,
   evaluations: 0,
   local_simulations: 0,
-  evidence_exports: 0,
-  external_provider_calls: 0
+  metadata_validations: 0,
+  qpu_submissions: 0,
+  evidence_exports: 0
 })
 
-export const initialState = (): QcgState => ({ phase: 'empty', consent: false, counters: zeroCounters(), invocations: [] })
+export const initialState = (): QcgState => ({ phase: 'empty', authority_state: 'ready', effects: zeroEffects(), invocations: [] })

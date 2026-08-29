@@ -1,32 +1,49 @@
 /// <reference lib="webworker" />
 import { QscEventTarget, getCompiler, loadWasmModule } from 'qsharp-lang'
 
-const bellProgram = `
-namespace Qcg {
-  @EntryPoint()
-  operation Main() : Result[] {
-    use (left, right) = (Qubit(), Qubit());
-    H(left);
-    CNOT(left, right);
-    let result = [M(left), M(right)];
-    ResetAll([left, right]);
-    return result;
-  }
-}`
+interface Request {
+  type: 'analyze' | 'run'
+  requestId: string
+  source: string
+  shots?: number
+}
 
-self.onmessage = async (event: MessageEvent<{ type: 'run'; requestId: string; shots: number }>) => {
-  if (event.data.type !== 'run') return
-  try {
-    // This import and WASM compiler are deliberately confined to this worker.
+let wasmReady: Promise<void> | undefined
+
+async function compiler() {
+  if (!wasmReady) {
     const wasmUrl = new URL('../node_modules/qsharp-lang/lib/web/qsc_wasm_bg.wasm', import.meta.url).href
-    await loadWasmModule(wasmUrl)
-    const compiler = await getCompiler()
-    const diagnostics = await compiler.checkCode(bellProgram)
-    if (diagnostics.length > 0) throw new Error('Q# Bell program failed validation')
+    wasmReady = loadWasmModule(wasmUrl)
+  }
+  await wasmReady
+  return getCompiler()
+}
 
-    const shotsRequested = Math.max(1, Math.min(256, Math.trunc(event.data.shots)))
+function boundedDiagnostics(count: number): string[] {
+  if (count === 0) return []
+  return [`Q# compiler reported ${count} bounded diagnostic${count === 1 ? '' : 's'}.`]
+}
+
+self.onmessage = async (event: MessageEvent<Request>) => {
+  const { type, requestId, source } = event.data
+  try {
+    const qsharp = await compiler()
+    const diagnostics = await qsharp.checkCode(source)
+    if (type === 'analyze') {
+      self.postMessage({
+        type: 'analysis_complete',
+        requestId,
+        valid: diagnostics.length === 0,
+        diagnosticCount: diagnostics.length,
+        diagnostics: boundedDiagnostics(diagnostics.length)
+      })
+      return
+    }
+    if (diagnostics.length > 0) throw new Error('Q# source failed validation')
+
+    const shotsRequested = Math.max(1, Math.min(256, Math.trunc(event.data.shots ?? 1)))
     const events = new QscEventTarget(true)
-    await compiler.run({ sources: [['main.qs', bellProgram]], languageFeatures: [] }, 'Qcg.Main()', shotsRequested, events)
+    await qsharp.run({ sources: [['main.qs', source]], languageFeatures: [] }, 'Qcg.Main()', shotsRequested, events)
     const shots = events.getResults()
     const outcomeCounts = shots.reduce<Record<string, number>>((counts, shot) => {
       const outcome = typeof shot.result === 'string' ? shot.result : 'compiler_error'
@@ -38,15 +55,18 @@ self.onmessage = async (event: MessageEvent<{ type: 'run'; requestId: string; sh
     )
     self.postMessage({
       type: 'complete',
-      requestId: event.data.requestId,
+      requestId,
       bellInvariant,
       shotsRequested,
       shotsReturned: shots.length,
       outcomeCounts
     })
   } catch {
-    // Do not expose compiler/WASM diagnostics to the page or agent.
-    self.postMessage({ type: 'error', requestId: event.data.requestId, message: 'Local Q# simulation could not complete. Recover by retrying the bounded local run.' })
+    self.postMessage({
+      type: 'error',
+      requestId,
+      message: 'Local Q# processing could not complete. Review the bounded artifact and retry.'
+    })
   }
 }
 

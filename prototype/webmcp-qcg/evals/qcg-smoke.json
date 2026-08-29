@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Inspect and evaluate one bounded Bell experiment",
+    "messages": [
+      {
+        "role": "user",
+        "type": "message",
+        "content": "Inspect the loaded Q# Bell experiment and decide whether a bounded local simulation is justified before any external quantum execution."
+      }
+    ],
+    "expectedCall": [
+      {
+        "functionName": "inspect_quantum_experiment",
+        "arguments": {
+          "artifact_id": "simulate-first-c88be57cffca7fa8bce95d05"
+        }
+      },
+      {
+        "functionName": "evaluate_quantum_call",
+        "arguments": {
+          "manifest_id": "manifest-c88be57cffca7fa8bce95d05",
+          "target_profile_id": "qsharp-local-wasm-1310",
+          "scientific_intent": "Measure the Bell correlation through one bounded local Q# simulation.",
+          "observable": "bell_correlation",
+          "parameters": {},
+          "requested_limits": {
+            "shots": 64,
+            "timeout_ms": 10000,
+            "max_qubits": 2,
+            "target": "local_simulator"
+          }
+        }
+      }
+    ]
+  }
+]

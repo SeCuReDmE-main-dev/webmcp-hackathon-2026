@@ -1,23 +1,80 @@
-import type { Decision } from './types'
+import { EXTERNAL_PROFILE_ID, LOCAL_PROFILE_ID } from './targetProfiles'
+import type { Decision, RequestedLimits } from './types'
+
+export const bellProgram = `namespace Qcg {
+  @EntryPoint()
+  operation Main() : Result[] {
+    use (left, right) = (Qubit(), Qubit());
+    H(left);
+    CNOT(left, right);
+    let result = [M(left), M(right)];
+    ResetAll([left, right]);
+    return result;
+  }
+}`
+
+const invalidProgram = `namespace Qcg {
+  @EntryPoint()
+  operation Main() : Result[] {
+    use q = Qubit()
+    return [M(q)];
+  }
+}`
 
 export interface DemoCard {
   id: string
   title: string
   expectedDecision: Decision
   detail: string
-  reasonCode: string
-  artifactKind: 'qsharp_bell' | 'openqasm' | 'unknown'
-  requiredQubits: number
-  supported: boolean
-  freshEvidence: boolean
-  compiledForTarget: boolean
-  localEvidence: boolean
+  scientificIntent: string
+  observable: string
+  profileId: string
+  requestedLimits: RequestedLimits
+  source: string
+  evidenceSeed: 'reusable_result' | 'local_validation' | 'none'
+  compiledProfile: 'current' | 'legacy'
 }
 
+const localLimits: RequestedLimits = { shots: 64, timeout_ms: 10_000, max_qubits: 2, target: 'local_simulator' }
+
 export const demoCards: DemoCard[] = [
-  { id: 'reuse-evidence', title: 'Reuse the Fresh Result', expectedDecision: 'reuse_result', detail: 'Hypothesis: a current evidence packet already answers the selected question.', reasonCode: 'EVIDENCE_REUSABLE', artifactKind: 'qsharp_bell', requiredQubits: 2, supported: true, freshEvidence: true, compiledForTarget: true, localEvidence: true },
-  { id: 'reject-incompatible', title: 'Reject the Unsupported Call', expectedDecision: 'reject', detail: 'Hypothesis: the selected artifact falls outside the bounded Q# pathway.', reasonCode: 'ARTIFACT_INCOMPATIBLE', artifactKind: 'unknown', requiredQubits: 2, supported: false, freshEvidence: false, compiledForTarget: false, localEvidence: false },
-  { id: 'recompile-required', title: 'Recompile for the Target', expectedDecision: 'recompile', detail: 'Hypothesis: a deterministic compile step is required before execution.', reasonCode: 'RECOMPILE_REQUIRED', artifactKind: 'openqasm', requiredQubits: 2, supported: true, freshEvidence: false, compiledForTarget: false, localEvidence: false },
-  { id: 'simulate-first', title: 'Simulate Before Spending', expectedDecision: 'simulate_first', detail: 'Hypothesis: a bounded local Bell simulation is the minimum next evidence step.', reasonCode: 'LOCAL_SIMULATION_REQUIRED', artifactKind: 'qsharp_bell', requiredQubits: 2, supported: true, freshEvidence: false, compiledForTarget: true, localEvidence: false },
-  { id: 'external-ready', title: 'Ready, but Not Authorized', expectedDecision: 'ready_for_external_execution', detail: 'Hypothesis: the artifact is ready while external authorization remains absent.', reasonCode: 'EXTERNAL_EXECUTION_NOT_AUTHORIZED', artifactKind: 'qsharp_bell', requiredQubits: 2, supported: true, freshEvidence: false, compiledForTarget: true, localEvidence: true }
+  {
+    id: 'reuse-evidence', title: 'Reuse the Fresh Result', expectedDecision: 'reuse_result',
+    detail: 'A byte-identical artifact and matching observable already have fresh evidence.',
+    scientificIntent: 'Verify the Bell correlation without repeating an identical computation.', observable: 'bell_correlation',
+    profileId: LOCAL_PROFILE_ID, requestedLimits: localLimits, source: bellProgram,
+    evidenceSeed: 'reusable_result', compiledProfile: 'current'
+  },
+  {
+    id: 'reject-incompatible', title: 'Reject the Unsupported Call', expectedDecision: 'reject',
+    detail: 'The imported Q# artifact fails the bounded compiler gate.',
+    scientificIntent: 'Evaluate whether the malformed Q# artifact can enter the bounded execution path.', observable: 'compile_validity',
+    profileId: LOCAL_PROFILE_ID, requestedLimits: localLimits, source: invalidProgram,
+    evidenceSeed: 'none', compiledProfile: 'current'
+  },
+  {
+    id: 'recompile-required', title: 'Recompile for the Target', expectedDecision: 'recompile',
+    detail: 'The artifact evidence was produced for an older target-profile digest.',
+    scientificIntent: 'Refresh the compiler evidence against the selected target profile.', observable: 'target_compatibility',
+    profileId: LOCAL_PROFILE_ID, requestedLimits: localLimits, source: bellProgram,
+    evidenceSeed: 'none', compiledProfile: 'legacy'
+  },
+  {
+    id: 'simulate-first', title: 'Simulate Before Spending', expectedDecision: 'simulate_first',
+    detail: 'The valid Bell artifact has no matching local evidence yet.',
+    scientificIntent: 'Measure the Bell correlation through one bounded local Q# simulation.', observable: 'bell_correlation',
+    profileId: LOCAL_PROFILE_ID, requestedLimits: localLimits, source: bellProgram,
+    evidenceSeed: 'none', compiledProfile: 'current'
+  },
+  {
+    id: 'external-ready', title: 'Ready, but Not Authorized', expectedDecision: 'ready_for_external_execution',
+    detail: 'Local evidence exists and the frozen external contract matches, while submission remains disabled.',
+    scientificIntent: 'Review whether the validated artifact is ready to leave the local preflight boundary.', observable: 'bell_correlation',
+    profileId: EXTERNAL_PROFILE_ID,
+    requestedLimits: { ...localLimits, target: 'external_reference' }, source: bellProgram,
+    evidenceSeed: 'local_validation', compiledProfile: 'current'
+  }
 ]
+
+export const findDemoCard = (artifactId: string): DemoCard | undefined =>
+  demoCards.find((card) => artifactId.startsWith(`${card.id}-`) || artifactId === card.id)

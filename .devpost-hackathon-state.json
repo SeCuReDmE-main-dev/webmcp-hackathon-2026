@@ -1,6 +1,6 @@
 {
   "schema": "devpost-hackathon-state.v1",
-  "checked_at": "2026-08-28T15:46:12-04:00",
+  "checked_at": "2026-08-29T13:58:51-04:00",
   "hackathon": {
     "id": 31011,
     "slug": "webmcp",
@@ -16,12 +16,12 @@
     "name": "WebMCP-QCG: Quantum Call Gate",
     "slug": "webmcp-qcg-quantum-call-gate",
     "url": "https://devpost.com/software/webmcp-qcg-quantum-call-gate",
-    "state": "submission_draft",
+    "state": "published_project_unsubmitted_hackathon_entry",
     "submitted": false,
     "submitted_at": null,
     "video_url": "",
     "repository_url": "https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026",
-    "live_url": null
+    "live_url": "https://qcg.securedme.ca/"
   },
   "deliverables": {
     "working_live_url": "required",

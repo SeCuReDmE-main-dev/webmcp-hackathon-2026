@@ -7,7 +7,7 @@ August 28, 2026
 English working draft  
 Project repository: <https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026>
 
-I used Codex to its fullest potential as a research partner, for code mapping, source comparison, evidence organization, consistency checks, editorial control, and deliverable preparation. I formulated the intent, defined the scope, interpreted the results, arbitrated the conclusions, and preserved every public decision. This collaboration enhances my investigative capacity; it places judgment, responsibility, and signature under my authority.
+I used Codex to its fullest potential as a research partner—for code mapping, source comparison, evidence organization, consistency checks, editorial control, and deliverable preparation. I formulated the intent, defined the scope, interpreted the results, arbitrated the conclusions, and preserved every public decision. This collaboration expands my investigative capacity; judgment, responsibility, authorship, and final signature remain under my authority.
 
 ---
 

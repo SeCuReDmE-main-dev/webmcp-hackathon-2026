@@ -1,0 +1,123 @@
+{
+  "contract": "webmcp-qcg.hosting-baseline.v1",
+  "captured_at": "2026-08-29T12:50:03-04:00",
+  "repository_sha": "4e6f76371d8b7172f1c66741008df03d14352807",
+  "supersedes": "qcg-securedme-ca-reservation-2026-08-28.json",
+  "requested_domain": "qcg.securedme.ca",
+  "operators": {
+    "settings": "securedme-settings-operator",
+    "hosting": "securedme-cpanel-operator",
+    "ssh_used": false,
+    "direct_env_access": false
+  },
+  "settings_baseline": {
+    "workspace_root": "Z:\\SecuredMe Education suite",
+    "env_path": "Z:\\SecuredMe Education suite\\.env",
+    "venv_path": "Z:\\SecuredMe Education suite\\.venv",
+    "env_exists": true,
+    "venv_exists": true,
+    "canonical_paths_enforced": true,
+    "validation_status": "valid",
+    "validation_error_count": 0,
+    "cpanel_broker_status": "ready",
+    "secret_values_exposed": false
+  },
+  "cpanel_baseline": {
+    "health_status": "success",
+    "account_read_status": "success",
+    "account_read_source": "Variables/get_user_information",
+    "domain_inventory_status": "success",
+    "domain_inventory_source": "DomainInfo/list_domains",
+    "target_present": true,
+    "target_type": "subdomain",
+    "document_root_source": "DomainInfo/single_domain_data",
+    "document_root_relative": "public_html/qcg.securedme.ca",
+    "document_root_absolute_redacted": "/home/<cpanel-account>/public_html/qcg.securedme.ca",
+    "directory_inventory_source": "Fileman/list_files",
+    "document_root_entries": [
+      {
+        "name": "cgi-bin",
+        "type": "directory"
+      }
+    ],
+    "deployment_diagnostic_status": "success",
+    "deployment_diagnostic_target": "qcg.securedme.ca",
+    "domain_inventory_read": true,
+    "document_root_read": true,
+    "passenger_inventory_read": true,
+    "remote_mutation": false,
+    "secret_values_exposed": false
+  },
+  "dns": {
+    "status": "resolved",
+    "record_type": "A",
+    "address": "173.209.32.227",
+    "ttl_seconds": 14400
+  },
+  "tls": {
+    "status": "success",
+    "protocol": "TLSv1.3",
+    "cipher": "TLS_AES_256_GCM_SHA384",
+    "subject_common_name": "qcg.securedme.ca",
+    "issuer": "Let's Encrypt YR1",
+    "not_before": "2026-08-29T14:28:02Z",
+    "not_after": "2026-11-27T14:28:01Z",
+    "san_dns": [
+      "qcg.securedme.ca",
+      "www.qcg.securedme.ca"
+    ]
+  },
+  "http_origin": {
+    "requested_url": "https://qcg.securedme.ca/",
+    "status_code": 301,
+    "location": "https://securedme.ca/",
+    "server": "LiteSpeed",
+    "content_type": "text/html",
+    "content_bytes": 795,
+    "body_sha256": "e8b101a7c7f64aad528cc734513cbeb02243c0af37930dc0f3239749cff184b6",
+    "security_headers_present": [],
+    "security_headers_missing": [
+      "strict-transport-security",
+      "content-security-policy",
+      "x-content-type-options",
+      "x-frame-options",
+      "referrer-policy",
+      "permissions-policy"
+    ]
+  },
+  "http_followed_redirect": {
+    "final_url": "https://securedme.ca/",
+    "status_code": 200,
+    "content_bytes": 15197,
+    "body_sha256": "2aa8803db5fddd2c53afb5f1cd0f85d527a312634c5b078fba0ec8521114ae10"
+  },
+  "safe_release_plan": {
+    "current_rollback_docroot": "public_html/qcg.securedme.ca",
+    "staging_base": "public_html/qcg.securedme.ca/releases",
+    "release_destination_template": "public_html/qcg.securedme.ca/releases/<artifact-sha256-prefix>",
+    "transport": "cpanel-uapi-only",
+    "implicit_ssh_fallback": false,
+    "steps": [
+      "Produce and hash the deployable artifact.",
+      "Create a content-addressed release directory through an allowlisted cPanel UAPI plan.",
+      "Upload the artifact to that isolated directory and verify its hash and required files.",
+      "Plan a document-root change to the verified release directory.",
+      "Apply only with exact plan-bound confirmation.",
+      "Verify the new document root, TLS, HTTP status, headers, and content hash.",
+      "Rollback by restoring public_html/qcg.securedme.ca if any post-apply gate fails."
+    ]
+  },
+  "readiness": {
+    "domain_creation_plan_applicable": false,
+    "domain_creation_reason": "The target already exists and is visible in a fresh cPanel inventory.",
+    "deployment_plan_can_proceed_now": false,
+    "deployment_apply_can_proceed_now": false,
+    "blocking_conditions": [
+      "No deployable artifact and artifact hash were supplied.",
+      "The content-addressed release directory does not exist yet.",
+      "The current operator does not yet expose an allowlisted UAPI-only create-directory and atomic release preparation contract."
+    ],
+    "next_safe_gate": "Add and test the UAPI-only release-directory preparation contract, then create a plan after the artifact hash is known.",
+    "remote_mutation_performed": false
+  }
+}

@@ -22,6 +22,10 @@ artifacts/private/
 .firecrawl/
 .vercel/
 
+# Stitch source exports can exceed GitHub's 100 MB object limit. Keep the local
+# archive intact and commit only reviewed/exported design assets.
+asset/.stitch/*.zip
+
 # Raw Deep Research exports are retained locally for audit, but they contain
 # non-portable citation markers and unverified statements. Publish only the
 # validated comparative synthesis and primary-source references.

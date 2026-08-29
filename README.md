@@ -2,128 +2,150 @@
 
 # WebMCP Quantum Call Gate
 
-Decision, research, prototyping and implementation journal for the 2026 WebMCP
-hackathon project.
+**QCG v2** is a working browser prototype for one decision that should happen
+before quantum execution: reuse existing evidence, reject the request, recompile,
+simulate locally first, or report that the request is ready for a separately
+authorized external system.
 
-**WebMCP-QCG** asks a deliberately narrow question before any quantum workload
-is executed: should this request reuse existing evidence, be refused, wait for
-missing information or consent, or proceed to a bounded local simulation?
+It is a human-in-the-loop preflight workbench, not a quantum provider. The
+prototype imports a local Q# artifact, derives a byte-exact manifest, evaluates
+it against a time-bounded target-profile snapshot, records the human decision,
+and exports a reproducible v2 evidence receipt. Only the published Bell program
+(allowing leading or trailing whitespace) can enter the bounded local simulation
+path.
 
-The repository preserves the candidate history without pretending every lane
-remains active:
+- Stable release URL: [https://qcg.securedme.ca/](https://qcg.securedme.ca/)
+- Current public status: the retained HTTPS origin serves QCG directly. The
+  2026-08-29 live-origin run passed its byte-integrity, header, WASM MIME,
+  human fallback and native WebMCP smoke gates.
+- License: [MIT](LICENSE). Dependency licenses remain with their authors; see
+  [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
-| Lane | Status | Current decision |
-|---|---|---|
-| Quantech Vid | `REJECTED_FOR_THIS_HACKATHON` | Preserved because it was a real candidate, but its video-production scope does not make WebMCP essential. |
-| WebCCP | `DEFERRED_BENCH` | Context continuity remains useful above WebMCP, but the data-weight and ingestion-cost model is not mature enough for this hackathon. |
-| WebMCP Quantum Connector | `SELECTED_AS_QCG` | The selected direction combines a preflight gate, capability routing and a reproducible evidence packet. |
+No QPU submission, paid API, provider credential, or remote quantum job exists
+in this MVP. The QPU submission counter is structurally fixed at zero.
 
-## Selected direction
+## What QCG v2 actually does
 
-**WebMCP Quantum Call Gate + capability adapters + reproducible evidence packet**
+1. A human imports a UTF-8 `.qs` file of at most 128 KiB, or selects one of five
+   falsifiable demo cards.
+2. QCG computes a SHA-256 digest of the exact bytes and creates a
+   `webmcp-qcg.artifact-manifest.v2` manifest with bounded compiler evidence.
+3. QCG evaluates scientific intent, observable, requested limits, and one
+   frozen target profile. The result is one of five explicit decisions.
+4. A human accepts, defers, or overrides the recommendation. An override needs
+   a justification. Only an accepted `simulate_first` recommendation creates
+   short-lived, one-use consent for local simulation.
+5. The pinned `qsharp-lang@1.31.0` runtime can execute the published Bell sample
+   in a Web Worker. The receipt records effects and keeps QPU submissions at 0.
+6. JSON or Markdown evidence can be exported without raw Q#, credentials,
+   provider diagnostics, or local filesystem paths. Receipts are also stored
+   locally in browser IndexedDB when it is available.
 
-The browser page exposes small, non-overlapping tools. A deterministic preflight
-engine inspects the request, evidence freshness, target compatibility, local
-resource bounds and authorization before any effectful adapter is eligible to
-run. Framework-native payloads remain native; the project does not claim a
-universal quantum language.
+## Quick start
 
-The first browser vertical slice is now executable. A WebMCP-capable browser
-discovered and invoked the gate, a Q# Web Worker loaded pinned
-`qsharp-lang@1.31.0`, and the bounded Bell fixture completed 64/64 correlated
-shots. The evidence receipt records one local simulation, a passing Bell
-invariant and zero external provider calls.
-
-No QPU, paid API or remote quantum job has been invoked.
-
-## Run the prototype
-
-Requirements: Node.js 20+ and npm.
+From the repository root:
 
 ```bash
 cd prototype/webmcp-qcg
 npm ci
 npm test
+npm run build
 npm run dev
 ```
 
-Open the displayed local URL in ChatGPT's in-app browser, which supports WebMCP,
-or in Chrome 149+ after enabling
-`chrome://flags/#enable-webmcp-testing` and restarting Chrome. The application
-remains fully usable through its human controls when WebMCP is unavailable.
+Open the local URL printed by Vite. The human interface works without WebMCP.
+For the exact setup, sample path, browser modes, and troubleshooting, use the
+[getting-started guide](docs/GETTING_STARTED.md).
 
-Create a production bundle with:
+The checked-in Q# sample is
+[`prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qs`](prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qs).
+While Vite is running, the same file is served at
+`/fixtures/qcg-bell-sample.qs`.
 
-```bash
-npm run build
-```
+## Four progressive WebMCP tools
 
-## Four progressive tools
+The tools are registered dynamically. A clean page exposes no artifact tool;
+the first two appear only after the human has loaded a valid local artifact.
 
-| Tool | Availability | Purpose |
+| Tool | When it is available | Effect |
 |---|---|---|
-| `inspect_quantum_experiment` | initial | Create a versioned manifest and digest. |
-| `evaluate_quantum_call` | initial | Return one decision, reason codes and a next action. |
-| `export_quantum_evidence_report` | after evidence exists | Export a bounded JSON or Markdown receipt. |
-| `run_bounded_qsharp_simulation` | only after `simulate_first` plus visible one-time consent | Run the fixed local Q# Bell fixture in a Web Worker. |
+| `inspect_quantum_experiment` | After a human-loaded artifact manifest exists | Verifies the artifact identifier and returns its bounded manifest. Raw Q# does not cross the tool contract. |
+| `evaluate_quantum_call` | After a human-loaded artifact manifest exists | Returns one recommendation, reason codes, unknowns, confidence, and a safer alternative. It grants no execution authority. |
+| `run_bounded_qsharp_simulation` | Only while a valid `simulate_first` recommendation has accepted, unused human consent | Consumes consent and runs the approved Bell sample locally in a Worker. It makes no provider or QPU call. |
+| `export_quantum_evidence_report` | After an evaluation has created a v2 receipt | Exports the current receipt as JSON or Markdown without re-evaluating or executing it. |
 
-The five possible decisions are `reuse_result`, `reject`, `recompile`,
-`simulate_first` and `ready_for_external_execution`. External readiness is a
-report state; it grants no provider authorization.
+An evaluation normally makes the export tool discoverable immediately. The
+simulation tool appears only for the narrower consented branch and disappears
+after its one-use consent is consumed.
 
-## Verified Day 3 proof
+## Browser modes
 
-- Native WebMCP invocations: inspection, evaluation, simulation and export.
-- Human authorization event: one visible, one-time consent.
-- Q# shots: 64 requested, 64 completed.
-- Outcomes: 33 `[One, One]`, 31 `[Zero, Zero]`.
-- Bell invariant: pass.
-- Local simulations: 1.
-- External provider, paid and QPU calls: 0.
-- Automated tests: 11 passing.
-- Clean production build: passing.
+- **Human controls:** available in an ordinary modern browser; native tool
+  discovery is optional.
+- **WebMCP-capable in-app browser:** native tools are available when the page
+  receives `document.modelContext.registerTool`.
+- **Experimental Chrome WebMCP testing:** use a Chrome build that exposes
+  `chrome://flags/#enable-webmcp-testing`, enable the flag, and fully restart
+  Chrome. Flag availability is browser-build dependent.
 
-The machine-readable receipt is
-[`evidence/browser/qcg-native-browser-proof-2026-08-28.json`](evidence/browser/qcg-native-browser-proof-2026-08-28.json).
+If the WebMCP API is absent or registration fails, QCG reports that state and
+keeps the human workflow usable.
 
-## Repository map
+## Current verification
 
-- `docs/PROJECT_CHARTER.md` — scope and non-goals.
-- `docs/IDEA_PORTFOLIO.md` — three candidate lanes and their status.
-- `docs/decisions/` — dated decisions and reversibility conditions.
-- `docs/hackathon-build/` — current scope, specification, checklist and build notes.
-- `docs/design/` — binding QCG interface contract and the matching Google Stitch prompt.
-- `docs/ideas/` — one dossier per candidate.
-- `research/webmcp/` — preserved WebMCP/CCP reconnaissance and source registry.
-- `research/quantum/` — current four-surface quantum research.
-- `evidence/SOURCE_MANIFEST.md` — provenance and hashes for imported research.
-- `experiments/` — bounded executable probes and their commands.
-- `evidence/` — machine-readable receipts and source provenance.
-- `evidence/hosting/` — secret-free hosting reservation and deployment receipts.
-- `docs/journal/` — public day-by-day development journal.
-- `prototype/` — selected implementation surface as it becomes verified.
-- `devpost-submission.md` — working submission copy; explicitly unsubmitted.
+The current QCG v2 working tree was rechecked on 2026-08-29 in an isolated copy
+with Node.js `24.18.1` and npm `11.16.0`:
+
+- clean `npm ci`: pass, 0 vulnerabilities reported;
+- automated test files: 2 passed;
+- automated tests: 18 passed;
+- TypeScript check and Vite production build: pass;
+- development server and `/fixtures/qcg-bell-sample.qs`: HTTP 200.
+
+The earlier native browser/Q# vertical-slice receipt remains useful historical
+evidence, but it does not replace a fresh stable-origin Chrome run for QCG v2.
+See [`evidence/qa/`](evidence/qa/) for dated receipts.
+
+## Limits and non-goals
+
+- QCG v2 accepts Q# only. It is not a universal circuit language, converter, or
+  multi-provider router.
+- Imported Q# can be inspected and evaluated, but local execution is deliberately
+  limited to the published Bell program, allowing leading or trailing whitespace.
+- The request bounds are at most 256 shots, 8 qubits, and 15 seconds. They bound
+  input and policy; they are not generalized capacity or performance claims.
+- `ready_for_external_execution` means only that the recorded preflight found no
+  blocker under the supplied snapshot. Provider availability, credentials,
+  queue state, price, submission, and authorization remain unknown and external.
+- Bundled target profiles expire. A stale or unknown profile is rejected rather
+  than treated as current evidence.
+- IndexedDB receipts are local to the browser profile; there is no account,
+  server sync, analytics, or remote persistence.
+- Stable-origin evidence is recorded in the
+  [live acceptance receipt](evidence/qa/LIVE_ORIGIN_ACCEPTANCE_RECEIPT_2026-08-29.md).
+  Future builds must repeat those gates before replacing this release.
+
+## Documentation map
+
+- [Getting started](docs/GETTING_STARTED.md) — install, test, build, run, sample,
+  browser setup, workflow, and troubleshooting.
+- [Release runbook](docs/RELEASE.md) — release artifact, gates, required headers,
+  stable-origin validation, rollback boundary, and open blockers.
+- [Threat model](docs/security/QCG_THREAT_MODEL.md) — assets, trust boundaries,
+  controls, residual risks, security headers, and deliberate exclusions.
+- [`docs/PROJECT_CHARTER.md`](docs/PROJECT_CHARTER.md) — scope and non-goals.
+- [`docs/decisions/`](docs/decisions/) — dated architecture decisions.
+- [`docs/hackathon-build/`](docs/hackathon-build/) — specification, checklist,
+  build notes, and current action registry.
+- [`evidence/`](evidence/) — machine-readable receipts and provenance.
+- [`evidence/hosting/`](evidence/hosting/) — current read-only hosting baseline.
+- [`docs/journal/`](docs/journal/) — public development journal.
 
 ## Governance
 
-- Public repository and open construction journal; public visibility is not a
-  Devpost submission.
-- WebMCP upstream remains external and read-only.
-- No QPU, paid API or provider job is launched without a separate explicit authorization.
-- An AI agent may orchestrate and explain; deterministic quantum libraries own calculations and validation.
-- A rejected idea remains documented so the decision can be audited or revisited.
-- No secret, account credential, Origin Trial token or private email belongs in this repository.
-
-## Current status
-
-- Day 2 field report and Day 4 working draft: available in `docs/journal/`.
-- QDK public-package spike: passed on Node/WASM.
-- Q# browser Worker: passed with 64/64 bounded shots.
-- Native WebMCP invocation: passed in ChatGPT/Codex's in-app browser.
-- External Chrome: human fallback passed; native testing awaits the Chrome 149+
-  WebMCP flag and restart.
-- Expiring public preview: native WebMCP/Q# path passed with both security
-  headers; see the [public proof receipt](evidence/browser/qcg-temporary-public-webmcp-proof-2026-08-28.json).
-- Stable public deployment: pending authenticated hosting.
-- Devpost project `1404828`: `submission_draft`; not submitted.
-- License: MIT. Third-party packages retain their own licenses and notices.
+- Public construction is not a Devpost submission.
+- No QPU, paid API, provider job, or spending action is authorized by QCG.
+- Deterministic quantum libraries perform compilation and simulation; an AI
+  agent may orchestrate and explain but does not manufacture quantum results.
+- No secret, provider credential, private path, Origin Trial token, or private
+  correspondence belongs in the repository or an exported receipt.

@@ -1,0 +1,29 @@
+{
+  "schema_version": "webmcp-qcg.release-manifest.v1",
+  "created_at": "2026-08-29T13:33:00-04:00",
+  "source": "prototype/webmcp-qcg/dist",
+  "package": {
+    "name": "webmcp-qcg-2026-08-29.zip",
+    "size": 2269778,
+    "sha256": "6d574985fbff4fe376395beae37f292889a5d187a9b81601eeb445d7e58c4d44"
+  },
+  "files": [
+    {"path": ".htaccess", "size": 926, "sha256": "44df4675f24f9caad4d62f2d0b217e883b36ee6512cad6c0ab511369b73830e5"},
+    {"path": "_headers", "size": 150, "sha256": "9f45f4da658fc3badc0b735f3dc4344bdbd0979314a518d9f9182a6b508b038f"},
+    {"path": "assets/index-D-PfaGik.css", "size": 8126, "sha256": "d7469a9bd2ffcb4032bcc99ecd4ef7aca9fd5683b307ff5fed1ea742b3c8c445"},
+    {"path": "assets/index-Ylgm1FK1.js", "size": 326643, "sha256": "5cd34a5194f7b94ee4749a7e38e991d164505dd62f47a7d56b70ca72cde23d77"},
+    {"path": "assets/qsc_wasm_bg-CCIGAYD7.wasm", "size": 6066574, "sha256": "5f01879bb9b00d2b75e28d14af6b083a1bf8a92617ffad933b0325e991d5f280"},
+    {"path": "assets/qsharp.worker-BayQcUhz.js", "size": 33895, "sha256": "acf0ce61ff02ec05e9d38dcd9d6d1f06d9fab552656b0d18cbeee3f20d4f9b12"},
+    {"path": "fixtures/qcg-bell-sample.qs", "size": 236, "sha256": "602ec14b539c7ac01513b043eedd01931894dc00b746f2c55ed22ef0305e17df"},
+    {"path": "index.html", "size": 552, "sha256": "980a2400012221f1312004ccabb0484015c60e288583256dbda75e0f5937c0f6"},
+    {"path": "qcg-mark.svg", "size": 391, "sha256": "18eb92a24aaf10c606bd56069fe985ade9544c9e3f6efe58357fb37fe2d1df73"}
+  ],
+  "gates": {
+    "build": "pass",
+    "tests": "18/18 pass",
+    "webmcp_evals_smoke": "2/2 pass",
+    "lighthouse_accessibility": 1.0,
+    "lighthouse_best_practices": 1.0,
+    "qpu_submissions": 0
+  }
+}

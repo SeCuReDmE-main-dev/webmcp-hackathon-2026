@@ -18,7 +18,7 @@ Checked: 2026-08-28
 | Q# WebAssembly asset | 6,066.57 kB |
 | Main JavaScript asset | 298.10 kB |
 
-The clean validation ran from `C:\Users\jeans\Desktop\Case study\.validation\qcg-final-20260828-1555` to avoid mapped-drive module-resolution behavior. The copied source matched the repository prototype at validation time. Vercel independently rebuilt the same source successfully.
+The clean validation ran from `<WORKSPACE>/.validation/qcg-final-20260828-1555` to avoid mapped-drive module-resolution behavior. The copied source matched the repository prototype at validation time. Vercel independently rebuilt the same source successfully.
 
 ## Contract validation
 

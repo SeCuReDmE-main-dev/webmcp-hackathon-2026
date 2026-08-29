@@ -4,7 +4,7 @@
 
 This document defines the product truth, interaction model, visual system, routing contract, responsive behavior, and Stitch handoff for the public WebMCP-QCG interface.
 
-Planned canonical destination:
+Canonical product destination:
 
 `https://qcg.securedme.ca/`
 
@@ -12,12 +12,11 @@ Repository:
 
 `https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026`
 
-Current hosting state:
+Domain contract:
 
-- `qcg.securedme.ca` is the selected and availability-checked address.
-- The cPanel reservation plan passed read-only preconditions on 2026-08-28.
-- The current cPanel operator is intentionally write-disabled, so the domain must be described as `planned` until a live cPanel inventory confirms creation.
-- The design must remain deployment-neutral and work as a static React/Vite application.
+- `qcg.securedme.ca` is the real canonical product address and must appear as a clickable first-party URL wherever the destination is shown.
+- Hosting and release health are separate operational checks; the interface must never infer deployment health from the presence of the domain alone.
+- The design remains deployment-neutral and works as a static React/Vite application.
 
 The existing prototype is the functional and interaction authority. It is not the final visual target. Preserve its working state machine, bounded contracts, accessibility, and evidence semantics while replacing its utilitarian styling with a coherent SecuredMe product interface.
 
@@ -41,7 +40,9 @@ Verified current behavior:
 - the Bell correlation invariant passed;
 - the evidence receipt recorded one local simulation;
 - external provider calls, paid calls, and QPU calls remained at zero;
-- eleven automated tests and the production build passed.
+- the current production build baseline is clean.
+
+The repository defines `npm test` as `vitest run`. The current Vitest execution result remains pending until it is run and verified against the current checkout. Do not display a passing-test count, green test badge, or test-complete claim before that verification exists.
 
 The page may present those values only as a labeled verified fixture. It must never transform them into generalized savings, performance, quantum-advantage, provider-compatibility, or scientific claims.
 
@@ -197,7 +198,7 @@ The page must establish the complete value proposition in under 15 seconds:
 2. QCG places a visible browser gate before that call.
 3. The gate inspects, decides, optionally simulates locally, and exports evidence.
 4. The current MVP contacted zero providers and zero QPUs.
-5. A human remains the authority for external execution.
+5. A human accepts, overrides, or defers the recommendation while external execution remains locked.
 
 The initial viewport must reveal a hint of the scenario workbench. Avoid a hero so tall that the product appears to be a marketing page rather than an executable instrument.
 
@@ -208,7 +209,8 @@ The initial viewport must reveal a hint of the scenario workbench. Avoid a hero 
 Include:
 
 - text identity: `SecuredMe / WebMCP-QCG`;
-- navigation: Gate, Scenarios, Evidence, How it works, Boundaries, Source;
+- primary workbench navigation: Experiment, Agent Review, Human Decision, Evidence Receipt, Activity;
+- secondary links: How it works, Boundaries, Source;
 - compact status: `Working browser prototype`;
 - live WebMCP status: detected, unavailable, registering, or error;
 - theme control;
@@ -216,7 +218,51 @@ Include:
 
 Do not imply that SecuredMe, OpenAI, Chrome, Microsoft, IBM, NVIDIA, or any quantum provider sponsors or endorses the project.
 
-### 10.2 Hero
+### 10.2 Five-tab workbench shell
+
+The application has five top-level tabs. They are five views over one canonical experiment record, never five independent copies of state.
+
+1. **Experiment**
+   - select one of the five falsifiable fixtures;
+   - inspect the artifact, target, bounds, evidence age, and digest;
+   - evaluate the call and, only when required, grant one-time consent for a bounded local simulation;
+   - keep one primary action visible at a time.
+
+2. **Agent Review**
+   - show the current WebMCP tool registry and invocation source;
+   - present the agent recommendation, reason codes, next action, assumptions, and unresolved evidence;
+   - distinguish a generated recommendation from a human decision;
+   - preserve the actual answer boundary before invocation.
+
+3. **Human Decision**
+   - present the agent recommendation beside the evidence needed to judge it;
+   - offer exactly three review outcomes: `accepted`, `overridden`, and `deferred`;
+   - require a concise human rationale for `overridden` and allow an optional note for the other outcomes;
+   - record the outcome as governance evidence without triggering external execution.
+
+4. **Evidence Receipt**
+   - assemble the manifest, decision, human review, simulation record when present, counters, provenance, and hashes;
+   - expose readable summaries first and raw JSON only through disclosure;
+   - export the current receipt in JSON or Markdown without reevaluating or rerunning.
+
+5. **Activity**
+   - show the chronological invocation and state-transition ledger;
+   - filter by source, tool, status, and phase;
+   - make cancellation, failure, retry, recovery, export, and human-review events visible;
+   - never display secret values, raw quantum code, private paths, or provider internals.
+
+Desktop uses a horizontal tab bar directly above the workbench. Tablet keeps the tab bar scrollable without truncating labels. Mobile uses the same semantic tab order in a horizontally scrollable tab list with a visible position indicator; it must not replace the tabs with an inaccessible custom dropdown.
+
+Keyboard contract:
+
+- use semantic tab and tabpanel relationships;
+- `Left` and `Right` move between tabs;
+- `Home` and `End` move to the first and last tab;
+- `Enter` or `Space` activates a focused tab when activation is manual;
+- focus moves predictably and never resets the active experiment;
+- tab labels always combine text with an icon and selected-state marker.
+
+### 10.3 Hero
 
 Required copy hierarchy:
 
@@ -234,9 +280,9 @@ Use a restrained gate or threshold composition on the right: two architectural r
 
 The `EXECUTE` stage must appear locked and labeled `external — human controlled`.
 
-### 10.3 Gate Workbench
+### 10.4 Gate Workbench
 
-Desktop composition:
+Desktop composition inside the **Experiment** tab:
 
 - left rail: scenario deck;
 - center: active inspection and decision surface;
@@ -259,7 +305,7 @@ Mobile composition:
 
 The workbench must retain one visible primary action at a time.
 
-### 10.4 Inspection Surface
+### 10.5 Inspection Surface
 
 Show:
 
@@ -274,7 +320,7 @@ Show:
 
 Raw quantum code, credentials, provider diagnostics, and private paths do not belong in this surface.
 
-### 10.5 Decision Surface
+### 10.6 Decision Surface
 
 Before invocation:
 
@@ -292,7 +338,7 @@ After invocation:
 
 Use the visual metaphor of a gate changing position, but keep transitions under 250 ms and respect reduced motion.
 
-### 10.6 Conditional Simulation and Consent
+### 10.7 Conditional Simulation and Consent
 
 The simulation control appears only when the active decision is `simulate_first`.
 
@@ -314,7 +360,7 @@ After consent:
 - display the invariant result and outcome histogram;
 - never expose an external execution button.
 
-### 10.7 Evidence and Invocation Ledger
+### 10.8 Evidence and Invocation Ledger
 
 Evidence is a first-order product surface.
 
@@ -332,7 +378,36 @@ Include:
 
 Keep raw JSON behind a disclosure control. The default surface should remain readable by a scientist, judge, or developer without decoding the schema.
 
-### 10.8 How the Gate Works
+### 10.9 Persistent Security Rail
+
+Three security cards remain visible on every tab. On desktop they form a compact rail above or beside the active panel. On tablet and mobile they become a three-item summary strip with expandable details. Their order and meaning remain stable.
+
+1. **Artifact Integrity**
+   - manifest identifier and digest status;
+   - states: pending, verified, mismatch, stale, unavailable;
+   - communicates whether the evaluated artifact still matches the inspected artifact.
+
+2. **Target Evidence**
+   - target compatibility, evidence freshness, and requested-bound status;
+   - states: pending, sufficient, incomplete, incompatible, expired;
+   - communicates what evidence supports the current recommendation.
+
+3. **Authority & Effects**
+   - human review state, consent state, external-execution lock, and local/external/paid/QPU counters;
+   - states: awaiting review, accepted, overridden, deferred, consent granted, consent consumed, locked;
+   - always shows `External execution: locked` in the MVP.
+
+Every security card uses a label, plain-language status, icon, and short explanation. Color is reinforcement only. A screen reader announcement occurs only when the status materially changes, not on every render.
+
+### 10.10 Human review outcomes
+
+- `accepted`: the human adopts the agent recommendation and its next action. This records agreement; it never authorizes a provider or QPU call.
+- `overridden`: the human selects a different bounded next action and supplies a rationale. The original recommendation remains visible in the receipt.
+- `deferred`: the human postpones judgment. The record remains open, exports as incomplete, and all external effects stay locked.
+
+Review outcomes are append-only evidence events. A later review creates another event rather than silently rewriting history.
+
+### 10.11 How the Gate Works
 
 Show four concise steps:
 
@@ -343,7 +418,7 @@ Show four concise steps:
 
 Connect each step to its WebMCP tool and visible human control.
 
-### 10.9 Boundaries and Governance
+### 10.12 Boundaries and Governance
 
 Present the following as a compact trust contract:
 
@@ -356,7 +431,7 @@ Present the following as a compact trust contract:
 - readiness and authorization remain separate;
 - source and evidence links are public and inspectable.
 
-### 10.10 Footer
+### 10.13 Footer
 
 Include:
 
@@ -364,7 +439,7 @@ Include:
 - SecuredMe;
 - GitHub repository;
 - MIT license;
-- planned route `qcg.securedme.ca`;
+- canonical route [`qcg.securedme.ca`](https://qcg.securedme.ca/);
 - status `Working browser prototype`;
 - statement `No QPU, paid API, or external quantum job is part of this MVP.`
 
@@ -455,6 +530,16 @@ Bright cover colors are accents and fills, not default small-text colors. Use Ga
 - Minimum interactive target: 44 × 44 px.
 - Maximum content width: 1440 px; workbench preferred width: 1280–1400 px.
 
+### 13.1 Responsive system
+
+| Viewport | Navigation | Workbench | Security rail |
+| --- | --- | --- | --- |
+| Desktop, 1200–1440+ px | Five tabs in one row | Experiment may use three columns; other tabs use one primary canvas plus a supporting rail | Three persistent cards in one row or right rail |
+| Tablet, 768–1199 px | Scrollable five-tab row with complete labels | One primary canvas followed by two-column supporting modules | Three compact cards in one row, details expandable |
+| Mobile, 320–767 px | Scrollable semantic tab list with position cue | One column in task order; one primary action at a time | Three-item summary strip followed by expandable cards |
+
+Dark and light themes use identical hierarchy, geometry, order, copy, states, and interaction behavior. Theme changes tokens only. Every required screen must be designed for desktop, tablet, and mobile rather than relying on automatic scaling from the desktop master.
+
 ## 14. Component Contract
 
 Required reusable components:
@@ -462,6 +547,11 @@ Required reusable components:
 - `QcgHeader`
 - `HeroGate`
 - `WebMcpStatus`
+- `WorkbenchTabs`
+- `SecurityRail`
+- `ArtifactIntegrityCard`
+- `TargetEvidenceCard`
+- `AuthorityEffectsCard`
 - `ScenarioDeck`
 - `ScenarioCard`
 - `PhaseRail`
@@ -474,11 +564,29 @@ Required reusable components:
 - `EvidenceCounters`
 - `EvidenceReceipt`
 - `AgentToolRegistry`
+- `AgentReviewPanel`
+- `HumanDecisionPanel`
+- `ReviewOutcomeControl`
 - `InvocationLedger`
+- `ActivityFilters`
 - `BoundaryContract`
 - `QcgFooter`
 
 Every component needs empty, loading, active, complete, cancelled, error, and recovery behavior where applicable.
+
+### 14.1 Complete state matrix
+
+| Surface | Empty / unavailable | Loading / active | Success states | Error and recovery |
+| --- | --- | --- | --- | --- |
+| Application shell | booting; WebMCP unavailable with human controls preserved | registering tools; restoring local record | ready; degraded human-only | registration error with `Retry registration`; fatal load error with `Reload workbench` |
+| Experiment | no scenario selected; no inspection | inspecting; evaluating; simulating; cancelling | inspected; one of five decisions; simulation completed | invalid input; digest mismatch; expired decision; cancelled; Worker timeout; `Review inputs`, `Inspect again`, or `Retry local simulation` |
+| Agent Review | no evaluation yet; agent surface unavailable | collecting evidence; evaluating recommendation | recommendation ready; reason codes and next action visible | incomplete evidence; tool error; stale recommendation; `Return to Experiment` or `Evaluate again` |
+| Human Decision | review unavailable until recommendation exists | saving review outcome | accepted; overridden; deferred | missing override rationale; stale evidence; save failure; retain draft and offer `Retry save` |
+| Evidence Receipt | no evidence packet | assembling; preparing export | receipt ready; JSON exported; Markdown exported | incomplete receipt; export failure; `Review missing evidence` or `Retry export` |
+| Activity | no activity; no filter matches | loading or applying filters | chronological events visible | ledger unavailable; retry without losing the canonical experiment |
+| Security cards | pending; unavailable; locked | checking integrity, target, or authority | verified/sufficient plus accepted, overridden, or deferred | mismatch, incompatible, expired, or stale with a named recovery action |
+
+Loading states use stable skeleton geometry and explicit text such as `Inspecting artifact…`; they never fake progress. Errors preserve entered values and the last verified receipt. Recovery actions are specific, keyboard reachable, and never silently rerun a simulation or consume consent.
 
 ## 15. Accessibility and Motion Contract
 
@@ -507,7 +615,7 @@ Do not regenerate the SecuredMe identity or bake functional interface text into 
 
 ## 17. Routing and Deployment Contract
 
-- Planned canonical origin: `https://qcg.securedme.ca/`.
+- Canonical origin: `https://qcg.securedme.ca/`.
 - Use a top-level application; do not place the WebMCP registration surface inside an iframe.
 - Preserve `Origin-Agent-Cluster: ?1`.
 - Preserve `Permissions-Policy: tools=(self)`.
@@ -522,20 +630,25 @@ Stitch should produce one coherent project containing:
 
 1. desktop dark master at 1440 px;
 2. desktop light twin at 1440 px;
-3. tablet workbench state;
+3. tablet dark and light workbench masters;
 4. mobile dark master at 390 px;
 5. mobile light twin at 390 px;
-6. empty / pre-invocation state;
-7. `reuse_result` state;
-8. `reject` state;
-9. `recompile` state;
-10. `simulate_first` before consent;
-11. active local simulation with cancellation;
-12. completed Bell evidence state;
-13. `ready_for_external_execution` with external execution visibly locked;
-14. WebMCP unavailable human-fallback state;
-15. component and token summary;
-16. implementation-ready handoff assets.
+6. all five tabs in desktop, tablet, and mobile composition;
+7. persistent Artifact Integrity, Target Evidence, and Authority & Effects cards;
+8. empty and pre-invocation states;
+9. loading states for inspection, evaluation, receipt assembly, activity, and export;
+10. `reuse_result` state;
+11. `reject` state;
+12. `recompile` state;
+13. `simulate_first` before consent;
+14. active local simulation with cancellation;
+15. completed Bell evidence state;
+16. `ready_for_external_execution` with external execution visibly locked;
+17. Human Decision states for `accepted`, `overridden`, and `deferred`;
+18. WebMCP-unavailable human-fallback state;
+19. validation, Worker, registration, export, and ledger error states with recovery actions;
+20. component and token summary;
+21. implementation-ready handoff assets.
 
 ## 19. Acceptance Gate
 
@@ -551,12 +664,19 @@ The design is accepted only if:
 - external execution remains locked in every state;
 - the verified fixture says 64/64 shots, invariant pass, and zero external calls without generalizing the result;
 - the evidence ledger and provenance are first-order surfaces;
+- the five tabs expose one canonical record rather than duplicating state;
+- Artifact Integrity, Target Evidence, and Authority & Effects remain visible on every tab;
+- accepted, overridden, and deferred human outcomes remain distinct from agent recommendations;
 - the visual language clearly derives from the QCG article cover and thumbnail;
 - gold represents trust/decision while blue-cyan represents computation;
 - text and controls remain readable above the visual atmosphere;
 - dark and light themes share the same architecture;
+- desktop, tablet, and mobile preserve the same five-tab task order;
+- every tab has explicit empty, loading, success, error, and recovery behavior;
 - every important state works at 320 px and with keyboard navigation;
 - functional text remains HTML/CSS;
 - no fake providers, partners, user counts, testimonials, benchmarks, QPU access, or cost-saving claims appear;
 - no secret, private path, `.env` value, Origin Trial token, Gmail, Drive, or private correspondence enters the design;
 - the result can be implemented against the existing React/TypeScript services without changing the verified product contract.
+- `qcg.securedme.ca` is presented as the canonical clickable product address;
+- the interface may state that the current production build, 18-test Vitest baseline and official two-step WebMCP smoke evaluation pass; each numeric claim remains tied to its dated receipt.

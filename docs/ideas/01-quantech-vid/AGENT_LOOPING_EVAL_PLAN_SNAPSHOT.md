@@ -100,8 +100,7 @@ Les contenus sensibles restent exclus des traces exportées. Les identifiants et
 
 ## Références
 
-- [Patron transversal issu du webinaire](../../../Webinaires/2026-08-26-openai-academy-builder-bootcamp-agents/02_concepts/AGENT_LOOPING_EVAL_PATTERN.md)
+- Patron transversal issu du webinaire: source workspace historique `Webinaires/2026-08-26-openai-academy-builder-bootcamp-agents/02_concepts/AGENT_LOOPING_EVAL_PATTERN.md` (hors de ce dépôt)
 - [OpenAI Agents SDK — Running agents](https://openai.github.io/openai-agents-python/running_agents/)
 - [OpenAI Agents SDK — Tracing](https://openai.github.io/openai-agents-python/tracing/)
 - [OpenAI — Agent evals](https://developers.openai.com/api/docs/guides/agent-evals)
-
