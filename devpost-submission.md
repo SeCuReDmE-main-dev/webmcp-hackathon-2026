@@ -51,6 +51,9 @@ The principal challenge was preserving scientific meaning while keeping the agen
 - Four native, composable WebMCP tools share the human application services.
 - Five scenarios can confirm or falsify their stated hypothesis.
 - A real Q# WebAssembly Worker completed a bounded Bell simulation.
+- Four accessible seasonal presentations preserve one semantic workflow.
+- A separate QCG DevTools companion and strict append-only ledger make declared
+  agent counter-analysis visible without granting it quantum authority.
 - Tool logs preserve invocation source, state transition, reason codes and counters.
 - External provider calls, QPU calls and paid calls remain exactly zero.
 - The public repository contains source, tests, research provenance and machine-readable evidence.
@@ -61,7 +64,7 @@ WebMCP is strongest here as a decision surface. The agent gains precise capabili
 
 ### What's next
 
-The stable public deployment, live WebMCP smoke trace and clean-clone reproduction now pass. The immediate release gate is the public demo video followed by my final field-by-field review. The longer roadmap adds versioned capability adapters for additional quantum ecosystems while keeping every native contract visible. External execution remains a separate, explicitly authorized product surface.
+The stable public deployment, live WebMCP smoke trace and clean-clone reproduction now pass. The seasonal release adds a local F12 collaboration panel while keeping its identities declared and its authority read-only. A live external Gemini-client exchange remains a separate validation step. The immediate release gate is the public demo video followed by my final field-by-field review. The longer roadmap adds versioned capability adapters for additional quantum ecosystems while keeping every native contract visible. External execution remains a separate, explicitly authorized product surface.
 
 ## Required custom-field draft
 

@@ -1,0 +1,35 @@
+{
+  "schema_version": "webmcp-qcg.release-manifest.v1",
+  "created_at": "2026-08-29T16:49:08-04:00",
+  "source": "prototype/webmcp-qcg/dist",
+  "package": {
+    "name": "qcg-seasonal-2026-08-29.zip",
+    "size": 2243440,
+    "sha256": "9161efefd2636ecfb336fb2af7b0f01181333da1bc34613314974e6440a6bf87",
+    "tracked_in_git": false
+  },
+  "files": [
+    {"path": "_headers", "size": 150, "sha256": "9f45f4da658fc3badc0b735f3dc4344bdbd0979314a518d9f9182a6b508b038f"},
+    {"path": ".htaccess", "size": 926, "sha256": "44df4675f24f9caad4d62f2d0b217e883b36ee6512cad6c0ab511369b73830e5"},
+    {"path": "assets/index-BI1lwL-F.js", "size": 344824, "sha256": "7549ebb6e84145a8f8e763dbf289fb1d04311cf2c8451c9b90b38306af6d2d25"},
+    {"path": "assets/index-GA5hkRr6.css", "size": 9483, "sha256": "225668af5171321be73b29ee5fc32a8096489e1b2aae894f6fe9523c5a0cf2ab"},
+    {"path": "assets/qsc_wasm_bg-CCIGAYD7.wasm", "size": 6066574, "sha256": "5f01879bb9b00d2b75e28d14af6b083a1bf8a92617ffad933b0325e991d5f280"},
+    {"path": "assets/qsharp.worker-BayQcUhz.js", "size": 33895, "sha256": "acf0ce61ff02ec05e9d38dcd9d6d1f06d9fab552656b0d18cbeee3f20d4f9b12"},
+    {"path": "fixtures/qcg-bell-sample.qs", "size": 236, "sha256": "602ec14b539c7ac01513b043eedd01931894dc00b746f2c55ed22ef0305e17df"},
+    {"path": "index.html", "size": 552, "sha256": "0a4f8b1e4cfb50a7d4f1a34d0787e613c7cb583519638f0f0f51feca065841f6"},
+    {"path": "qcg-mark.svg", "size": 391, "sha256": "18eb92a24aaf10c606bd56069fe985ade9544c9e3f6efe58357fb37fe2d1df73"},
+    {"path": "seasonal/autumn.svg", "size": 387, "sha256": "9f54311776c76be81798a9fd21669331b6f8a32c81c676bb099c907fc9bf6644"},
+    {"path": "seasonal/spring.svg", "size": 417, "sha256": "7dc0adae5b9c9e869ca5309cde3021c38d5c2bb4bb571e2b08168d78d77a21ca"},
+    {"path": "seasonal/summer.svg", "size": 384, "sha256": "e4833eee06816eacdf56089eb81a2c12c713c97de8bfab49da67b0daf9ddc204"},
+    {"path": "seasonal/winter.svg", "size": 389, "sha256": "7596dc0b813a96625a3ec324f56642da97f7205a742c46badc79ff5e2c4bf856"}
+  ],
+  "gates": {
+    "build": "pass",
+    "tests": "34/34 pass",
+    "seasonal_browser_qa": "pass",
+    "minimum_contrast_ratio": 7.65,
+    "public_artifact_scan": "pass",
+    "live_seasonal_deployment": "blocked_before_mutation",
+    "qpu_submissions": 0
+  }
+}

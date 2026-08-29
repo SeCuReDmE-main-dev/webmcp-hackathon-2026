@@ -5,6 +5,11 @@ import { QcgServices } from './services'
 import { EXTERNAL_PROFILE_ID, LOCAL_PROFILE_ID } from './targetProfiles'
 import { useQcgWebMcp } from './webmcp'
 import type { HumanChoice, QcgState } from './types'
+import { DebugLedger } from './debugLedger'
+import { installQcgDevtoolsBridge } from './devtoolsBridge'
+import { registerQcgDevtoolsTools } from './devtoolsTools'
+import type { QcgDebugMessage } from './debugContracts'
+import { qcgSeasons, readWindowQcgSeason, saveWindowQcgSeason, type QcgSeason } from './season'
 
 const tabs = ['Experiment', 'Agent Review', 'Human Decision', 'Evidence Receipt', 'Activity'] as const
 type Tab = (typeof tabs)[number]
@@ -24,6 +29,7 @@ function shortHash(value?: string): string {
 
 export default function App() {
   const services = useMemo(() => new QcgServices(), [])
+  const debugLedger = useMemo(() => new DebugLedger(), [])
   const [state, setState] = useState<QcgState>(services.snapshot())
   const [selected, setSelected] = useState(demoCards[3].id)
   const selectedCard = demoCards.find((card) => card.id === selected)!
@@ -37,14 +43,39 @@ export default function App() {
   const [justification, setJustification] = useState('')
   const [busy, setBusy] = useState(false)
   const [storedReceipts, setStoredReceipts] = useState(0)
-  const [theme, setTheme] = useState<'dark' | 'light'>('dark')
+  const [season, setSeason] = useState<QcgSeason>(() => readWindowQcgSeason(window))
+  const [debugSessionId] = useState(() => crypto.randomUUID())
+  const [debugMessages, setDebugMessages] = useState<QcgDebugMessage[]>([])
+  const [debugReady, setDebugReady] = useState(false)
+  const [debugActorFilter, setDebugActorFilter] = useState('all')
+  const [debugKindFilter, setDebugKindFilter] = useState('all')
+  const [humanDebugSummary, setHumanDebugSummary] = useState('')
+  const [debugError, setDebugError] = useState('')
   const simulationController = useRef<AbortController | null>(null)
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
+  const seasonRefs = useRef<Array<HTMLButtonElement | null>>([])
   const evalFixtureLoaded = useRef(false)
+  const stateRef = useRef(state)
+  stateRef.current = state
   const refresh = useCallback(() => setState(services.snapshot()), [services])
   const { supported, toolNames, registrationStatus } = useQcgWebMcp(services, state, refresh)
 
   useEffect(() => () => simulationController.current?.abort(), [])
+  useEffect(() => { saveWindowQcgSeason(window, season) }, [season])
+  useEffect(() => {
+    void debugLedger.openSession(debugSessionId).then(() => setDebugReady(true)).catch(() => setDebugReady(false))
+  }, [debugLedger, debugSessionId])
+  useEffect(() => {
+    if (!debugReady) return
+    const removeBridge = installQcgDevtoolsBridge(() => stateRef.current, debugLedger, debugSessionId)
+    const unregister = window.__QCG_DEVTOOLS_V1__ ? registerQcgDevtoolsTools(window.__QCG_DEVTOOLS_V1__, debugLedger) : () => undefined
+    return () => { unregister(); removeBridge() }
+  }, [debugLedger, debugReady, debugSessionId])
+  const refreshDebugMessages = useCallback(() => {
+    void debugLedger.messages(debugSessionId).then(setDebugMessages).catch(() => setDebugMessages([]))
+  }, [debugLedger, debugSessionId])
+  useEffect(() => { if (debugReady) refreshDebugMessages() }, [debugReady, refreshDebugMessages])
+  useEffect(() => debugLedger.subscribe(refreshDebugMessages), [debugLedger, refreshDebugMessages])
   useEffect(() => {
     const fixture = new URLSearchParams(window.location.search).get('eval_fixture')
     if (!fixture || evalFixtureLoaded.current) return
@@ -211,6 +242,19 @@ export default function App() {
     }
   }
 
+  async function appendHumanDebugMessage(): Promise<void> {
+    if (!humanDebugSummary.trim() || !window.__QCG_DEVTOOLS_V1__) return
+    try {
+      await window.__QCG_DEVTOOLS_V1__.appendHumanMessage({ summary: humanDebugSummary.trim() })
+      setHumanDebugSummary('')
+      setDebugError('')
+      refreshDebugMessages()
+    } catch (error) {
+      setDebugError(error instanceof Error ? error.message : 'The collaboration message could not be recorded.')
+      setActiveTab('Activity')
+    }
+  }
+
   async function exportEvidence(format: 'json' | 'markdown'): Promise<void> {
     if (!state.receipt) return
     setBusy(true)
@@ -239,25 +283,45 @@ export default function App() {
     tabRefs.current[next]?.focus()
   }
 
+  function onSeasonKeyDown(index: number, event: React.KeyboardEvent<HTMLButtonElement>): void {
+    let next = index
+    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % qcgSeasons.length
+    else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index - 1 + qcgSeasons.length) % qcgSeasons.length
+    else if (event.key === 'Home') next = 0
+    else if (event.key === 'End') next = qcgSeasons.length - 1
+    else return
+    event.preventDefault()
+    setSeason(qcgSeasons[next])
+    seasonRefs.current[next]?.focus()
+  }
+
   const consentValid = state.authority_state === 'authorized'
 
-  return <main data-theme={theme}>
+  const visibleDebugMessages = debugMessages.filter((message) =>
+    (debugActorFilter === 'all' || message.actor === debugActorFilter) &&
+    (debugKindFilter === 'all' || message.kind === debugKindFilter)
+  )
+
+  return <main data-season={season}>
     <header className="hero">
+      <img className="seasonal-mark" src={`/seasonal/${season}.svg`} alt="" aria-hidden="true" />
       <div>
         <p className="eyebrow">WebMCP-QCG · browser-native HITL preflight</p>
         <h1>Review before you run.</h1>
         <p className="lede">I make a quantum call inspectable before compute, shots or provider budget can enter the workflow. The agent recommends; the human accepts, defers or overrides.</p>
       </div>
       <div className="hero-actions">
-        <button className="theme-toggle" onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}>
-          {theme === 'dark' ? '☀ Light' : '◐ Dark'}
-        </button>
+        <div className="season-selector" role="radiogroup" aria-label="Interface season">
+          {qcgSeasons.map((option, index) => <button key={option} ref={(node) => { seasonRefs.current[index] = node }} role="radio" tabIndex={season === option ? 0 : -1} aria-checked={season === option} className={season === option ? 'selected' : ''} onClick={() => setSeason(option)} onKeyDown={(event) => onSeasonKeyDown(index, event)}>{option}</button>)}
+        </div>
         <p className={`status-chip ${registrationStatus === 'registered' ? 'pass' : 'caution'}`} role="status">
           <span aria-hidden="true">{registrationStatus === 'registered' ? '●' : '△'}</span>
           {!supported
             ? 'Human mode · WebMCP unavailable'
             : registrationStatus === 'registered'
-              ? `${toolNames.length} native tools registered`
+              ? toolNames.length
+                ? `${toolNames.length} native tools registered`
+                : 'WebMCP ready · load an artifact'
               : registrationStatus === 'error'
                 ? 'WebMCP registration needs recovery'
                 : 'Registering WebMCP tools'}
@@ -450,6 +514,7 @@ export default function App() {
           <article><strong>{state.effects.qpu_submissions}</strong><span>QPU submissions</span></article>
         </div>
         {state.error && <p className="notice error" role="alert"><strong>Recovery:</strong> {state.error}</p>}
+        <p className="notice"><strong>Debug storage:</strong> {debugLedger.storageMode === 'indexeddb' ? 'IndexedDB isolated ledger' : 'memory fallback; messages persist only for this page session.'}</p>
         <div className="two-column">
           <article className="panel">
             <h3>Current WebMCP surface</h3>
@@ -463,6 +528,26 @@ export default function App() {
                 <span>{entry.summary}</span>
                 <small>{entry.source} · {new Date(entry.timestamp).toLocaleTimeString()}</small>
               </li>) : <li>No invocation yet.</li>}
+            </ol>
+          </article>
+        </div>
+        <div className="two-column collaboration-grid">
+          <article className="panel">
+            <h3>Collaboration ledger</h3>
+            <p>Isolated debug messages never confer consent or invoke a simulation.</p>
+            <div className="debug-filters">
+              <label>Actor<select aria-label="Filter collaboration actor" value={debugActorFilter} onChange={(event) => setDebugActorFilter(event.target.value)}><option value="all">All actors</option><option value="human">Human</option><option value="codex">Codex</option><option value="gemini">Gemini</option><option value="antigravity">Antigravity</option><option value="system">System</option></select></label>
+              <label>Kind<select aria-label="Filter collaboration kind" value={debugKindFilter} onChange={(event) => setDebugKindFilter(event.target.value)}><option value="all">All kinds</option><option value="observation">Observation</option><option value="hypothesis">Hypothesis</option><option value="proposal">Proposal</option><option value="challenge">Challenge</option><option value="decision_request">Decision request</option><option value="receipt">Receipt</option></select></label>
+            </div>
+            <label>Message for human review<textarea aria-label="Human collaboration message" maxLength={1200} value={humanDebugSummary} onChange={(event) => setHumanDebugSummary(event.target.value)} placeholder="Record a bounded observation for the collaboration ledger." /></label>
+            <p className="notice"><strong>Collaboration boundary:</strong> Never paste secrets, local paths or source code into this ledger.</p>
+            {debugError && <p className="notice error" role="alert"><strong>Review the message:</strong> {debugError}</p>}
+            <button className="primary" disabled={!debugReady || !humanDebugSummary.trim()} onClick={() => void appendHumanDebugMessage()}>Add human message</button>
+          </article>
+          <article className="panel">
+            <h3>Declared messages</h3>
+            <ol className="log collaboration-log" aria-live="polite">
+              {visibleDebugMessages.length ? visibleDebugMessages.map((message) => <li key={message.event_id}><strong>{message.actor} · {message.kind}</strong><span>{message.summary}</span><small>{message.status} · {message.confidence} confidence · {new Date(message.issued_at).toLocaleTimeString()}</small></li>) : <li>No collaboration messages match the active filters.</li>}
             </ol>
           </article>
         </div>

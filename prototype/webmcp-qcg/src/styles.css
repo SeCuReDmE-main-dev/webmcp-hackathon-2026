@@ -36,21 +36,6 @@ main {
   padding: 2rem clamp(1rem, 4vw, 3.5rem);
 }
 
-main[data-theme="light"] {
-  --page: #f8f6ee;
-  --surface: #fffdf6;
-  --surface-2: #eef8ff;
-  --text: #001537;
-  --muted: #425779;
-  --line: #b9c9dc;
-  --cyan: #007eaf;
-  --cyan-soft: #006c96;
-  --gold: #9b6500;
-  --green: #087545;
-  --red: #a52742;
-  background: linear-gradient(180deg, #f8f6ee, #eef7fb);
-}
-
 .hero, .security-rail, .tabs, .workspace, footer {
   width: min(1280px, 100%);
   margin-inline: auto;
@@ -62,6 +47,8 @@ main[data-theme="light"] {
   align-items: flex-start;
   gap: 2rem;
   padding: 1.5rem 0 2rem;
+  position: relative;
+  overflow: hidden;
 }
 .hero > div:first-child { max-width: 780px; }
 .eyebrow, .step {
@@ -78,6 +65,16 @@ h3 { font-size: 1.15rem; margin: 0 0 1rem; }
 h4 { color: var(--muted); margin: 1.25rem 0 .45rem; }
 .lede { color: var(--muted); line-height: 1.65; font-size: 1.1rem; margin: 0; max-width: 720px; }
 .hero-actions { display: grid; justify-items: end; gap: .75rem; min-width: 240px; }
+.seasonal-mark { position: absolute; right: -1.4rem; bottom: -2.1rem; width: min(23vw, 210px); opacity: .4; pointer-events: none; }
+.season-selector { display: flex; flex-wrap: wrap; justify-content: end; gap: .3rem; }
+.season-selector button { font-size: .7rem; padding: .35rem .5rem; text-transform: capitalize; }
+.season-selector button.selected { border-color: var(--gold); color: var(--gold); box-shadow: inset 0 0 0 1px var(--gold); }
+[data-season="autumn"] { --page: #21150d; --surface: #372217; --surface-2: #4b301e; --text: #fff5e7; --muted: #e3c8ab; --line: #82583b; --cyan: #f0a04b; --cyan-soft: #ffc27e; --gold: #ffd075; --green: #a7d38b; --red: #ff9d8d; --season-accent: #e88a3c; }
+[data-season="winter"] { --page: #0c1e31; --surface: #12304a; --surface-2: #173f60; --text: #f1fbff; --muted: #bfd7e8; --line: #4f7f9f; --cyan: #95d8f0; --cyan-soft: #c8f1ff; --gold: #d8edff; --green: #9ee1d3; --red: #ffa9b7; --season-accent: #95d8f0; }
+[data-season="spring"] { --page: #102718; --surface: #1b3c25; --surface-2: #285235; --text: #efffee; --muted: #c3e5c3; --line: #5e9465; --cyan: #8ed98d; --cyan-soft: #c3f6bc; --gold: #e2eb85; --green: #8ed98d; --red: #ffb0a4; --season-accent: #8ed98d; }
+[data-season="summer"] { --page: #172544; --surface: #24395f; --surface-2: #304b78; --text: #fffbe7; --muted: #d7d4b5; --line: #7487af; --cyan: #f4d25b; --cyan-soft: #ffe99a; --gold: #f4d25b; --green: #a9dfa1; --red: #ffb2a1; --season-accent: #f4d25b; }
+[data-season] .hero { border-color: var(--season-accent); }
+[data-season] .eyebrow { color: var(--season-accent); }
 
 button, input, textarea, select {
   border: 1px solid var(--line);
@@ -86,7 +83,6 @@ button, input, textarea, select {
 }
 button { padding: .72rem .9rem; }
 button:hover { border-color: var(--cyan); }
-.theme-toggle { white-space: nowrap; }
 .primary {
   background: var(--cyan);
   border-color: var(--cyan);
@@ -245,6 +241,9 @@ code { color: var(--cyan-soft); overflow-wrap: anywhere; }
 .log li { margin: .7rem 0; }
 .log span, .log small { display: block; color: var(--muted); }
 .log small { font-size: .7rem; margin-top: .15rem; }
+.collaboration-grid { margin-top: 1rem; }
+.debug-filters { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .7rem; }
+.collaboration-log { max-height: 255px; }
 
 footer { color: var(--muted); font-size: .9rem; padding: 2rem 0; }
 footer p { margin: 0; }
@@ -252,6 +251,7 @@ footer p { margin: 0; }
 @media (max-width: 980px) {
   .hero { display: grid; }
   .hero-actions { justify-items: start; }
+  .season-selector { justify-content: start; }
   .security-rail { grid-template-columns: 1fr; }
   .two-column { grid-template-columns: 1fr; }
   .cards { grid-template-columns: repeat(2, 1fr); }
@@ -265,6 +265,7 @@ footer p { margin: 0; }
   .section-title { display: grid; gap: .8rem; align-items: start; }
   .tabs button { flex-basis: 155px; }
   .cards, .counter-grid, .limit-grid { grid-template-columns: 1fr; }
+  .debug-filters { grid-template-columns: 1fr; }
   .scenario-card { min-height: auto; }
   .facts { grid-template-columns: 1fr; gap: .2rem; }
   .facts dd { margin-bottom: .55rem; }

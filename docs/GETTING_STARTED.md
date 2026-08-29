@@ -41,8 +41,9 @@ npm test
 npm run build
 ```
 
-`npm test` runs the service-contract and WebMCP-lifecycle suites. The current
-verification result is 2 test files and 18 tests passing.
+`npm test` runs the service, WebMCP lifecycle, seasonal selector, strict debug
+contract, bridge-authority and third-party tool suites. The current verification
+result is 6 test files and 34 tests passing.
 
 `npm run build` runs `tsc --noEmit` before Vite and writes the production bundle
 to `prototype/webmcp-qcg/dist/`. The build includes the Q# Worker, the pinned Q#
@@ -110,7 +111,8 @@ failure; QCG keeps the full human workflow available.
 6. Inspect **Evidence Receipt** and export JSON or Markdown if needed.
 7. Confirm in **Activity** that QPU submissions remain `0`.
 
-At page load, native WebMCP exposes only:
+At page load, no artifact tool is exposed. After a human loads a valid artifact,
+native WebMCP exposes:
 
 - `inspect_quantum_experiment`
 - `evaluate_quantum_call`
@@ -119,7 +121,36 @@ After evaluation, `export_quantum_evidence_report` becomes available because a
 v2 receipt exists. `run_bounded_qsharp_simulation` appears only during the valid
 accepted-consent window for `simulate_first` and is removed after consent use.
 
-## 7. Imported artifact behavior
+## 7. Use the seasonal selector
+
+The header contains one radio group with exactly four options: Autumn, Winter,
+Spring and Summer. Arrow keys move between adjacent seasons; Home selects
+Autumn and End selects Summer. A reload preserves the selected season. The
+workflow, five tabs, three security cards, tools and decision state stay the
+same in all four presentations.
+
+## 8. Load the optional QCG DevTools panel
+
+This is a manual local-development step:
+
+1. Open `chrome://extensions` in Chrome.
+2. Enable **Developer mode**.
+3. Choose **Load unpacked** and select
+   `companion/qcg-devtools-extension/`.
+4. Open QCG, open F12, then select the **QCG** panel.
+
+The panel reads a structurally reduced bridge with `chrome.devtools.inspectedWindow.eval`.
+It can filter declared messages, append a bounded human observation, acknowledge
+a review request and copy bounded context for a manual assistant. Review copied
+text before sharing it, and never paste secrets or source code. The panel exposes
+no consent, simulation or external-execution command.
+
+For Chrome DevTools MCP, use the exact flags and shared-page routing in
+[`docs/DEVTOOLS_MULTI_AGENT_RUNBOOK.md`](DEVTOOLS_MULTI_AGENT_RUNBOOK.md).
+Third-party discovery remains experimental; the narrow bridge is the documented
+fallback. QCG itself does not require the extension or a Gemini client.
+
+## 9. Imported artifact behavior
 
 QCG accepts a non-empty UTF-8 `.qs` file no larger than 128 KiB. The filename is
 reduced to its leaf component, and SHA-256 is computed over the exact bytes.
@@ -130,7 +161,7 @@ inspection/recommendation path and receive `recompile` when they would otherwise
 enter local simulation. This is an intentional safety boundary, not generalized
 Q# execution support.
 
-## 8. Troubleshooting
+## 10. Troubleshooting
 
 ### `npm ci` fails with `EPERM` on Windows
 
@@ -163,7 +194,7 @@ Recommendations and consent expire, and consent is single-use. Run a fresh
 preflight and record a new human decision. QCG deliberately does not revive or
 replay expired authority.
 
-## 9. Security and data boundary
+## 11. Security and data boundary
 
 - Raw Q# stays in session memory and does not cross the WebMCP tool contract.
 - Exported receipts omit raw Q#, secrets, provider diagnostics, credentials, and
@@ -171,3 +202,6 @@ replay expired authority.
 - Receipts stored in IndexedDB remain local to that browser profile.
 - No analytics, authentication, remote persistence, provider submission, paid
   call, or QPU call is part of the prototype.
+- Collaboration messages use `identity_assurance: declared`, reject unknown
+  fields and prohibited sensitive material, and remain isolated from quantum
+  consent and simulation services.

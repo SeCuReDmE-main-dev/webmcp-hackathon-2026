@@ -1,583 +1,75 @@
-# Stitch Prompt — WebMCP-QCG Quantum Call Gate
+# Stitch prompt — WebMCP-QCG Winter workbench
 
-Use the attached `DESIGN.md` as the binding product, interaction, truth, accessibility, and visual contract. Use the supplied QCG visual reference, but keep every functional word, control, decision, counter, and evidence field as editable HTML/CSS.
+Use `docs/design/DESIGN.md` as the binding contract. Generate a complete, editable visual design for the real WebMCP-QCG application. Stitch is a visual reference step: do not publish its generated HTML, do not replace the React prototype, and do not rasterize functional text or controls.
 
-Create a complete premium responsive product design for:
+## Product and truth boundary
 
-`WebMCP-QCG — WebMCP Quantum Call Gate`
+Design **WebMCP-QCG — WebMCP Quantum Call Gate**, a browser-native human-in-the-loop preflight workbench. It inspects a known Q# artifact, evaluates one bounded recommendation, optionally runs one fixed local Q# Bell fixture only after a visible one-time consent, and exports a reproducible receipt. It has no provider credentials, paid call, QPU submission, arbitrary quantum-code execution, or scientific-interpretation capability.
 
-Canonical product destination:
+Use the clickable first-party address [https://qcg.securedme.ca/](https://qcg.securedme.ca/) and status copy `Working browser prototype`. Never imply sponsorship or endorsement by a provider, browser vendor or AI company.
 
-`https://qcg.securedme.ca/`
+The current engineering receipt is 34 passing Vitest tests in six files on 2026-08-29. Treat it as dated build evidence only. The verified Bell fixture is 64/64 bounded shots, its correlation invariant passed, and the receipt recorded zero external calls. Do not convert these into speed, savings, availability, scientific proof or quantum advantage.
 
-Repository:
+## Exact application shell
 
-`https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026`
+Build one shell with exactly these five tabs, in order: `Experiment`, `Agent Review`, `Human Decision`, `Evidence Receipt`, `Activity`. Keep three compact cards visible on every tab: `Artifact Integrity`, `Target Evidence`, `Authority & Effects`.
 
-Treat `https://qcg.securedme.ca/` as the real clickable first-party product address. Hosting health remains an operational release check, so keep public product status copy at `Working browser prototype` until the deployed build itself is verified.
+The first viewport shows: product promise `Decide before quantum execution.`, `Working browser prototype`, WebMCP status (`detected`, `unavailable`, `registering` or `error`), the dated verified fixture line when available, `Open the gate`, and a partial view of the five-scenario deck. Do not reveal a machine decision before invocation. A scenario card may show a **Hypothesis**, never a preloaded observed answer.
 
-## Product truth
+## Exactly four tools
 
-WebMCP-QCG is a working browser-native preflight gate. It inspects a known quantum experiment artifact, evaluates whether the request should reuse evidence, stop, recompile, simulate locally, or become ready for a later human-controlled external workflow, and exports a reproducible receipt.
+Render an `Agent surface` registry that changes calmly as the real state changes:
 
-The verified MVP has:
+1. `inspect_quantum_experiment` — available after a valid human-loaded artifact exists; creates a versioned manifest and digest.
+2. `evaluate_quantum_call` — available after a valid human-loaded artifact exists; returns exactly one decision, reason codes and one next action.
+3. `run_bounded_qsharp_simulation` — visible only for accepted `simulate_first` with unused one-time consent; runs the fixed local Bell fixture in a Worker and disappears after use.
+4. `export_quantum_evidence_report` — visible after evidence exists; exports JSON or Markdown without rerunning.
 
-- four progressive WebMCP tools;
-- one canonical state shared by human controls and browser agents;
-- a pinned `qsharp-lang@1.31.0` WebAssembly runtime in a Web Worker;
-- a fixed bounded Bell fixture;
-- 64 of 64 completed shots;
-- a passing Bell correlation invariant;
-- one local simulation;
-- zero external provider calls;
-- zero paid calls;
-- zero QPU calls;
-- a clean current production-build baseline.
+Never add a fifth tool, an `Execute` button, a provider/QPU selector, a fake call counter or an animation that claims work occurred.
 
-The repository configures `npm test` to run Vitest. Its current verified result is 18 passing tests across two files, and the pinned official WebMCP smoke evaluation passes two of two steps locally and on the stable HTTPS origin. Display these as dated build evidence, never as generalized scientific validation.
+## Decisions and fixtures
 
-Present those values as one verified fixture, never as generalized performance, savings, provider support, scientific proof, or quantum advantage.
+Support exactly these decisions: `reuse_result`, `reject`, `recompile`, `simulate_first`, `ready_for_external_execution`. Every completed decision includes a text label, icon, explanation, reason-code chips, exactly one next action, manifest/decision identifier, timestamp, invocation source and local/external/paid/QPU counters. The final decision is a report state; show the external stage locked with `human controlled`.
 
-Primary line:
+Create five selectable hypothesis cards:
 
-`Decide before quantum execution.`
+- **Reuse the Fresh Result** — fresh valid evidence can answer without another run.
+- **Reject the Unsupported Call** — unsupported requirements should stop at the gate.
+- **Recompile for the Target** — a target mismatch needs preparation.
+- **Simulate Before Spending** — missing evidence calls for one bounded local simulation.
+- **Ready, but Not Authorized** — technical readiness can exist while authority stays locked.
 
-Supporting line:
+## Tab details
 
-`Inspect the request, return one bounded decision, simulate locally only when the evidence calls for it, and export the receipt before any external quantum work.`
+`Experiment` contains a real UTF-8 `.qs` import boundary (128 KiB maximum), Bell sample download, scientific intent, observable, target profile, bounded shots/qubits/timeout inputs, five cards and `Run selected preflight`.
 
-## Critical interaction instruction
+`Agent Review` shows the recommendation, confidence, reason codes, safer alternative, manifest, target, reuse key, expiry and unknowns. `Human Decision` shows Accept, Defer and justified Override. Only an accepted `simulate_first` recommendation creates a visible short-lived consent token. Include local simulation, revoke and Cancel controls only in that state.
 
-This is an executable scientific workbench, not a conventional marketing landing page.
+`Evidence Receipt` shows receipt schema, artifact digest, human choice, Bell invariant status, receipt digest and export controls. `Activity` shows inspections, evaluations, metadata validations, local simulations, QPU submissions and the source-labelled invocation ledger. Empty, partial, active, completed, cancelled, error and one-step recovery states must be designed, not omitted.
 
-The workbench has exactly five top-level tabs over one shared canonical record:
+## Winter visual direction and four-theme set
 
-1. `Experiment`
-2. `Agent Review`
-3. `Human Decision`
-4. `Evidence Receipt`
-5. `Activity`
+The primary Winter presentation uses ice white, cool blue, cobalt and restrained frosted gold. Translate the approved QCG gate/cube/provenance language into a precise instrument: two gate rails, blue-cyan seam, wireframe evidence cube, sparse provenance connectors, and the rail `TRUST → INSPECT → DECIDE → VERIFY → EXECUTE`, with `EXECUTE` visibly locked.
 
-Keep three compact security cards visible across every tab:
+The product has exactly four selectable presentation themes, with identical structure and behavior:
 
-1. `Artifact Integrity`
-2. `Target Evidence`
-3. `Authority & Effects`
+1. `Autumn — provenance`: graphite/plum, rust, amber, ivory, copper; default presentation.
+2. `Winter — clarity`: ice white, cobalt, cool blue, frosted gold; active Day 3–4 direction.
+3. `Spring — emergence`: mineral pale base, fresh cyan, leaf green, soft gold.
+4. `Summer — signal`: QCG navy, electric blue, cyan, metallic gold.
 
-The first viewport must show:
+Do not invent a fifth “dark”, “light”, “premium”, “DevTools” or “marketing” theme. Contrast variants are token adjustments inside one of the four themes. Keep text above atmosphere; no cover as a full-page background, no sponsor/provider logos, no decorative fake telemetry.
 
-- the product promise;
-- working-prototype status;
-- WebMCP registration status;
-- the verified zero-external-call fixture;
-- an `Open the gate` action;
-- a visible hint of the five-scenario workbench.
+## Separate DevTools collaboration surface
 
-The actual machine-verifiable decision must remain absent before invocation. Scenario cards may state a hypothesis but cannot reveal or preload the actual answer in the DOM.
+Represent Chrome DevTools WebMCP as a separate inspection lane beside the app, not as a sixth tab or a theme. Show the human reviewer, QCG UI, the browser-agent WebMCP surface and the DevTools WebMCP panel connected by one canonical state/evidence flow. DevTools may inspect registration, schema, invocation inputs/outputs, errors and counts. It cannot add tools, bypass consent, edit evidence or unlock external execution. Label every event `human`, `webmcp`, `worker` or `export`.
 
-Human controls and WebMCP tools act on the same visible state. Show invocation provenance as `human`, `webmcp`, `worker`, or `export`.
+## Responsive, accessibility and motion
 
-## Four progressive tools
+Produce complete states at desktop (1280–1440 px), tablet (768–1199 px) and mobile (320–767 px). Desktop uses a five-tab row and two-column panels; tablet keeps full labels in a scrollable row and stacks panels; mobile preserves semantic order, shows a position cue and keeps security cards and controls reachable. No clipped labels or hover-only information.
 
-Design a compact `Agent surface` registry that accurately shows current availability:
+Use semantic headings and form labels, tab roles, live status for registration/ledger changes, visible 3 px focus rings, keyboard ArrowLeft/ArrowRight/Home/End navigation, and text plus icons for all states. Include descriptive alt text for meaningful graphics. Honor `prefers-reduced-motion`; keep transitions below 250 ms and never communicate state by animation alone.
 
-1. `inspect_quantum_experiment`
-   - initially available;
-   - creates a versioned manifest and digest.
+## Output and self-audit
 
-2. `evaluate_quantum_call`
-   - initially available;
-   - returns one decision, reason codes, and one next action.
-
-3. `run_bounded_qsharp_simulation`
-   - appears only after `simulate_first` and unused visible one-time consent;
-   - runs the fixed local Bell fixture;
-   - disappears after consent is consumed.
-
-4. `export_quantum_evidence_report`
-   - appears after evidence exists;
-   - exports JSON or Markdown without rerunning the experiment.
-
-Show tool registration changes as calm state updates, not as gaming animations.
-
-## Five decisions
-
-The decision surface supports exactly:
-
-- `reuse_result`
-- `reject`
-- `recompile`
-- `simulate_first`
-- `ready_for_external_execution`
-
-Each completed decision needs:
-
-- a text label and icon;
-- a plain-language explanation;
-- reason-code chips;
-- exactly one next action;
-- manifest or decision identifier;
-- timestamp and invocation source;
-- local, external, paid, and QPU call counters.
-
-`ready_for_external_execution` is a report state only. It grants no permission. Keep the external execution stage locked and label it `human controlled`.
-
-## Five falsifiable scenario cards
-
-Create a scenario deck with:
-
-1. **Reuse the Fresh Result**
-   - hypothesis: fresh valid evidence can answer without another run.
-
-2. **Reject the Unsupported Call**
-   - hypothesis: unsupported requirements should stop at the gate.
-
-3. **Recompile for the Target**
-   - hypothesis: a target mismatch needs preparation before execution.
-
-4. **Simulate Before Spending**
-   - hypothesis: missing evidence should trigger one bounded local simulation.
-
-5. **Ready, but Not Authorized**
-   - hypothesis: technical readiness can exist while external authority remains locked.
-
-Each card must visibly say `Hypothesis`. The observed result may differ. Do not make the card styling imply that the hypothesis is guaranteed.
-
-## Required page architecture
-
-### 1. Header
-
-Include:
-
-- text identity `SecuredMe / WebMCP-QCG`;
-- primary navigation: Experiment, Agent Review, Human Decision, Evidence Receipt, Activity;
-- secondary links: How it works, Boundaries, Source;
-- status pill: `Working browser prototype`;
-- WebMCP status: detected, unavailable, registering, or error;
-- dark/light theme control;
-- CTA: `Open the gate`.
-
-Do not show sponsor or provider logos. Do not imply endorsement by OpenAI, Chrome, Microsoft, IBM, NVIDIA, or any quantum provider.
-
-### 2. Hero gate
-
-Required hierarchy:
-
-- eyebrow: `WebMCP-native quantum preflight`
-- H1: `Decide before quantum execution.`
-- one concise supporting sentence;
-- primary CTA: `Open the gate`;
-- secondary CTA: `View verified proof`;
-- tertiary link: `Inspect source`;
-- verified fixture: `64/64 bounded Bell shots · invariant passed · 0 external calls`.
-
-Create a restrained visual threshold on the right using two gate rails, a luminous blue-cyan seam, a geometric evidence cube, fine constellation/provenance lines, and this five-stage rail:
-
-`TRUST → INSPECT → DECIDE → VERIFY → EXECUTE`
-
-Make `EXECUTE` visibly locked and annotate it `external — human controlled`.
-
-Do not reproduce the full cover as a background. Translate its gate and evidence language into functional interface geometry.
-
-### 3. Five-tab workbench
-
-All five tabs read and update one canonical experiment record. Never create disconnected tab-local copies of the manifest, recommendation, human review, receipt, or ledger.
-
-**Experiment** contains the scenario selector, inspection, evaluation, conditional one-time consent, bounded local simulation, cancellation, and one visible primary action.
-
-**Agent Review** contains the progressive WebMCP tool registry, invocation provenance, recommendation, assumptions, reason codes, unresolved evidence, and exactly one proposed next action. Make the recommendation visibly agent-produced and distinct from human authority.
-
-**Human Decision** places the recommendation beside its supporting evidence and offers exactly three outcomes:
-
-- `accepted`: adopt the recommendation without authorizing external execution;
-- `overridden`: select another bounded next action and require a rationale;
-- `deferred`: preserve the open record and keep every external effect locked.
-
-**Evidence Receipt** assembles the manifest, recommendation, human outcome, local simulation when present, hashes, provenance, and counters. It exports JSON or Markdown without reevaluating or rerunning.
-
-**Activity** shows an append-only chronological ledger with filters for source, tool, status, and phase. Include cancellation, retry, recovery, export, and human-review events.
-
-Desktop uses a horizontal five-tab bar above the workbench. Tablet keeps complete labels in a scrollable tab row. Mobile uses the same semantic order in a horizontally scrollable tab list with a clear position marker.
-
-Keyboard behavior:
-
-- semantic tablist, tab, and tabpanel relationships;
-- `Left`/`Right` navigate tabs;
-- `Home`/`End` reach first and last tabs;
-- `Enter`/`Space` activate when using manual activation;
-- focus remains visible and tab changes never reset the experiment;
-- every tab combines text, icon, and selected-state marker.
-
-### 4. Experiment-tab workbench
-
-Desktop:
-
-- left: five-scenario deck;
-- center: inspection and decision surface;
-- right: agent surface, counters, and recent invocation ledger.
-
-Keep one clear primary action at a time.
-
-The center panel should evolve through:
-
-- empty;
-- inspecting;
-- inspected;
-- evaluating;
-- decision revealed;
-- awaiting consent;
-- simulating;
-- completed;
-- cancelled;
-- error with recovery.
-
-### 5. Inspection panel
-
-Show:
-
-- artifact name and ID;
-- target;
-- requested bounds;
-- evidence age;
-- digest status;
-- `Inspect` action;
-- manifest ID after completion.
-
-Do not show raw quantum code, credentials, provider internals, private paths, or secrets.
-
-### 6. Decision plaque
-
-Before evaluation, show the inputs and hypothesis while keeping the actual decision absent.
-
-After evaluation, reveal:
-
-- exactly one decision;
-- reason-code chips;
-- exactly one next action;
-- evidence identifiers and provenance;
-- updated counters.
-
-The gate may open, remain closed, or redirect visually according to the result. Keep the transition fast, accessible, and subtle.
-
-### 7. Consent and local simulation
-
-Only for `simulate_first`, show a one-time consent panel:
-
-- `Fixed two-qubit Bell fixture`
-- `Q# WebAssembly Worker`
-- `1–256 bounded shots`
-- `1–8 bounded qubits`
-- `500–15000 ms timeout`
-- `0 network/provider/QPU calls`
-- CTA: `Grant one-time local consent`.
-
-After consent, show:
-
-- CTA: `Run bounded local simulation`;
-- `Cancel` during execution;
-- progress with completed shots;
-- correlated outcome histogram;
-- Bell invariant status;
-- notice that consent was consumed.
-
-Never add a provider submission or external execution button.
-
-### 8. Evidence receipt and ledger
-
-Make evidence a primary product surface.
-
-Show:
-
-- evidence packet summary;
-- decision and reason codes;
-- manifest, decision, run, and evidence IDs where present;
-- local simulations;
-- external provider calls;
-- paid calls;
-- QPU calls;
-- Bell invariant and outcomes when present;
-- `Export JSON`;
-- `Export Markdown`;
-- recent invocations with source, tool, status, summary, and time.
-
-Keep raw JSON behind a disclosure. The initial view must be readable without decoding schemas.
-
-### 9. Persistent security rail
-
-Keep these three cards visible across every tab. On desktop they form one concise row or a stable right rail. On tablet and mobile they become a compact summary strip with expandable details.
-
-1. **Artifact Integrity**
-   - show manifest ID and digest status;
-   - support pending, verified, mismatch, stale, and unavailable.
-
-2. **Target Evidence**
-   - show compatibility, freshness, and request-bound status;
-   - support pending, sufficient, incomplete, incompatible, and expired.
-
-3. **Authority & Effects**
-   - show agent-review state, human outcome, consent state, external lock, and four call counters;
-   - support awaiting review, accepted, overridden, deferred, consent granted, consent consumed, and locked;
-   - always show `External execution: locked` for the MVP.
-
-Each card requires a text label, status phrase, icon, and one-line explanation. Never rely on color alone. Announce only material status changes to assistive technology.
-
-### 10. How it works
-
-Create four concise, connected steps:
-
-1. Inspect the artifact.
-2. Evaluate the call.
-3. Simulate locally only when evidence requires it.
-4. Export the receipt for a human-controlled next step.
-
-Associate each step with the appropriate WebMCP tool and human control.
-
-### 11. Boundaries
-
-Create a calm trust-contract section containing:
-
-- external execution remains locked;
-- local simulation is bounded and cancellable;
-- consent is visible, one-time, and consumed;
-- strict schemas refuse unknown properties;
-- raw code and secrets stay outside the tool contract;
-- readiness remains separate from authorization;
-- every invocation records provenance;
-- the human interface works when WebMCP is absent.
-
-### 12. Footer
-
-Include:
-
-- WebMCP-QCG;
-- SecuredMe;
-- repository link;
-- MIT license;
-- clickable canonical route `qcg.securedme.ca`;
-- status `Working browser prototype`;
-- line: `No QPU, paid API, or external quantum job is part of this MVP.`
-
-## Visual direction
-
-Use the attached `asset/thumbnail/thumbnail_devpost.png` and the first QCG article cover as the visual authorities.
-
-Translate their design language into a premium scientific control room:
-
-- deep navy and near-black for the decision chamber;
-- electric blue and cyan for computation, registration, and simulation;
-- metallic gold for trust, decisions, selected scenarios, and verified evidence;
-- ivory for editorial warmth and readable major type;
-- a gate for authorization boundaries;
-- a cube for versioned evidence;
-- lattice and constellation lines for provenance and dependencies.
-
-Keep the visual atmosphere behind the interface hierarchy. The design should feel precise, evidence-led, calm, and memorable.
-
-Avoid:
-
-- generic AI robots or brains;
-- fake QPU hardware photography;
-- random equations used as decoration;
-- crypto, casino, game, steampunk, or fantasy-portal styling;
-- animated star-field backgrounds;
-- overuse of glow;
-- gold body text at small sizes;
-- giant empty marketing sections;
-- cards nested inside cards;
-- sponsor or partner strips;
-- fake testimonials or metrics;
-- provider selection controls;
-- an external Execute button.
-
-## Binding palette
-
-Dark master:
-
-- Gate Black `#02060B`
-- Void Navy `#000D1C`
-- Archive Navy `#011A35`
-- Panel Navy `#071F36`
-- Cool Border `#183E62`
-- Quantum Blue `#0878D8`
-- Signal Cyan `#20C8FF`
-- Gate Gold `#E8A838`
-- Bright Gold `#FFC857`
-- Editorial Ivory `#FFF0C2`
-- Cool White `#EAF5FF`
-- Muted Steel `#9CB4C8`
-
-Light twin:
-
-- Parchment `#FFF9ED`
-- Ice Surface `#F3F9FF`
-- Deep Ink `#071629`
-- Navy Text `#102D4C`
-- Light Border `#C9D9E8`
-- Royal Blue `#0867B7`
-- Deep Cyan `#006B8F`
-- Burnished Gold `#8A5700`
-- Warm Rule `#D9A43A`
-
-States:
-
-- Pass `#65D895`
-- Warning / consent `#F2B94B`
-- Reject / error `#FF7483`
-- Information `#59BFFF`
-- Locked `#A8B4C0`
-
-Use text and icons with every state color. Use cyan for agent/computation/focus and gold for trust/decision/evidence.
-
-Treat bright cover colors as accents and fills rather than default small-text colors. Use Gate Black on gold controls, Editorial Ivory or Cool White on dark surfaces, and the darker light-theme cyan/gold tokens for text on parchment or ice.
-
-## Typography and component style
-
-- Hero and major section openings: `Cormorant Garamond` or equivalent editorial serif.
-- Interface and body: `Inter` or `Manrope`.
-- Code, IDs, schemas, and reason codes: `IBM Plex Mono`.
-- Use the serif sparingly; controls remain sans-serif.
-- Card radius: 8–12 px.
-- Use fine gold rules and occasional clipped corners for gate panels.
-- Keep minimum body size at 16 px.
-- Keep targets at least 44 × 44 px.
-- Maximum content width: 1440 px.
-
-## Responsive and accessibility requirements
-
-- Produce desktop dark and light masters at 1440 px.
-- Produce tablet dark and light masters for 768–1199 px.
-- Produce mobile dark and light masters at 390 px.
-- Ensure a readable 320 px layout.
-- Preserve the five-tab order and the three security cards at every breakpoint.
-- Keep dark and light themes structurally identical; theme changes tokens, not information hierarchy.
-- Preserve semantic heading order.
-- Make the whole workflow keyboard operable.
-- Use a visible cyan focus ring plus high-contrast outline.
-- Support `prefers-reduced-motion`.
-- Use `aria-live` behavior for registration, invocation, cancellation, and results without repeated chatter.
-- Never depend on color alone.
-- Keep consent separate from simulation.
-- Keep the human workflow complete when WebMCP is unavailable.
-- Do not use floating controls that cover workbench actions.
-
-## Complete state coverage
-
-Design every state explicitly rather than relying on a generic disabled screen.
-
-### Application shell
-
-- booting;
-- registering WebMCP tools;
-- ready;
-- degraded human-only mode;
-- registration error with `Retry registration`;
-- fatal load error with `Reload workbench`.
-
-### Experiment
-
-- no scenario selected;
-- inspecting;
-- inspected;
-- evaluating;
-- each of the five decision results;
-- awaiting consent;
-- simulating;
-- cancelling;
-- completed;
-- cancelled;
-- invalid input, digest mismatch, expired decision, Worker timeout, and safe recovery.
-
-### Agent Review
-
-- no evaluation;
-- collecting evidence;
-- evaluating;
-- recommendation ready;
-- incomplete evidence;
-- stale recommendation;
-- tool error with `Return to Experiment` or `Evaluate again`.
-
-### Human Decision
-
-- unavailable until a recommendation exists;
-- pending review;
-- saving;
-- accepted;
-- overridden with required rationale;
-- deferred;
-- stale evidence;
-- save failure that retains the draft and offers `Retry save`.
-
-### Evidence Receipt
-
-- no receipt;
-- assembling;
-- ready;
-- exporting JSON;
-- exporting Markdown;
-- incomplete receipt;
-- export failure with `Review missing evidence` or `Retry export`.
-
-### Activity and security
-
-- empty ledger;
-- loading ledger;
-- populated ledger;
-- no filter matches;
-- ledger error and retry;
-- pending, pass, warning, failure, stale, locked, and unavailable security-card states.
-
-Use stable skeleton geometry and honest progress text. Preserve inputs and the last verified evidence after errors. A recovery action must never silently rerun a simulation or consume consent.
-
-## Required Stitch outputs
-
-Return one coherent Stitch project with:
-
-1. desktop dark master;
-2. desktop light twin;
-3. tablet dark and light masters;
-4. mobile dark master;
-5. mobile light twin;
-6. all five tabs at desktop, tablet, and mobile widths;
-7. persistent Artifact Integrity, Target Evidence, and Authority & Effects cards;
-8. empty and pre-invocation states;
-9. all required loading states;
-10. one state for each of the five gate decisions;
-11. `simulate_first` consent state;
-12. active simulation and cancellation state;
-13. completed Bell evidence state;
-14. Human Decision states for accepted, overridden, and deferred;
-15. WebMCP-unavailable human-fallback state;
-16. registration, validation, Worker, save, export, and ledger error/recovery states;
-17. component and token summary;
-18. implementation-ready handoff assets.
-
-## Self-audit before finalizing
-
-Reject the output if:
-
-- it looks like a future concept instead of a working browser prototype;
-- the gate is decorative rather than tied to the state machine;
-- WebMCP is hidden or appears optional to the demonstrated agent path;
-- the actual decision is present before invocation;
-- the four tools or progressive registration rules are inaccurate;
-- the five tabs duplicate or lose canonical experiment state;
-- Artifact Integrity, Target Evidence, or Authority & Effects disappears on any tab;
-- agent recommendation and human decision appear to be the same authority;
-- accepted, overridden, and deferred are missing or ambiguous;
-- local simulation appears without visible one-time consent;
-- external execution appears available;
-- readiness looks like authorization;
-- the 64-shot fixture becomes a generalized claim;
-- the invocation ledger or provenance disappears;
-- the visual identity stops resembling the navy, blue-cyan, gold, ivory QCG cover language;
-- atmosphere reduces text, focus, or control readability;
-- functional text is baked into images;
-- dark and light versions diverge structurally;
-- tablet or mobile changes the five-tab order or hides the security rail;
-- any tab lacks its empty, loading, error, or explicit recovery behavior;
-- mobile hides evidence or boundaries;
-- fake metrics, providers, partners, testimonials, cost savings, QPU access, or quantum advantage appear;
-- any secret, private path, `.env` value, Origin Trial token, Gmail, Drive, or private correspondence appears.
-- `qcg.securedme.ca` is labeled as a placeholder rather than the canonical product URL;
-- a passing Vitest result or numeric test count appears before current verification exists.
+Deliver editable desktop/tablet/mobile frames for Winter plus reference frames for the other three themes. Keep all functional copy editable HTML/CSS. Do not export or publish generated HTML, raw screen images, cover art, monograph art, fake metrics, invented dates, provider/QPU assertions or an `Execute` control. Before handoff verify exactly five tabs, four tools, five decisions, five hypotheses, four themes and one separate DevTools inspection architecture.

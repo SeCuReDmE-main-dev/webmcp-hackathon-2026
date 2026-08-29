@@ -41,6 +41,20 @@ in this MVP. The QPU submission counter is structurally fixed at zero.
    provider diagnostics, or local filesystem paths. Receipts are also stored
    locally in browser IndexedDB when it is available.
 
+## Four seasons, one workflow
+
+The interface now provides exactly four persistent presentations: **Autumn,
+Winter, Spring, and Summer**. The selector is a keyboard-operable radio group;
+the selected season is retained in `localStorage`. Seasons change design tokens
+and one decorative tree/gate SVG only. They never change the semantic DOM,
+quantum services, decision rules, authority states, or effect counters. Text and
+icons continue to identify every state when colour is unavailable, and reduced
+motion disables decorative transitions.
+
+Winter is the visual edition used for the Day 3–4 evidence captures. Jean-Sébastien
+retains authorship of the final covers and editorial graphics; the small checked-in
+SVGs are deliberately modest implementation placeholders.
+
 ## Quick start
 
 From the repository root:
@@ -78,6 +92,32 @@ An evaluation normally makes the export tool discoverable immediately. The
 simulation tool appears only for the narrower consented branch and disappears
 after its one-use consent is consumed.
 
+## Optional QCG DevTools companion
+
+`companion/qcg-devtools-extension/` contains an unpacked Manifest V3 extension
+that creates a local F12 panel named **QCG**. It reads the narrow
+`window.__QCG_DEVTOOLS_V1__` bridge and displays the structurally reduced artifact,
+recommendation, reason codes, counters, declared participants, collaboration
+messages, and pending human-review requests. A human can append a bounded
+observation or acknowledge a debug request. Both operations leave quantum
+authority unchanged.
+
+Four collaboration-only tools are exposed through the official
+`devtoolstooldiscovery` event: `read_debug_context`,
+`post_debug_observation`, `request_human_review`, and
+`export_debug_handoff`. They are separate from the four WebMCP quantum tools
+and cannot create consent, run simulation, or authorize external execution.
+Each write is bound to the active page session. Agent identity is explicitly
+**declared**, not authenticated; human and system entries originate in QCG.
+Free-text entries are schema-bounded and screened for recognized high-risk
+credential, path, source-code, stack and transport patterns. The panel also
+warns every participant to keep secrets and source code out of the ledger.
+
+Loading an unpacked extension and opening its F12 panel are manual browser
+actions. The application remains fully usable without the extension, Gemini,
+or Chrome DevTools MCP. See the
+[multi-agent DevTools runbook](docs/DEVTOOLS_MULTI_AGENT_RUNBOOK.md).
+
 ## Browser modes
 
 - **Human controls:** available in an ordinary modern browser; native tool
@@ -93,14 +133,18 @@ keeps the human workflow usable.
 
 ## Current verification
 
-The current QCG v2 working tree was rechecked on 2026-08-29 in an isolated copy
-with Node.js `24.18.1` and npm `11.16.0`:
+The seasonal QCG working tree was rechecked on 2026-08-29 with Node.js
+`24.18.1` and npm `11.16.0`:
 
 - clean `npm ci`: pass, 0 vulnerabilities reported;
-- automated test files: 2 passed;
-- automated tests: 18 passed;
+- automated test files: 6 passed;
+- automated tests: 27 passed;
 - TypeScript check and Vite production build: pass;
-- development server and `/fixtures/qcg-bell-sample.qs`: HTTP 200.
+- Winter persistence, keyboard selection, 320 px layout, five tabs and three
+  persistent security cards: browser-validated;
+- the declared Codex/Gemini/human protocol fixture preserves authority and
+  records zero QPU submissions. This is a contract proof, not a claim that a
+  live external Gemini client participated.
 
 The earlier native browser/Q# vertical-slice receipt remains useful historical
 evidence, but it does not replace a fresh stable-origin Chrome run for QCG v2.
@@ -129,6 +173,10 @@ See [`evidence/qa/`](evidence/qa/) for dated receipts.
 
 - [Getting started](docs/GETTING_STARTED.md) — install, test, build, run, sample,
   browser setup, workflow, and troubleshooting.
+- [Seasonal design system](docs/design/DESIGN.md) — four themes, tokens,
+  provenance, collaboration plane and visual boundaries.
+- [DevTools multi-agent runbook](docs/DEVTOOLS_MULTI_AGENT_RUNBOOK.md) — shared
+  page routing, official experimental flags and the extension boundary.
 - [Release runbook](docs/RELEASE.md) — release artifact, gates, required headers,
   stable-origin validation, rollback boundary, and open blockers.
 - [Threat model](docs/security/QCG_THREAT_MODEL.md) — assets, trust boundaries,

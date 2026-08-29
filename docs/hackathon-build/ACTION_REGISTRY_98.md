@@ -1,4 +1,4 @@
-# WebMCP-QCG — execution registry (97-action base plus Action 98)
+# WebMCP-QCG — execution registry (Actions 1–117)
 
 Created: 2026-08-29
 Purpose: one evidence-bearing status surface for the complete hackathon path
@@ -164,6 +164,30 @@ An action reaches `DONE` only when its evidence path exists and supports the sta
 |---:|---|---|---|---|
 | 98 | Research and draft a source-grounded three-year vision for broadly accessible AI-assisted quantum simulation; use the supplied LinkedIn post and private prior writing only as provenance of Jean-Sébastien's intuition, verify the underlying Japanese primary research, and separate feasible trends, unknowns and speculation | Jean-Sébastien + Docs research lane | DONE | `research/day4/ACTION_98_THREE_YEAR_QUANTUM_ACCESS_VISION_2026-08-29.md`; `evidence/qa/ACTION_98_THREE_YEAR_VISION_RECEIPT_2026-08-29.md`; 17 attributed sources and four explicit evidence levels |
 
+## M. Seasonal redesign and DevTools collaboration — 99 to 117
+
+| ID | Action | Owner | Status | Evidence or next gate |
+|---:|---|---|---|---|
+| 99 | Capture the executable baseline and accept the seasonal/DevTools architecture | Root/Sol | DONE | `evidence/qa/ACTION_99_SEASONAL_DEVTOOLS_BASELINE_2026-08-29.md`; seasonal DevTools ADR |
+| 100 | Produce the complete English Winter introduction and cover brief | Root/Sol | DONE | `docs/journal/DAY_3_4_WINTER_INTRODUCTION_EN.md`; `DAY_3_4_WINTER_COVER_BRIEF_EN.md` |
+| 101 | Create the separate Day 3–4 Winter article dossier and provenance manifest | Luna | DONE | New dated article folder; `research/PROVENANCE_MANIFEST.md`; Autumn boundary recorded |
+| 102 | Classify Stitch screens and quarantine generated or unsupported claims | Luna | DONE | `docs/design/STITCH_ASSET_TRIAGE.md`; 113/113 screens classified; raw ZIP remains ignored |
+| 103 | Rewrite the canonical seasonal and collaboration design system | Root + Luna | DONE | `docs/design/DESIGN.md`; executable tool-registration wording reconciled |
+| 104 | Replace the Stitch prompt with a functional seasonal workbench prompt | Root + Luna | DONE | `docs/design/STITCH_PROMPT.md`; five tabs/four tools/four seasons locked |
+| 105 | Create four seasonal token sets and decorative SVG assets | Terra | DONE | Four reviewed SVGs plus theme tokens; final illustration remains Jean-Sébastien's graphic pass |
+| 106 | Replace Light/Dark with an accessible persistent season selector | Terra | DONE | Four-option radiogroup; keyboard and reload persistence browser proof |
+| 107 | Validate seasonal accessibility, responsive layouts and reduced motion | Terra + Luna | DONE | `SEASONAL_CONTRAST_RECEIPT_2026-08-29.md`; 320 px, tablet and desktop browser checks |
+| 108 | Add strict versioned debug-collaboration contracts | Terra | DONE | `debugContracts.ts`; strict contract tests |
+| 109 | Implement the bounded append-only IndexedDB ledger | Terra | DONE | `debugLedger.ts`; bounded persistence, fallback and duplicate tests |
+| 110 | Register four separate third-party DevTools tools | Terra | DONE | `devtoolstooldiscovery` lifecycle and authority-boundary tests |
+| 111 | Add collaboration UI and the narrow F12 bridge | Terra | DONE | Activity UI, structurally reduced cached bridge and tests |
+| 112 | Build the unpacked MV3 QCG DevTools panel | Terra | DONE | Valid MV3 package under `companion/qcg-devtools-extension/`; manual installation remains an author gate |
+| 113 | Document shared-page attachment for Codex, Gemini and Antigravity | Root/Sol | DONE | `docs/DEVTOOLS_MULTI_AGENT_RUNBOOK.md`; official CLI flags and `pageIdRouting` verified 2026-08-29 |
+| 114 | Prove a structured Codex → Gemini → human exchange | Terra + Root | PARTIAL | Executable declared-identity protocol fixture passed with unchanged authority; live external Gemini and installed F12 panel remain manual gates |
+| 115 | Complete code, security, accessibility and visual QA | Terra + Luna | DONE | 34/34 tests, build, browser checks, AA contrast, public scan and consolidated receipt |
+| 116 | Deploy the seasonal application and distribute public-safe assets | Root + Luna | BLOCKED | Package and public-safe Winter captures complete; cPanel deploy plan returned `CPANEL_READ_FAILED` with `mutated=false` |
+| 117 | Finalize the Day 3–4 manuscript and update public drafts without submitting | Root/Sol | DONE | Mirrored 2,429-word Winter draft, README and Devpost draft; publication remains author-controlled |
+
 ## Current total
 
-This registry reports evidence rather than assuming completion. The original 97-action base is preserved and Action 98 is now closed as a source-grounded editorial lane. `DONE` records evidence already present; `PENDING` and `IN_PROGRESS` identify executable next gates; `AUTHOR_GATE` protects publication authority; `DEFERRED` preserves an idea while keeping it outside the current critical path.
+This registry reports evidence rather than assuming completion. The original 97-action base and completed Action 98 remain unchanged. Of Actions 99–117, seventeen are `DONE`, Action 114 is `PARTIAL` at the live-external-client gate and Action 116 is `BLOCKED` before cPanel mutation. `AUTHOR_GATE` protects manual extension installation, final graphics, publication, video upload and Devpost submission. The working release candidate stays locally valid while the prior accepted public release remains intact.

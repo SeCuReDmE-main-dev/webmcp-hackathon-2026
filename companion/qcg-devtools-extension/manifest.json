@@ -1,0 +1,8 @@
+{
+  "manifest_version": 3,
+  "name": "QCG DevTools Ledger",
+  "version": "0.1.0",
+  "description": "A local, bounded collaboration panel for WebMCP-QCG.",
+  "devtools_page": "devtools.html",
+  "permissions": ["clipboardWrite"]
+}
