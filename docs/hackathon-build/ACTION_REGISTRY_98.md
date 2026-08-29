@@ -136,7 +136,7 @@ An action reaches `DONE` only when its evidence path exists and supports the sta
 | 84 | Publish the market, partner, feature and verdict documents | Docs lane | DONE | `research/market/` |
 | 85 | Validate every new public URL and local cross-reference | Docs + QA | DONE | `evidence/qa/PUBLIC_LINK_CHECK_RECEIPT_2026-08-29.md`; 55 public URLs, 26 local links, zero unresolved |
 | 86 | Scan public artifacts for secrets and private paths | Security + QA | DONE | `evidence/qa/PUBLIC_ARTIFACT_SCAN_2026-08-29.md` |
-| 87 | Reproduce install, tests and build from a clean clone | QA lane | PENDING | Clean-clone receipt |
+| 87 | Reproduce install, tests and build from a clean clone | QA lane | DONE | `evidence/qa/CLEAN_CLONE_RECEIPT_2026-08-29.md`; public commit `9dfb625`, 18/18 tests and production build pass |
 
 ## J. Editorial and video — 88 to 93
 
