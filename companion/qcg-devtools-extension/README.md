@@ -32,6 +32,34 @@ it is not an MCP tool or a free-text command. Commands are allowlisted end to
 end and cannot invoke a simulator, create consent, reach a provider, or send
 raw source.
 
+## Page open-companion handshake
+
+The QCG page can request an extension opening only through a same-window,
+same-origin `postMessage` envelope:
+
+```js
+{ channel: 'qcg-console-extension-control.v1', type: 'open_companion', request_id: '<uuid>' }
+```
+
+`contentBridge.js` validates the window source, origin, channel, type and UUID,
+then sends only the request ID to the service worker. The worker derives the
+target from `sender.tab.id`; it never accepts a page-supplied tab identifier.
+The content bridge emits the paired `open_companion_result` with the same UUID
+and a bounded `side_panel`, `companion_tab`, or `none` status. The extension
+action keeps its direct user-click path.
+
+## Shared console information architecture
+
+The exact same `panel.html`, `panel.js`, and `panel.css` render every extension
+surface. Its navigation is **Inspector, Console, WebMCP, Decisions, Sources,
+Receipts, Activity**. Wide DevTools renders the workbench with the evidence
+rail; the narrow side panel converts the same navigation into a scrollable
+single pane. Inspector/Sources/Receipts expose metadata only, Console is
+bounded messages plus manual Gemini relay, Decisions contains visible human
+buttons, and Activity lists participants, messages and relay observations.
+Tokens remain dark/light only: emerald action/success, cyan technical state,
+gold human authority/evidence, and red rejection/error.
+
 Native Gemini remains a manual relay: create/copy a sanitized packet, paste it
 into Gemini DevTools yourself, preview the reply, then explicitly import it as
 untrusted data.
@@ -51,6 +79,6 @@ Manual smoke matrix:
    fallback.
 3. Navigate away and switch tabs; verify the companion shows no other tab's
    context.
-4. Use review, memory, observation, override-note, and Gemini relay buttons;
-   verify QCG records only explicit human collaboration actions.
+4. Use decision, review, memory, observation, and Gemini relay buttons;
+   verify QCG records only explicit human actions.
 5. Confirm no UI offers consent, simulation, provider, or QPU execution.

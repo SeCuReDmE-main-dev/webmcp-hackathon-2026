@@ -32,7 +32,16 @@ async function connect() {
 
 async function refreshDevtools() {
   try {
-    const snapshot = await evaluate('window.__QCG_CONSOLE_V2__ ? window.__QCG_CONSOLE_V2__.getSnapshot() : (window.__QCG_DEVTOOLS_V1__ ? window.__QCG_DEVTOOLS_V1__.getCachedPanelSnapshot() : null)')
+    const snapshot = await evaluate(`(() => {
+      const v2 = window.__QCG_CONSOLE_V2__?.getSnapshot?.()
+      const v1 = window.__QCG_DEVTOOLS_V1__?.getCachedPanelSnapshot?.()
+      if (!v2) return v1 || null
+      return { ...v2,
+        participants: v1?.participants || [], messages: v1?.messages || [],
+        human_review_requests: v1?.human_review_requests || [], memories: v1?.memories || [],
+        last_command: v1?.last_command
+      }
+    })()`)
     if (snapshot) acceptSnapshot(snapshot)
     else setStatus('Open a WebMCP-QCG page to connect.', true)
   } catch { setStatus('Unable to read the bounded QCG bridge.', true) }
@@ -50,7 +59,7 @@ function acceptSnapshot(snapshot) {
   if (isDevtools) state.port?.postMessage({ type: 'qcg-console-snapshot.v1', snapshot })
   setStatus(`${snapshot.phase || 'connected'} · ${snapshot.authority_state || 'unknown'}`)
   $('#context').textContent = JSON.stringify({ surface: snapshot.surface, artifact: snapshot.artifact, recommendation: snapshot.recommendation, available_commands: snapshot.available_commands, effects: snapshot.effects, storage_mode: snapshot.storage_mode }, null, 2)
-  renderEvidence(snapshot); renderParticipants(snapshot.participants || []); renderMessages(snapshot.messages || []); renderReviews(snapshot.human_review_requests || []); renderDecision(snapshot); renderMemories(snapshot.memories || [])
+  renderEvidence(snapshot); renderParticipants(snapshot.participants || []); renderMessages(snapshot.messages || []); renderReviews(snapshot.human_review_requests || []); renderDecision(snapshot); renderMemories(snapshot.memories || []); renderWebMcp(snapshot); renderSources(snapshot); renderReceipts(snapshot)
 }
 
 function renderEvidence(snapshot) { $('#evidence').replaceChildren(...facts([['Artifact', snapshot.artifact?.digest || '—'], ['Recommendation', snapshot.recommendation?.decision || '—'], ['Effects', `${snapshot.effects?.qpu_submissions ?? 0} QPU · ${snapshot.effects?.local_simulations ?? 0} local`], ['Authority', snapshot.authority_state || '—']])) }
@@ -58,6 +67,7 @@ function facts(entries) { return entries.flatMap(([key, value]) => [Object.assig
 function renderParticipants(items) { renderList($('#participants'), items, (item) => `${item.actor || 'unknown'} · ${item.role || 'declared'}`, 'No declared participants.') }
 function renderMessages(items) {
   const target = $('#messages'); const recent = items.slice(-20).reverse()
+  renderList($('#activity-messages'), recent, (item) => `${item.actor || 'unknown'} · ${item.kind || 'observation'}\n${item.summary || ''}`, 'No recent activity.')
   if (!recent.length) return renderList(target, [], () => '', 'No bounded messages.')
   target.replaceChildren(...recent.map((item) => {
     const li = document.createElement('li')
@@ -73,13 +83,16 @@ function renderMessages(items) {
     return li
   }))
 }
+function renderWebMcp(snapshot) { renderList($('#webmcp-commands'), snapshot.available_commands || [], (entry) => typeof entry === 'string' ? entry : entry?.kind || entry?.name || 'bounded command', 'No bounded capability metadata.') }
+function renderSources(snapshot) { $('#source-metadata').replaceChildren(...facts([['Artifact ID', snapshot.artifact?.id || '—'], ['Format', snapshot.artifact?.format || '—'], ['Profile', snapshot.artifact?.profile || '—'], ['Compiler', snapshot.artifact?.compiler_status || '—']])) }
+function renderReceipts(snapshot) { $('#receipt-metadata').replaceChildren(...facts([['Receipt ID', snapshot.receipt?.id || '—'], ['Digest', snapshot.receipt?.digest || '—'], ['Schema', snapshot.receipt?.schema_version || '—']])) }
 function renderMemories(items) { renderList($('#memories'), items, (item) => `${item.disposition || 'recorded'} · ${item.provenance_event_id || '—'}\n${item.digest || '—'}`, 'No human memory decisions.') }
 function renderReviews(items) {
   $('#review-count').textContent = String(items.length)
   const target = $('#reviews'); target.replaceChildren(...(items.length ? items.map((item) => {
     const li = document.createElement('li'); li.append(Object.assign(document.createElement('strong'), { textContent: item.summary || 'Human review requested.' }), Object.assign(document.createElement('small'), { textContent: item.requested_action || 'Review visible evidence.' }))
     const row = document.createElement('div'); row.className = 'button-row'
-    for (const disposition of ['approve', 'deny', 'reject', 'defer']) { const button = document.createElement('button'); button.type = 'button'; button.textContent = disposition; button.addEventListener('click', () => sendCommand({ kind: 'human_review_disposition', event_id: item.event_id, disposition })); row.append(button) }
+    for (const disposition of ['approve', 'deny', 'reject', 'defer']) { const button = document.createElement('button'); button.type = 'button'; button.textContent = disposition; button.className = disposition === 'reject' ? 'danger' : 'human-action'; button.addEventListener('click', () => sendCommand({ kind: 'human_review_disposition', event_id: item.event_id, disposition })); row.append(button) }
     li.append(row); return li
   }) : [Object.assign(document.createElement('li'), { textContent: 'No pending human review requests.' })]))
 }
@@ -100,7 +113,7 @@ function renderList(target, items, formatter, empty) { target.replaceChildren(..
 function bindNavigation() { document.querySelectorAll('.nav-item').forEach((button) => button.addEventListener('click', () => { const view = button.dataset.view; document.querySelectorAll('.nav-item').forEach((item) => item.classList.toggle('active', item === button)); document.querySelectorAll('[data-view-panel]').forEach((panel) => { panel.hidden = panel.dataset.viewPanel !== view }) })) }
 function bindActions() {
   $('#theme').addEventListener('change', () => saveTheme($('#theme').value))
-  $('#open-companion').addEventListener('click', async () => { if (!Number.isInteger(state.tabId)) return setStatus('No QCG tab is selected.', true); const result = await chrome.runtime.sendMessage({ type: 'qcg-console-open-side-panel', tab_id: state.tabId }).catch(() => ({ opened: 'none' })); setStatus(result.opened === 'side_panel' ? 'Companion side panel opened.' : result.opened === 'companion_tab' ? 'Opened companion-tab fallback.' : 'Browser declined companion opening.', result.opened === 'none') })
+  $('#open-companion').addEventListener('click', async () => { if (!Number.isInteger(state.tabId)) return setStatus('No QCG tab is selected.', true); const result = await chrome.runtime.sendMessage({ type: 'qcg-console-open-side-panel-for-extension', tab_id: state.tabId }).catch(() => ({ opened: 'none' })); setStatus(result.opened === 'side_panel' ? 'Companion side panel opened.' : result.opened === 'companion_tab' ? 'Opened companion-tab fallback.' : 'Browser declined companion opening.', result.opened === 'none') })
   $('#send').addEventListener('click', () => { const summary = $('#message').value.trim(); if (summary) sendCommand({ kind: 'human_message', summary }) })
   $('#override').addEventListener('input', () => { $('#record-override').disabled = $('#override').value.trim().length < 12 })
   $('#accept-decision').addEventListener('click', () => sendDecision('accepted'))
@@ -109,6 +122,8 @@ function bindActions() {
   $('#create-handoff').addEventListener('click', () => { const prompt = $('#handoff-prompt').value.trim(); if (prompt) sendCommand({ kind: 'gemini_manual_handoff_create', intent: $('#handoff-intent').value, prompt }) })
   $('#preview-reply').addEventListener('click', () => sendCommand({ kind: 'gemini_manual_reply_preview', raw: $('#gemini-reply').value }))
   $('#import-reply').addEventListener('click', () => sendCommand({ kind: 'gemini_manual_reply_import', raw: $('#gemini-reply').value }))
+  $('#open-site').addEventListener('click', async () => { if (!Number.isInteger(state.tabId)) return setStatus('No inspected QCG tab is selected.', true); await chrome.tabs.update(state.tabId, { active: true }).catch(() => undefined) })
+  $('#copy-context').addEventListener('click', () => { void navigator.clipboard.writeText(JSON.stringify(state.snapshot, null, 2)).then(() => setStatus('Bounded context copied.'), () => setStatus('Browser declined clipboard access.', true)) })
 }
 function sendCommand(command) {
   if (!state.port || !Number.isInteger(state.tabId)) return setStatus('Open a QCG tab before submitting a command.', true)
@@ -124,7 +139,7 @@ function sendDecision(choice) {
   sendCommand(choice === 'overridden' ? { kind: 'human_decision', recommendation_id, choice, justification } : { kind: 'human_decision', recommendation_id, choice })
 }
 function handleResult(result) { if (result?.handoff) { const handoff = typeof result.handoff === 'string' ? result.handoff : JSON.stringify(result.handoff, null, 2); $('#handoff-preview').textContent = handoff; void navigator.clipboard.writeText(handoff).catch(() => undefined) } else if (result?.preview || result?.summary) $('#handoff-preview').textContent = result.preview || result.summary; if (result?.accepted) { $('#message').value = ''; $('#override').value = ''; $('#record-override').disabled = true; setStatus(result.message || 'Human command recorded. Quantum authority is unchanged.') } else setStatus(result?.error || result?.message || 'The companion command was rejected.', true) }
-function setStatus(message, error = false) { $('#status').textContent = message; $('#status').classList.toggle('error', error) }
+function setStatus(message, error = false) { $('#status').textContent = message; $('#status').classList.toggle('error', error); $('.status-dot').classList.toggle('failure', error) }
 function evaluate(expression) { return new Promise((resolve, reject) => chrome.devtools.inspectedWindow.eval(expression, (result, exception) => exception ? reject(new Error(exception.value || 'Inspected-window evaluation failed.')) : resolve(result))) }
-function hydrateTheme() { const theme = localStorage.getItem('qcg-console-theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); $('#theme').value = theme; saveTheme(theme) }
+function hydrateTheme() { const theme = localStorage.getItem('qcg-console-theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); $('.console').dataset.surface = isDevtools ? 'devtools' : 'sidepanel'; $('#theme').value = theme; saveTheme(theme) }
 function saveTheme(theme) { document.querySelector('.console').dataset.theme = theme; localStorage.setItem('qcg-console-theme', theme) }

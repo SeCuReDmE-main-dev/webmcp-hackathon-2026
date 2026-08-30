@@ -1,4 +1,5 @@
 const CHANNEL = 'qcg-console-page-bridge.v1'
+const CONTROL_CHANNEL = 'qcg-console-extension-control.v1'
 const port = chrome.runtime.connect({ name: 'qcg-console-content.v1' })
 const FORBIDDEN = /(?:-----BEGIN|\b(?:api[_-]?key|client[_-]?secret|access[_-]?token|password)\b|\b(?:C:|Z:)\\|file:\/\/|https?:\/\/|\b(?:stack|trace|body)\b|\b(?:operation|namespace|openqasm|qreg)\b)/i
 
@@ -9,7 +10,15 @@ function requestSnapshot() {
 window.addEventListener('message', (event) => {
   if (event.source !== window || event.origin !== location.origin) return
   const data = event.data
-  if (!data || data.channel !== CHANNEL) return
+  if (!data || typeof data !== 'object') return
+  if (data.channel === CONTROL_CHANNEL && data.type === 'open_companion' && validRequestId(data.request_id)) {
+    void chrome.runtime.sendMessage({ type: 'qcg-console-open-side-panel', request_id: data.request_id }).then(
+      (result) => window.postMessage({ channel: CONTROL_CHANNEL, type: 'open_companion_result', request_id: data.request_id, status: openStatus(result?.opened) }, location.origin),
+      () => window.postMessage({ channel: CONTROL_CHANNEL, type: 'open_companion_result', request_id: data.request_id, status: 'none' }, location.origin)
+    )
+    return
+  }
+  if (data.channel !== CHANNEL) return
   if (data.type === 'snapshot' && validSnapshot(data.snapshot)) {
     port.postMessage({ type: 'qcg-console-snapshot.v1', snapshot: data.snapshot })
   }
@@ -31,7 +40,8 @@ requestSnapshot()
 
 function validString(value, max = 1200) { return typeof value === 'string' && value.length > 0 && value.length <= max && !FORBIDDEN.test(value) }
 function validUuid(value) { return validString(value, 36) && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value) }
-function validRequestId(value) { return validString(value, 80) && /^[A-Za-z0-9._:-]+$/.test(value) }
+function validRequestId(value) { return validString(value, 36) && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value) }
+function openStatus(value) { return ['side_panel', 'companion_tab', 'none'].includes(value) ? value : 'none' }
 function validSnapshot(value) { return value && typeof value === 'object' && validString(value.session_id, 128) && validString(value.schema_version, 80) && !FORBIDDEN.test(JSON.stringify(value)) }
 function validResult(value) { return value && typeof value === 'object' && typeof value.accepted === 'boolean' && (!value.error || validString(value.error, 260)) }
 function validCommand(value) {

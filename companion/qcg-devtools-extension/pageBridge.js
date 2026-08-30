@@ -35,18 +35,22 @@ async function execute(command) {
 }
 
 function safeSnapshot() {
-  const value = bridgeV2()?.getSnapshot?.() ?? bridgeV1()?.getCachedPanelSnapshot?.()
+  // V2 owns the safety/decision state. V1 is read only as a bounded legacy
+  // collaboration ledger until that detail is exposed by the V2 page bridge.
+  const v2 = bridgeV2()?.getSnapshot?.()
+  const legacy = bridgeV1()?.getCachedPanelSnapshot?.()
+  const value = v2 ?? legacy
   if (!value || typeof value !== 'object') return { schema_version: 'qcg-console-context.v1', session_id: 'unavailable', phase: 'unavailable', authority_state: 'unavailable', messages: [], participants: [], human_review_requests: [], memories: [] }
   return {
     schema_version: text(value.schema_version, 80) || 'qcg-console-context.v1', surface: text(value.surface, 80), session_id: text(value.session_id, 128) || 'unavailable',
     phase: text(value.phase, 80) || 'unavailable', authority_state: text(value.authority_state, 80) || 'unavailable',
     artifact: pick(value.artifact, ['id', 'digest', 'format', 'profile', 'compiler_status', 'compiler']), recommendation: pick(value.recommendation, ['id', 'decision', 'confidence', 'reason_codes', 'expires_at']),
     effects: pick(value.effects, ['qpu_submissions', 'provider_calls', 'local_simulations', 'external_execution_requests']), receipt: pick(value.receipt, ['id', 'digest', 'schema_version']), storage_mode: text(value.storage_mode, 40),
-    participants: list(value.participants, ['actor', 'role']),
-    messages: list(value.messages, ['event_id', 'actor', 'role', 'intent', 'transport', 'kind', 'summary', 'evidence_refs', 'confidence', 'status', 'identity_assurance']),
-    human_review_requests: list(value.human_review_requests, ['event_id', 'summary', 'requested_action', 'evidence_refs', 'status']),
-    memories: list(value.memories, ['memory_id', 'disposition', 'provenance_event_id', 'digest', 'created_at']),
-    last_command: pick(value.last_command, ['command_id', 'status', 'message']), available_commands: commands(value.available_commands)
+    participants: list(legacy?.participants ?? value.participants, ['actor', 'role']),
+    messages: list(legacy?.messages ?? value.messages, ['event_id', 'actor', 'role', 'intent', 'transport', 'kind', 'summary', 'evidence_refs', 'confidence', 'status', 'identity_assurance']),
+    human_review_requests: list(legacy?.human_review_requests ?? value.human_review_requests, ['event_id', 'summary', 'requested_action', 'evidence_refs', 'status']),
+    memories: list(legacy?.memories ?? value.memories, ['memory_id', 'disposition', 'provenance_event_id', 'digest', 'created_at']),
+    last_command: pick(legacy?.last_command ?? value.last_command, ['command_id', 'status', 'message']), available_commands: commands(value.available_commands)
   }
 }
 

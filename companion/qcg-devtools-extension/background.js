@@ -16,9 +16,15 @@ chrome.runtime.onConnect.addListener((port) => {
 
 chrome.action.onClicked.addListener((tab) => { if (typeof tab.id === 'number') void openCompanion(tab.id) })
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if (!message || typeof message !== 'object') return
-  if (message.type === 'qcg-console-open-side-panel' && Number.isInteger(message.tab_id)) {
+  if (message.type === 'qcg-console-open-side-panel' && validRequestId(message.request_id)) {
+    const tabId = sender.tab?.id
+    if (!Number.isInteger(tabId)) { sendResponse({ request_id: message.request_id, opened: 'none' }); return }
+    void openCompanion(tabId).then((result) => sendResponse({ request_id: message.request_id, ...result }))
+    return true
+  }
+  if (message.type === 'qcg-console-open-side-panel-for-extension' && Number.isInteger(message.tab_id)) {
     void openCompanion(message.tab_id).then((result) => sendResponse(result))
     return true
   }
@@ -105,6 +111,7 @@ function forwardCommand(tabId, origin, requestId, command) {
 function broadcast(tabId, message, except) { for (const port of [panelPorts.get(tabId), devtoolsPorts.get(tabId)]) { if (!port || port === except) continue; try { port.postMessage(message) } catch {} } }
 function validString(value, max = 1200) { return typeof value === 'string' && value.length > 0 && value.length <= max && !FORBIDDEN.test(value) }
 function validUuid(value) { return validString(value, 36) && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value) }
+function validRequestId(value) { return validUuid(value) }
 function validSnapshot(value) { return value && typeof value === 'object' && validString(value.session_id, 128) && validString(value.schema_version, 80) && !FORBIDDEN.test(JSON.stringify(value)) }
 function validResult(value) { return value && typeof value === 'object' && typeof value.accepted === 'boolean' && (!value.error || validString(value.error, 260)) }
 function validCommand(value) {
