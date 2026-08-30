@@ -1,7 +1,7 @@
 # ADR — Day 5 Spring proof and feature freeze
 
 - Date: 2026-08-30
-- Status: **Accepted and in implementation**
+- Status: **Implemented; feature freeze active**
 - Decision owner: Jean-Sébastien Beaulieu
 - Baseline commit: `237d208b26fdee93de6642d6018ce9b7778a90a6`
 
@@ -57,3 +57,19 @@ Actions 120–148 are the final Day 5 product additions. After the `day5-feature
 - Spring passes responsive and accessibility checks without changing product semantics.
 - Benchmarks publish corpus, configuration, results, variance, cost and limitations.
 - Devpost remains unsubmitted until Jean-Sébastien explicitly authorizes submission.
+
+## Implementation outcome
+
+The bounded Day 5 scope is implemented at product commit `ff23d48d2ba8dfe785e8e6a17b13e3b452629f1a`.
+
+- The clean-copy regression suite passed 41 of 41 tests and the production build completed.
+- Q# and OpenQASM Bell fixtures execute locally through the pinned QDK runtime.
+- Eight additional ecosystem profiles remain inspection-only.
+- The live `QCG` F12 panel and same-page Chrome DevTools MCP exchange were demonstrated.
+- The E2B campaign completed 2.6 million deterministic evaluations, including two one-million-operation passes with matching digests across all 100 sandboxes.
+- The public HTTP canary returned 80 of 80 successful responses.
+- The E2B SDK did not return an invoice total, so campaign cost remains unknown.
+- The Spring candidate remains local under the author's visual guard; the stable public cPanel release was not mutated.
+- Devpost remains a draft and no QPU, quantum provider or payment operation was invoked.
+
+All feature ideas after this outcome belong to the post-hackathon backlog. Release work may now change only defects, tests, evidence, accessibility, documentation, deployment packaging or video materials.

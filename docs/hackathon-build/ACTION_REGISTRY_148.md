@@ -33,8 +33,8 @@ This registry inherits Actions 1–117 and their evidence from `ACTION_REGISTRY_
 | 144 | Run clean-clone, WebMCP, F12, security and recovery QA | Root + Terra | DONE | `evidence/qa/ACTION_144_INTEGRATED_QA_2026-08-30.md`; clean install, 41/41 tests, build, F12 receipt and zero credential/private-path findings |
 | 145 | Preserve the stable cPanel release under the superseding author visual guard and verify rollback | Root/Sol | DONE | `evidence/hosting/ACTION_145_STABLE_RELEASE_AUTHOR_GUARD_2026-08-30.md`; public mutation count 0 |
 | 146 | Produce English/French Spring editorials and short extracts | Luna + Root | DONE | `MANUSCRIPT_EN.md`, `MANUSCRIPT_FR.md`, `EXTRACT_EN.md`, `EXTRACT_FR.md` in the Day 5 Spring article folder; author-review only |
-| 147 | Update public docs, push main and tag the feature freeze | Root/Sol | PENDING | Public commit and tag |
-| 148 | Produce the Day 5 closeout and enforce the freeze | Root/Sol | PENDING | Final report |
+| 147 | Update public docs, push main and tag the feature freeze | Root/Sol | IN_PROGRESS | Product commit `ff23d48`; remote verification pending |
+| 148 | Produce the Day 5 closeout and enforce the freeze | Root/Sol | IN_PROGRESS | `docs/hackathon-build/DAY5_CLOSEOUT_2026-08-30.md`; remote verification pending |
 
 ## Status rule
 
