@@ -1,8 +1,35 @@
 <!doctype html>
-<html><head><meta charset="utf-8"><meta name="color-scheme" content="dark light"><link rel="stylesheet" href="panel.css"></head>
-<body><main><header><h1>QCG Collaboration</h1><p id="status">Waiting for a QCG page.</p></header>
-<section class="filters"><label>Actor <select id="actor"><option value="all">All</option><option>human</option><option>codex</option><option>gemini</option><option>antigravity</option><option>system</option></select></label><label>Kind <select id="kind"><option value="all">All</option><option>observation</option><option>hypothesis</option><option>proposal</option><option>challenge</option><option>decision_request</option><option>receipt</option></select></label><label>Status <select id="message-status"><option value="all">All</option><option>open</option><option>acknowledged</option><option>resolved</option></select></label></section>
-<pre id="context">No bounded context yet.</pre><section><h2>Participants</h2><ul id="participants"></ul></section><section><h2>Human review requests</h2><ul id="reviews"></ul></section><section><h2>Human memory</h2><ul id="memories"></ul></section><section><h2>Ledger messages</h2><ul id="messages"></ul></section>
-<label>Human message<textarea id="message" maxlength="1200" placeholder="A bounded observation for the QCG ledger. Never paste secrets, paths, source code, stacks, URLs, or network bodies."></textarea></label><div class="actions"><button id="send">Add human message</button><button id="copy">Copy bounded context</button></div>
-<section class="handoff"><h2>Native Gemini manual relay</h2><p>Prepare a bounded packet, paste it into Gemini DevTools yourself, then preview and import the structured reply. Imported text remains untrusted.</p><label>Intent <select id="handoff-intent"><option value="debug">Debug</option><option value="search">Search</option><option value="find">Find</option><option value="brainstorm">Brainstorm</option><option value="decision">Decision</option></select></label><label>Prompt<textarea id="handoff-prompt" maxlength="1200" placeholder="Bounded question; no source code or credentials."></textarea></label><div class="actions"><button id="create-handoff">Create & copy packet</button></div><label>Gemini structured reply<textarea id="gemini-reply" maxlength="1600" placeholder='Paste a qcg-gemini-manual-reply.v1 JSON reply.'></textarea></label><div class="actions"><button id="preview-reply">Preview reply</button><button id="import-reply">Import reply</button></div><pre id="handoff-preview">No manual handoff prepared.</pre></section>
-<p class="boundary">This panel reads only <code>__QCG_DEVTOOLS_V1__</code>. It has no Gemini API, consent, or simulation authority.</p></main><script type="module" src="panel.js"></script></body></html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="color-scheme" content="dark light">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>QCG Console Companion</title>
+  <link rel="stylesheet" href="panel.css">
+</head>
+<body>
+  <main class="console" data-theme="dark">
+    <header class="topbar">
+      <div><p class="eyebrow">WEBMCP-QCG · LOCAL COMPANION</p><h1>Evidence console</h1></div>
+      <div class="top-actions"><label class="theme-label">Theme<select id="theme"><option value="dark">Dark</option><option value="light">Light</option></select></label><button id="open-companion" type="button">Open companion</button></div>
+    </header>
+    <div class="console-shell">
+      <nav class="console-nav" aria-label="Console sections">
+        <button class="nav-item active" data-view="overview" type="button">Overview</button>
+        <button class="nav-item" data-view="reviews" type="button">Human review <span id="review-count">0</span></button>
+        <button class="nav-item" data-view="agents" type="button">Agents</button>
+        <button class="nav-item" data-view="relay" type="button">Gemini relay</button>
+      </nav>
+      <section class="workbench" aria-live="polite">
+        <div class="workbench-heading"><div><p class="eyebrow" id="surface">CONNECTING</p><h2 id="status">Waiting for a QCG page.</h2></div><span class="status-dot" aria-hidden="true"></span></div>
+        <section class="view" data-view-panel="overview"><h3>Bounded context</h3><pre id="context">No bounded context yet.</pre><div class="split"><section><h3>Participants</h3><ul id="participants"></ul></section><section><h3>Messages</h3><ul id="messages"></ul></section></div></section>
+        <section class="view" data-view-panel="reviews" hidden><section id="decision-panel" hidden><p class="eyebrow">VISIBLE HUMAN DECISION</p><h3>Recommendation decision</h3><p id="decision-summary">No active recommendation.</p><div class="button-row"><button id="accept-decision" type="button">Accept</button><button id="defer-decision" type="button">Defer</button></div><label>Override justification<textarea id="override" maxlength="500" placeholder="At least 12 characters. A human must explicitly record an override."></textarea></label><button id="record-override" type="button" disabled>Record override</button><p class="boundary">This decision is sent only as a structured, button-generated QCG Console command. It never exposes a simulation control.</p></section><h3>Human review requests</h3><ul id="reviews"></ul><label>Human observation<textarea id="message" maxlength="500" placeholder="Bounded observation. Never paste secrets, paths, source code, stacks, URLs, or network bodies."></textarea></label><button id="send" type="button">Record human observation</button></section>
+        <section class="view" data-view-panel="agents" hidden><h3>Human memory</h3><ul id="memories"></ul><p class="boundary">Snapshots, reviews and messages are sanitized. This companion has no quantum consent, simulation, provider, or QPU capability.</p></section>
+        <section class="view" data-view-panel="relay" hidden><h3>Native Gemini manual relay</h3><p>Prepare a bounded packet, paste it into Gemini DevTools yourself, then preview and import a structured reply. The reply remains untrusted.</p><label>Intent<select id="handoff-intent"><option value="debug">Debug</option><option value="search">Search</option><option value="find">Find</option><option value="brainstorm">Brainstorm</option><option value="decision">Decision</option></select></label><label>Prompt<textarea id="handoff-prompt" maxlength="500" placeholder="Bounded question; no source code, paths or credentials."></textarea></label><button id="create-handoff" type="button">Create and copy packet</button><label>Gemini structured reply<textarea id="gemini-reply" maxlength="1600" placeholder="Paste qcg-gemini-manual-reply.v1 JSON."></textarea></label><div class="button-row"><button id="preview-reply" type="button">Preview</button><button id="import-reply" type="button">Import untrusted reply</button></div><pre id="handoff-preview">No manual handoff prepared.</pre></section>
+      </section>
+      <aside class="evidence-rail"><h2>Evidence rail</h2><dl id="evidence"><dt>Artifact</dt><dd>—</dd><dt>Recommendation</dt><dd>—</dd><dt>Effects</dt><dd>—</dd><dt>Authority</dt><dd>—</dd></dl><p class="boundary">All decisions originate from visible human buttons. Override text is a ledger note, not execution authority.</p></aside>
+    </div>
+  </main>
+  <script type="module" src="panel.js"></script>
+</body>
+</html>
