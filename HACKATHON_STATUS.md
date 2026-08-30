@@ -11,18 +11,22 @@ Updated: 2026-08-30
 | Human authority | pass | accept/defer/justified override; one-use local consent; external readiness is never authorization |
 | DevTools collaboration | pass | unpacked QCG F12 panel plus four collaboration-only Chrome DevTools MCP tools on one page ID |
 | Native Gemini boundary | pass with manual relay | export, human transfer, preview and schema-validated import; no claim of a native conversation API |
-| Automated validation | pass | 41/41 tests and TypeScript/Vite production build |
-| Visual/accessibility QA | pass for local candidate | 320 px/tablet/desktop, keyboard, contrast AA and reduced motion |
+| Automated validation | pass | 51/51 tests and TypeScript/Vite production build |
+| Visual/accessibility QA | pass for accepted console | 320 px/tablet/desktop, keyboard, contrast AA, reduced motion and live Access/Light smoke |
 | Engine benchmark | pass | 2.6M operations; two 100-sandbox 1M passes; 100/100 repeated digests; zero unauthorized effects |
 | Public HTTP canary | pass | 80/80 HTTP 200; zero errors/timeouts; p95 30.825 ms |
-| Stable deployment | retained by author guard | <https://qcg.securedme.ca/> matches the 2026-08-29 release manifest |
-| Day 5 Spring candidate | local, author-review only | source/build/screenshots; public deployment deferred until visual approval |
-| Vercel parity | blocked | known preview expired; no authenticated named project was available |
-| Editorial Spring | author-review drafts | English/French long form and short extracts; no publication action |
+| Stable deployment | pass | accepted QCG Console live at <https://qcg.securedme.ca/>; 14/14 paths and 12/12 public content hashes verified; rollback backup retained |
+| Day 5 console baseline | promoted | author-approved design/implementation artifact deployed; product feature freeze remains active |
+| Vercel parity | pass | <https://webmcp-qcg.vercel.app/> serves the same accepted HTML, JavaScript and CSS bytes |
+| Editorial Spring | open under author control | research and drafts remain material for composition; no article-closure or publication action |
 | Devpost | `submission_draft` | final submission remains an author-only decision |
 
 ## Current release gate
 
-Feature work is frozen. Remaining work is limited to integrated QA, documentation, author review, video preparation, stable-release recovery and the final human submission decision.
+Feature work is frozen. Remaining work is limited to defect correction, fresh
+native-agent and author-controlled live traces, documentation, article composition,
+video preparation, rollback readiness and the final human submission decision.
 
-The public site remains deliberately unchanged while Jean-Sébastien refines the graphic direction. This protects the proven stable interface and avoids presenting an unapproved Spring candidate as the release.
+The accepted console is now the canonical public interface. This deployment closes
+the design and implementation deployment phase; the Day 5 article, final graphics,
+publication and Devpost decisions remain open under Jean-Sébastien's authority.

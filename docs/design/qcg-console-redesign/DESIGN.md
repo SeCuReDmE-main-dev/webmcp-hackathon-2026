@@ -1,6 +1,6 @@
 # QCG console redesign — canonical three-surface design contract
 
-- Status: implemented, locally validated and author-approved for a Vercel preview; cPanel promotion remains gated
+- Status: implemented, locally validated, author-approved and live on the canonical cPanel origin
 - Date: 2026-08-30
 - Branch: `redesign/qcg-console`
 - Baseline: `50e7de43bfbf2d2d11397ffa9339273f0c486329`
@@ -17,8 +17,9 @@ QCG product contract.
 
 The existing `docs/design/DESIGN.md` remains the behavioral authority. This document
 defines how that behavior is presented across three surfaces. The implementation
-exists on the redesign branch; deployment and public-site replacement remain
-separately gated.
+exists on the redesign branch and was promoted after a separate author
+authorization, immutable package check, cPanel transaction and stable-origin
+smoke. Devpost submission and editorial publication remain separate.
 
 ## Frozen product contract
 
@@ -154,3 +155,11 @@ This implementation is ready for preview only after:
 5. secret, private-path, provider and unauthorized-effect scans remain clean;
 6. Jean-Sébastien approves the visual result before any deployment or public-site
    mutation.
+
+## Promotion record
+
+Jean-Sébastien approved the visual baseline and then explicitly authorized its
+canonical cPanel deployment. The exact package, rollback boundary, 12/12 public
+content hashes, headers and Bell preflight are recorded in
+[`QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md`](../../evidence/QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md).
+The Day 5 article remains open.

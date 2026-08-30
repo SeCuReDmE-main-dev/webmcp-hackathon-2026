@@ -82,6 +82,17 @@ decisions, not unverified runtime outcomes.
 - Editorial impact: the article gains a concrete deployment-coherence receipt rather than a visual similarity claim.
 - Proof/status: **Vercel production synchronized and public; HTTP 200, expected title, required WebMCP headers and exact asset hashes verified. cPanel unchanged.**
 
+## Entry 0008 — promote the accepted console to the canonical cPanel origin
+
+- Timestamp: 2026-08-30T17:48:53-04:00 (America/Toronto)
+- Owner: Jean-Sébastien Beaulieu
+- Evidence: `QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md`; cPanel plan `9b9525b7738d052dd825c12f`; immutable package SHA-256 `371A206716FCFCD71699285CCE51A8BB8AA7368B2615505397328DCC86E02269`; canonical browser smoke at `https://qcg.securedme.ca/`.
+- Selected: promote the exact author-accepted artifact through the SecuredMe cPanel Operator, retain an identified rollback backup, verify every expected remote path, compare all content-bearing public files by SHA-256, and exercise the Q# Bell preflight without recording a human decision.
+- Rejected: manual live-root upload, deleting the previous release, treating visual similarity as parity, impersonating the author's decision, or claiming a fresh native-agent invocation from a human-interface smoke.
+- Architectural impact: cPanel now serves the accepted QCG Console as the canonical product origin; Vercel remains the validation surface. The release retains a rollback boundary and the same frozen engine, authority model and tool counts.
+- Editorial impact: this closes the design and implementation deployment phase with verifiable receipts while leaving the Day 5 article open for Jean-Sébastien's writing, graphics and publication decisions.
+- Proof/status: **Canonical deployment PASS; 14/14 expected paths verified, 12/12 public content hashes exact, required headers present, Bell inspection/evaluation passed, human decision pending, local simulations 0 and QPU submissions 0.**
+
 ## Entry format for future additions
 
 Use a new numbered entry with timestamp and timezone, owner, evidence, selected and

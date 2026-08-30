@@ -1,7 +1,7 @@
 # ADR — Authorize the QCG console and extension redesign
 
 - Date: 2026-08-30
-- Status: **Accepted for implementation on the redesign branch**
+- Status: **Implemented, author-approved and promoted to the canonical cPanel origin**
 - Decision owner: Jean-Sébastien Beaulieu
 - Branch: `redesign/qcg-console`
 - Baseline HEAD: `50e7de43bfbf2d2d11397ffa9339273f0c486329`
@@ -59,6 +59,11 @@ test/build baseline, a secret/path scan and explicit author approval. This ADR d
 not authorize deployment, a public-site mutation, a graphics publication or a
 Devpost submission.
 
+Jean-Sébastien later supplied the separate deployment authorization required by
+this gate. That authorization and its runtime proof are preserved in the canonical
+cPanel deployment receipt; it does not extend to Devpost submission or editorial
+publication.
+
 ## Consequences
 
 The redesign can make the existing workflow legible across its three surfaces while
@@ -73,3 +78,4 @@ post-freeze backlog work and requires a new decision.
 - [`docs/DEVTOOLS_MULTI_AGENT_RUNBOOK.md`](../DEVTOOLS_MULTI_AGENT_RUNBOOK.md) — DevTools collaboration boundary
 - [`docs/security/QCG_THREAT_MODEL.md`](../security/QCG_THREAT_MODEL.md) — threat and data-handling boundary
 - [`docs/hackathon-build/DAY5_CLOSEOUT_2026-08-30.md`](../hackathon-build/DAY5_CLOSEOUT_2026-08-30.md) — Day 5 proof and stable-release guard
+- [`docs/evidence/QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md`](../evidence/QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md) — author-authorized canonical promotion and live smoke

@@ -1,22 +1,24 @@
-# QCG v2 release runbook
+# QCG v3 release runbook
 
-This runbook defines what a releasable QCG v2 build means. It does not authorize
+This runbook defines what a releasable QCG v3 build means. It does not authorize
 a hosting mutation, provider call, QPU submission, Devpost submission, or spend.
 
 The stable product address is
-[https://qcg.securedme.ca/](https://qcg.securedme.ca/). The 2026-08-29 release
-serves QCG directly over HTTPS and passed the live-origin acceptance gates.
-Its archive SHA-256 is
-`6d574985fbff4fe376395beae37f292889a5d187a9b81601eeb445d7e58c4d44`.
+[https://qcg.securedme.ca/](https://qcg.securedme.ca/). The author-approved
+2026-08-30 console release is served directly over HTTPS. Its immutable cPanel
+package SHA-256 is
+`371a206716fcfcd71699285cce51a8bb8aa7368b2615505397328dcc86e02269`.
 
 ## 1. Release inputs
 
 A release candidate must include:
 
-- the QCG v2 source under `prototype/webmcp-qcg/`;
+- the QCG v3 source under `prototype/webmcp-qcg/`;
 - the tracked `prototype/webmcp-qcg/package-lock.json`;
 - the public sample at
   `prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qs`;
+- the OpenQASM sample at
+  `prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qasm`;
 - the root [MIT license](../LICENSE) and
   [third-party notices](../THIRD_PARTY_NOTICES.md);
 - current, sourced target-profile snapshots whose expiry extends through the
@@ -40,10 +42,10 @@ Set-Location ../..
 git diff --check
 ```
 
-Expected results for the 2026-08-29 QCG v2 baseline:
+Expected results for the 2026-08-30 QCG v3 baseline:
 
 - dependency installation completes from the lock file;
-- 2 test files and 18 tests pass;
+- 51 automated tests pass;
 - TypeScript validation passes;
 - Vite creates `prototype/webmcp-qcg/dist/`;
 - the live official WebMCP smoke suite passes 2/2;
@@ -60,7 +62,7 @@ upload, verify that it contains:
 - the main JavaScript and CSS assets;
 - the Q# Worker asset;
 - the pinned Q# WebAssembly asset;
-- `fixtures/qcg-bell-sample.qs`;
+- `fixtures/qcg-bell-sample.qs` and `fixtures/qcg-bell-sample.qasm`;
 - `_headers`.
 
 The artifact must be immutable for validation: compute and record a hash before
@@ -87,7 +89,7 @@ The current cPanel release uses:
 
 - live document root: `public_html/qcg.securedme.ca`;
 - an operator-controlled candidate and backup boundary;
-- a package manifest that verifies the eight expected release paths.
+- a package manifest that verifies the 14 expected release paths.
 
 Do not upload manually over the live document root. Use the SecuredMe cPanel
 Operator's explicit `plan -> confirmation -> apply` transaction with the exact
@@ -95,7 +97,7 @@ package hash and expected paths. The operator completed and verified that flow
 for this release. A destructive rollback drill remains a separate maintenance
 gate; the release procedure itself preserves a backup boundary. See the
 [hosting baseline](../evidence/hosting/README.md) and the
-[live acceptance receipt](../evidence/qa/LIVE_ORIGIN_ACCEPTANCE_RECEIPT_2026-08-29.md).
+[canonical deployment receipt](evidence/QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md).
 
 ## 5. Stable-origin acceptance gate
 
@@ -135,17 +137,17 @@ to restore it. If any stable-origin gate fails:
 4. retain the failed artifact and evidence hash for diagnosis;
 5. do not mutate target evidence or receipts to make the failed run appear valid.
 
-The current redirect is the pre-release baseline. A rollback plan is not proven
-until the hosting operator has tested the actual promotion and restoration
-mechanism.
+The operator retained the identified previous-build backup during promotion. A
+rollback plan remains unproven until a separately authorized maintenance drill
+tests the actual restoration mechanism.
 
 ## 7. Factual release claims
 
 A passing build supports these claims:
 
-- QCG v2 builds and its automated contracts pass in the recorded environment;
+- QCG v3 builds and its automated contracts pass in the recorded environment;
 - the repository contains four progressively registered WebMCP tools;
-- the only local execution fixture is the published bounded Bell sample;
+- the local execution fixtures are the published bounded Q# and OpenQASM Bell samples;
 - QPU submission is structurally disabled and counted as zero.
 
 Do not claim stable deployment, native Chrome success, generalized Q# execution,
@@ -157,14 +159,14 @@ availability, a quote, a credential check, a job submission, or authorization.
 
 ## 8. Open release blockers
 
-The stable QCG release, headers, sample, WASM asset, human fallback and native
-Chrome WebMCP smoke trace passed on 2026-08-29. Remaining release-adjacent gates
-are:
+The QCG v3 console, headers, samples, WASM asset and bounded human preflight are
+live on the canonical origin. Remaining release-adjacent gates are:
 
 1. refresh or revalidate target-profile evidence if either bundled profile
    expires before the final acceptance run;
-2. repeat the live trace after any code or hosting change;
-3. run a rollback drill during a separately authorized maintenance window.
+2. run a fresh native-agent tool invocation on the new stable build;
+3. complete an author-controlled consent, local simulation and export trace;
+4. run a rollback drill during a separately authorized maintenance window.
 
 Video production and final Devpost submission are separate author-controlled
 gates and are outside this release runbook.

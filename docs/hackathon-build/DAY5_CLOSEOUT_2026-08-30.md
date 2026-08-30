@@ -6,6 +6,10 @@
 - Status: complete; feature freeze active
 - Authority owner: Jean-Sébastien Beaulieu
 
+> Scope clarification after the canonical promotion: “closeout” in this file
+> means the Day 5 engineering feature freeze for Actions 118–148. It does not
+> close the Day 5 article or Jean-Sébastien's editorial process.
+
 ## Outcome
 
 Day 5 converted WebMCP-QCG from a Q#-only proof into a bounded, measurable quantum preflight workbench. The product now exposes exactly four quantum tools and four collaboration-only DevTools tools. It preserves human authority, keeps provider execution outside the browser workflow and records verifiable evidence for every demonstrated path.
@@ -68,3 +72,14 @@ Jean-Sébastien retains the decisions to approve the final graphics, record the 
 ## Remote release verification
 
 The feature-freeze closeout commit `f89bdcf67bbe992aa71fd204abece8fdd2f5edf8` was pushed to `origin/main`. The annotated `day5-feature-freeze` tag was pushed and its peeled reference resolves to the same commit. The subsequent documentation-only receipt records that remote state without changing the frozen product code.
+
+## Post-closeout canonical promotion
+
+After author approval of the console redesign, the accepted artifact was promoted
+to `https://qcg.securedme.ca/` through the cPanel Operator's bound transaction.
+The retained rollback backup, package hash, exact public-file comparisons, headers
+and live Q# Bell preflight are recorded in
+[`QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md`](../evidence/QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md).
+
+This promotion closes the design and implementation deployment phase. The Day 5
+article remains open, unpublished and under Jean-Sébastien's authority.

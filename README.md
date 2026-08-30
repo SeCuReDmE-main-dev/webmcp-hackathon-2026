@@ -16,11 +16,12 @@ static-inspection surfaces and can never request simulation or external readines
 
 - Stable release URL: [https://qcg.securedme.ca/](https://qcg.securedme.ca/)
 - Vercel validation URL: [https://webmcp-qcg.vercel.app/](https://webmcp-qcg.vercel.app/)
-- Current public status: the retained 2026-08-29 release remains canonical on
-  `qcg.securedme.ca`. The author-approved three-surface QCG Console is also
-  synchronized to the stable Vercel validation address from commit `17e9db2`.
-  Byte-for-byte checks matched the built HTML, JavaScript and CSS. Promotion to
-  cPanel remains a separate release gate.
+- Current public status: the author-approved three-surface QCG Console is live
+  on the canonical cPanel origin and synchronized to the stable Vercel validation
+  address. The cPanel promotion preserved a rollback backup, verified all 14
+  expected paths and matched all 12 content-bearing public files to the local
+  production build by SHA-256. See the
+  [canonical deployment receipt](docs/evidence/QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md).
 - License: [MIT](LICENSE). Dependency licenses remain with their authors; see
   [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
@@ -158,9 +159,10 @@ The Day 5 QCG working tree was rechecked on 2026-08-30:
   million-operation passes with 100/100 matching digests;
 - public canary: 80/80 HTTP 200, zero errors/timeouts, p95 30.825 ms.
 
-The earlier native browser/Q# vertical-slice receipt remains useful historical
-evidence, but it does not replace a fresh stable-origin Chrome run before a
-future QCG v3 deployment.
+The 2026-08-30 stable-origin human smoke compiled and evaluated the published Q#
+Bell fixture, produced `simulate_first`, preserved the pending human decision,
+and kept local simulations and QPU submissions at zero. A fresh native-agent
+invocation and a full author-controlled simulation/export remain separate gates.
 See [`evidence/qa/`](evidence/qa/) for dated receipts.
 
 ## Limits and non-goals
@@ -192,6 +194,8 @@ See [`evidence/qa/`](evidence/qa/) for dated receipts.
   page routing, official experimental flags and the extension boundary.
 - [Release runbook](docs/RELEASE.md) — release artifact, gates, required headers,
   stable-origin validation, rollback boundary, and open blockers.
+- [Canonical cPanel deployment receipt](docs/evidence/QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md)
+  — immutable package, operator transaction, public hashes, headers and live smoke.
 - [Threat model](docs/security/QCG_THREAT_MODEL.md) — assets, trust boundaries,
   controls, residual risks, security headers, and deliberate exclusions.
 - [`docs/PROJECT_CHARTER.md`](docs/PROJECT_CHARTER.md) — scope and non-goals.
