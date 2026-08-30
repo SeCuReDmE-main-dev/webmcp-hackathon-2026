@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import type { QcgState } from '../types'
+import { safeDebugText } from '../debugContracts'
 
 export const qcgSurfaces = ['web', 'devtools', 'sidepanel'] as const
 export type QcgSurface = typeof qcgSurfaces[number]
@@ -23,6 +24,20 @@ export interface SanitizedConsoleSnapshotV2 {
   receipt?: { id: string; digest: string; schema_version: string }
   storage_mode: 'indexeddb' | 'memory'
   available_commands: SafeConsoleCommandKind[]
+  invocations: Array<{ tool: string; status: string; timestamp: string; summary: string }>
+  collaboration: {
+    participants: Array<{ actor: string; role: string }>
+    messages: Array<{ event_id: string; actor: string; role: string; kind: string; summary: string; status: string; issued_at: string }>
+    open_reviews: number
+    memory_tombstones: Array<{ memory_id: string; disposition: 'forgotten'; provenance_event_id: string; digest: string; created_at: string }>
+  }
+  tools: Array<{ name: string; group: 'quantum' | 'collaboration'; status: 'registered' | 'available'; last_invocation?: string }>
+}
+
+export interface ConsoleSnapshotContext {
+  toolNames?: readonly string[]
+  invocations?: Array<{ tool: string; status: string; timestamp: string; summary: string }>
+  collaboration?: Partial<SanitizedConsoleSnapshotV2['collaboration']>
 }
 
 export const safeConsoleCommandKinds = [
@@ -68,7 +83,22 @@ export interface ConsoleTransport {
   executeConsoleCommand(command: unknown): Promise<ConsoleCommandResultV1>
 }
 
-export function sanitizedConsoleSnapshot(state: QcgState, sessionId: string, storageMode: 'indexeddb' | 'memory', surface: QcgSurface = 'web'): SanitizedConsoleSnapshotV2 {
+const quantumToolNames = ['inspect_quantum_experiment', 'evaluate_quantum_call', 'run_bounded_local_simulation', 'export_quantum_evidence_report']
+const collaborationToolNames = ['read_debug_context', 'post_debug_message', 'request_human_review', 'export_debug_handoff']
+
+function boundedSummary(value: string): string {
+  try { return safeDebugText(500).parse(value) } catch { return 'Recorded bounded invocation.' }
+}
+
+export function sanitizedConsoleSnapshot(state: QcgState, sessionId: string, storageMode: 'indexeddb' | 'memory', surface: QcgSurface = 'web', context: ConsoleSnapshotContext = {}): SanitizedConsoleSnapshotV2 {
+  const invocations = (context.invocations ?? state.invocations).slice(0, 50).map((entry) => ({ tool: entry.tool, status: entry.status, timestamp: entry.timestamp, summary: boundedSummary(entry.summary) }))
+  const collaboration = context.collaboration ?? {}
+  const messages = (collaboration.messages ?? []).slice(0, 50).map((message) => ({ ...message, summary: boundedSummary(message.summary) }))
+  const available = new Set(context.toolNames ?? [])
+  const toolRows = [...quantumToolNames.map((name) => ({ name, group: 'quantum' as const })), ...collaborationToolNames.map((name) => ({ name, group: 'collaboration' as const }))].map((tool) => {
+    const last = invocations.find((entry) => entry.tool === tool.name) ?? (tool.group === 'collaboration' ? messages[0] : undefined)
+    return { ...tool, status: available.has(tool.name) || tool.group === 'collaboration' ? 'registered' as const : 'available' as const, last_invocation: last ? ('summary' in last ? last.summary : undefined) : undefined }
+  })
   return {
     schema_version: 'qcg-console-snapshot.v2',
     surface,
@@ -92,6 +122,14 @@ export function sanitizedConsoleSnapshot(state: QcgState, sessionId: string, sto
     effects: { ...state.effects },
     receipt: state.receipt ? { id: state.receipt.receipt_id, digest: state.receipt.digest, schema_version: state.receipt.schema_version } : undefined,
     storage_mode: storageMode,
-    available_commands: [...safeConsoleCommandKinds]
+    available_commands: safeConsoleCommandKinds.filter((kind) => kind !== 'human_decision' || Boolean(state.recommendation)),
+    invocations,
+    collaboration: {
+      participants: collaboration.participants ?? [],
+      messages,
+      open_reviews: collaboration.open_reviews ?? 0,
+      memory_tombstones: collaboration.memory_tombstones ?? []
+    },
+    tools: toolRows
   }
 }

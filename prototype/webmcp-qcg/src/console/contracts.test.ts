@@ -10,6 +10,11 @@ describe('QCG console contracts', () => {
     const snapshot = sanitizedConsoleSnapshot(state, '11111111-1111-4111-8111-111111111111', 'memory')
     expect(snapshot.surface).toBe('web')
     expect(snapshot.available_commands).not.toContain('run_bounded_local_simulation')
+    expect(snapshot.available_commands).not.toContain('human_decision')
+    expect(snapshot.tools).toHaveLength(8)
+    expect(snapshot.tools.filter((tool) => tool.group === 'quantum')).toHaveLength(4)
+    expect(snapshot.tools.filter((tool) => tool.group === 'collaboration')).toHaveLength(4)
+    expect(snapshot.collaboration.open_reviews).toBe(0)
     expect(JSON.stringify(snapshot)).not.toContain('not-exported')
   })
 

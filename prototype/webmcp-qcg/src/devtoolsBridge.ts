@@ -1,7 +1,7 @@
 import type { QcgState } from './types'
 import { DebugLedger } from './debugLedger'
 import { createGeminiManualHandoff, debugMessageDraft, geminiManualReply, safeDebugText, type CollaborationIntent, type GeminiManualHandoff, type HumanMemoryDisposition, type HumanReviewDisposition, type QcgDebugMessage } from './debugContracts'
-import { safeConsoleCommand, sanitizedConsoleSnapshot, type ConsoleCommandResultV1, type ConsoleTransport, type SanitizedConsoleSnapshotV2 } from './console/contracts'
+import { safeConsoleCommand, sanitizedConsoleSnapshot, type ConsoleCommandResultV1, type ConsoleSnapshotContext, type ConsoleTransport, type SanitizedConsoleSnapshotV2 } from './console/contracts'
 
 export interface QcgDevtoolsCommandStatus {
   command_id: string
@@ -58,6 +58,10 @@ export interface QcgConsoleBridgeV2 extends ConsoleTransport {
 export interface QcgConsoleDecisionExecutor {
   (input: { recommendation_id: string; choice: 'accepted' | 'deferred' | 'overridden'; justification?: string }): Promise<void>
 }
+export interface QcgConsoleBridgeOptions {
+  executeHumanDecision?: QcgConsoleDecisionExecutor
+  getConsoleContext?: () => Pick<ConsoleSnapshotContext, 'toolNames'>
+}
 
 declare global { interface Window { __QCG_DEVTOOLS_V1__?: QcgDevtoolsBridge; __QCG_CONSOLE_V2__?: QcgConsoleBridgeV2 } }
 
@@ -74,7 +78,7 @@ export function installQcgDevtoolsBridge(
   getState: () => QcgState,
   ledger: DebugLedger,
   sessionId: string,
-  options: { executeHumanDecision?: QcgConsoleDecisionExecutor } = {}
+  options: QcgConsoleBridgeOptions = {}
 ): () => void {
   let lastCommand: QcgDevtoolsCommandStatus | undefined
   const queuedReviewIds = new Set<string>()
@@ -185,7 +189,19 @@ export function installQcgDevtoolsBridge(
   const consoleBridge: QcgConsoleBridgeV2 = {
     // This bridge is hosted by the inspected page. Extension clients identify their own render surface.
     surface: 'web',
-    getSnapshot: () => sanitizedConsoleSnapshot(getState(), sessionId, ledger.storageMode, 'web'),
+    getSnapshot: () => {
+      const panel = cached
+      return sanitizedConsoleSnapshot(getState(), sessionId, ledger.storageMode, 'web', {
+        ...options.getConsoleContext?.(),
+        invocations: getState().invocations,
+        collaboration: {
+          participants: panel.participants,
+          messages: panel.messages.map((message) => ({ event_id: message.event_id, actor: message.actor, role: message.role, kind: message.kind, summary: message.summary, status: message.status, issued_at: message.issued_at })),
+          open_reviews: panel.human_review_requests.length,
+          memory_tombstones: panel.memories.filter((memory) => memory.disposition === 'forgotten').map((memory) => ({ ...memory, disposition: 'forgotten' as const }))
+        }
+      })
+    },
     executeConsoleCommand: async (input) => {
       const parsed = safeConsoleCommand.safeParse(input)
       if (!parsed.success) return reject('The console command does not match qcg-console-command.v1.')

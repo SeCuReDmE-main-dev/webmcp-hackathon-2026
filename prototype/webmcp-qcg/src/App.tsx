@@ -29,19 +29,24 @@ export default function App() {
   const [debugSessionId] = useState(() => crypto.randomUUID())
   const [debugMessages, setDebugMessages] = useState<QcgDebugMessage[]>([])
   const [debugReady, setDebugReady] = useState(false)
+  const [companionStatus, setCompanionStatus] = useState('Companion not requested')
+  const [actorFilter, setActorFilter] = useState('all')
+  const [kindFilter, setKindFilter] = useState('all')
   const simulationController = useRef<AbortController | null>(null)
   const fixtureLoaded = useRef(false)
   const stateRef = useRef(state)
   stateRef.current = state
   const refresh = useCallback(() => setState(services.snapshot()), [services])
   const { supported, toolNames, registrationStatus } = useQcgWebMcp(services, state, refresh)
+  const toolNamesRef = useRef(toolNames)
+  toolNamesRef.current = toolNames
 
   useEffect(() => () => simulationController.current?.abort(), [])
   useEffect(() => { try { window.localStorage.setItem(QCG_THEME_STORAGE_KEY, theme) } catch { /* optional browser storage */ } }, [theme])
   useEffect(() => { void debugLedger.openSession(debugSessionId).then(() => setDebugReady(true)).catch(() => setDebugReady(false)) }, [debugLedger, debugSessionId])
   useEffect(() => {
     if (!debugReady) return
-    const removeBridge = installQcgDevtoolsBridge(() => stateRef.current, debugLedger, debugSessionId, { executeHumanDecision: async (input) => { await services.decide(input); refresh() } })
+    const removeBridge = installQcgDevtoolsBridge(() => stateRef.current, debugLedger, debugSessionId, { executeHumanDecision: async (input) => { await services.decide(input); refresh() }, getConsoleContext: () => ({ toolNames: toolNamesRef.current }) })
     const unregister = window.__QCG_DEVTOOLS_V1__ ? registerQcgDevtoolsTools(window.__QCG_DEVTOOLS_V1__, debugLedger) : () => undefined
     return () => { unregister(); removeBridge() }
   }, [debugLedger, debugReady, debugSessionId, refresh, services])
@@ -52,6 +57,16 @@ export default function App() {
   useEffect(() => { void readReceipts().then((items) => setStoredReceipts(items.length)).catch(() => setStoredReceipts(0)) }, [])
   useEffect(() => { if (state.receipt) void saveReceipt(state.receipt).then(readReceipts).then((items) => setStoredReceipts(items.length)).catch(() => undefined) }, [state.receipt?.digest])
   useEffect(() => { if (!state.consent || state.consent.used) return; const wait = new Date(state.consent.expires_at).getTime() - Date.now(); if (wait <= 0) { refresh(); return }; const timer = window.setTimeout(refresh, wait + 20); return () => window.clearTimeout(timer) }, [refresh, state.consent?.consent_id, state.consent?.expires_at, state.consent?.used])
+  useEffect(() => {
+    const receive = (event: MessageEvent<unknown>) => {
+      if (event.origin !== window.location.origin || !event.data || typeof event.data !== 'object') return
+      const data = event.data as { channel?: unknown; type?: unknown; request_id?: unknown; opened?: unknown; status?: unknown }
+      if (data.channel !== 'qcg-console-extension-control.v1' || data.type !== 'open_companion_result' || data.request_id !== companionRequestRef.current) return
+      setCompanionStatus(data.opened === true || data.status === 'opened' ? 'Companion opened' : 'Companion unavailable')
+    }
+    window.addEventListener('message', receive)
+    return () => window.removeEventListener('message', receive)
+  }, [])
 
   async function runDemo(): Promise<void> { setBusy(true); try { const { manifest, card } = await services.loadDemoArtifact(selected); const inspected = await services.inspect({ artifact_id: manifest.artifact_id }); await services.evaluate({ manifest_id: inspected.manifest_id, target_profile_id: card.profileId, scientific_intent: card.scientificIntent, observable: card.observable, parameters: {}, requested_limits: card.requestedLimits }); setView('decisions') } catch { setView('activity') } finally { refresh(); setBusy(false) } }
   async function importArtifact(file: File): Promise<void> { setBusy(true); try { await services.importQuantumFile(file.name, new Uint8Array(await file.arrayBuffer()), artifactProfileId); setView('inspector') } catch { setView('activity') } finally { refresh(); setBusy(false) } }
@@ -61,10 +76,16 @@ export default function App() {
   function revokeConsent(): void { services.revokeConsent(); refresh() }
   function humanMessage(summary: string): void { void window.__QCG_DEVTOOLS_V1__?.appendHumanMessage({ summary }).then(refreshDebug).catch(() => undefined) }
   async function exportEvidence(format: 'json' | 'markdown'): Promise<void> { if (!state.receipt) return; setBusy(true); try { const result = await services.exportPacket({ receipt_id: state.receipt.receipt_id, format }); download(`webmcp-qcg-evidence.${format === 'json' ? 'json' : 'md'}`, result.content, format === 'json' ? 'application/json' : 'text/markdown') } finally { refresh(); setBusy(false) } }
+  const companionRequestRef = useRef<string | null>(null)
+  function openCompanion(): void { const requestId = crypto.randomUUID(); companionRequestRef.current = requestId; setCompanionStatus('Requesting companion…'); window.postMessage({ channel: 'qcg-console-extension-control.v1', type: 'open_companion', request_id: requestId }, window.location.origin) }
+  async function requestHandoff(intent: 'debug' | 'search' | 'find' | 'brainstorm' | 'decision'): Promise<string> {
+    const result = await (window.__QCG_CONSOLE_V2__?.executeConsoleCommand({ schema_version: 'qcg-console-command.v1', session_id: debugSessionId, kind: 'gemini_manual_handoff_create', intent, prompt: `Prepare a bounded ${intent} handoff from the current QCG evidence.` }) ?? Promise.resolve({ message: 'The bounded bridge is not ready.' }))
+    return result.message
+  }
 
-  const webTransport = useMemo(() => createWebConsoleTransport(() => sanitizedConsoleSnapshot(stateRef.current, debugSessionId, debugLedger.storageMode, 'web'), (command) => window.__QCG_CONSOLE_V2__?.executeConsoleCommand(command) ?? Promise.resolve({ schema_version: 'qcg-console-command-result.v1', accepted: false, status: 'rejected', message: 'The bounded bridge is not ready.' })), [debugLedger.storageMode, debugSessionId])
+  const webTransport = useMemo(() => createWebConsoleTransport(() => sanitizedConsoleSnapshot(stateRef.current, debugSessionId, debugLedger.storageMode, 'web', { toolNames, invocations: stateRef.current.invocations }), (command) => window.__QCG_CONSOLE_V2__?.executeConsoleCommand(command) ?? Promise.resolve({ schema_version: 'qcg-console-command-result.v1', accepted: false, status: 'rejected', message: 'The bounded bridge is not ready.' })), [debugLedger.storageMode, debugSessionId, toolNames])
   void webTransport
-  return <ConsoleShell theme={theme} onThemeChange={setTheme} view={view} onViewChange={setView} supported={supported} toolCount={toolNames.length} registrationStatus={registrationStatus} inspector={<ConsoleInspector state={state} />}>
-    <ConsoleViews view={view} state={state} selected={selected} select={setSelected} artifactProfileId={artifactProfileId} setArtifactProfileId={setArtifactProfileId} busy={busy} runDemo={() => void runDemo()} importArtifact={(file) => void importArtifact(file)} inspectImported={() => void inspectImported()} setView={setView} recordDecision={(choice, justification) => void recordDecision(choice, justification)} runSimulation={() => void runSimulation()} revokeConsent={revokeConsent} exportEvidence={(format) => void exportEvidence(format)} toolNames={toolNames} registrationStatus={registrationStatus} supported={supported} debugMessages={debugMessages} humanMessage={humanMessage} storedReceipts={storedReceipts} />
+  return <ConsoleShell theme={theme} onThemeChange={setTheme} view={view} onViewChange={setView} supported={supported} toolCount={toolNames.length} registrationStatus={registrationStatus} sessionId={debugSessionId} companionStatus={companionStatus} onOpenCompanion={openCompanion} inspector={<ConsoleInspector state={state} debugMessages={debugMessages} sessionId={debugSessionId} />}>
+    <ConsoleViews view={view} state={state} selected={selected} select={setSelected} artifactProfileId={artifactProfileId} setArtifactProfileId={setArtifactProfileId} busy={busy} runDemo={() => void runDemo()} importArtifact={(file) => void importArtifact(file)} inspectImported={() => void inspectImported()} setView={setView} recordDecision={(choice, justification) => void recordDecision(choice, justification)} runSimulation={() => void runSimulation()} revokeConsent={revokeConsent} exportEvidence={(format) => void exportEvidence(format)} toolNames={toolNames} registrationStatus={registrationStatus} supported={supported} debugMessages={debugMessages} humanMessage={humanMessage} storedReceipts={storedReceipts} actorFilter={actorFilter} kindFilter={kindFilter} setFilters={(actor, kind) => { setActorFilter(actor); setKindFilter(kind) }} requestHandoff={requestHandoff} />
   </ConsoleShell>
 }
