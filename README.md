@@ -15,10 +15,12 @@ bounded local execution paths. Eight additional ecosystem profiles are explicit
 static-inspection surfaces and can never request simulation or external readiness.
 
 - Stable release URL: [https://qcg.securedme.ca/](https://qcg.securedme.ca/)
-- Current public status: the retained 2026-08-29 stable release serves QCG
-  directly. The three-surface QCG Console candidate remains on the redesign
-  branch under the author's visual approval gate; the public release was
-  intentionally left unchanged.
+- Vercel validation URL: [https://webmcp-qcg.vercel.app/](https://webmcp-qcg.vercel.app/)
+- Current public status: the retained 2026-08-29 release remains canonical on
+  `qcg.securedme.ca`. The author-approved three-surface QCG Console is also
+  synchronized to the stable Vercel validation address from commit `17e9db2`.
+  Byte-for-byte checks matched the built HTML, JavaScript and CSS. Promotion to
+  cPanel remains a separate release gate.
 - License: [MIT](LICENSE). Dependency licenses remain with their authors; see
   [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 

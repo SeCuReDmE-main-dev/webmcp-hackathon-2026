@@ -71,6 +71,17 @@ decisions, not unverified runtime outcomes.
 - Editorial impact: this marks the transition from design iteration to deployment coherence. The article can distinguish acceptance of a working baseline from tomorrow's graphic refinement.
 - Proof/status: **Author accepted the current state; Vercel synchronization is now authorized and cPanel remains unchanged.**
 
+## Entry 0007 — synchronize one accepted artifact to the stable Vercel address
+
+- Timestamp: 2026-08-30T17:41:11-04:00 (America/Toronto)
+- Owner: Jean-Sébastien Beaulieu
+- Evidence: GitHub deployment `6171585797`; Vercel production deployment URL `https://webmcp-5znk6npof-ffed.vercel.app`; stable project domain `https://webmcp-qcg.vercel.app/`; exact remote/local SHA-256 comparisons in `QCG_VERCEL_SYNC_RECEIPT_2026-08-30.md`.
+- Selected: fast-forward the accepted commit to `main`, allow the linked Vercel project to deploy it, keep `webmcp-qcg.vercel.app` as the stable Vercel validation address, and preserve `qcg.securedme.ca` as the canonical product address.
+- Rejected: using an expiring anonymous preview, publishing a branch-specific hostname as canonical, disabling preview protection without need, or mutating cPanel during this step.
+- Architectural impact: production Vercel and the accepted local build now share exact HTML, JavaScript and CSS bytes. Hosting roles remain explicit: Vercel validates the candidate; cPanel remains the canonical retained release until its own promotion gate.
+- Editorial impact: the article gains a concrete deployment-coherence receipt rather than a visual similarity claim.
+- Proof/status: **Vercel production synchronized and public; HTTP 200, expected title, required WebMCP headers and exact asset hashes verified. cPanel unchanged.**
+
 ## Entry format for future additions
 
 Use a new numbered entry with timestamp and timezone, owner, evidence, selected and
