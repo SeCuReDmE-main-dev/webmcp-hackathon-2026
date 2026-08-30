@@ -3,7 +3,7 @@
 - Date: 2026-08-30
 - Scope: Actions 118–148
 - Product commit: `ff23d48d2ba8dfe785e8e6a17b13e3b452629f1a`
-- Status: release closure prepared; remote verification pending
+- Status: complete; feature freeze active
 - Authority owner: Jean-Sébastien Beaulieu
 
 ## Outcome
@@ -64,3 +64,7 @@ The English and French Spring manuscripts, extracts, evidence ledger and editori
 ## Remaining author decisions
 
 Jean-Sébastien retains the decisions to approve the final graphics, record the live video opening, publish the editorial package, update the deployed Spring interface and submit the Devpost entry. None of those decisions is implied by this engineering freeze.
+
+## Remote release verification
+
+The feature-freeze closeout commit `f89bdcf67bbe992aa71fd204abece8fdd2f5edf8` was pushed to `origin/main`. The annotated `day5-feature-freeze` tag was pushed and its peeled reference resolves to the same commit. The subsequent documentation-only receipt records that remote state without changing the frozen product code.
