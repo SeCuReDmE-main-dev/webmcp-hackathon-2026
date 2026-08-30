@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "preview": "vite preview",
     "build": "tsc --noEmit && vite build",
     "test": "vitest run --pool=threads --maxWorkers=1 --no-file-parallelism",
     "test:contracts": "vitest run src/services.test.ts --pool=threads --maxWorkers=1 --no-file-parallelism",

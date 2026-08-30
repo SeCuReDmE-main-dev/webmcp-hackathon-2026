@@ -27,9 +27,12 @@ Thumbs.db
 # Stitch source exports can exceed GitHub's 100 MB object limit. Keep the local
 # archive intact and commit only reviewed/exported design assets.
 asset/.stitch/*.zip
+asset/.stitch/*/
 evidence/browser/qcg-winter-desktop-raw.jpg
 evidence/browser/qcg-winter-mobile-raw.jpg
 evidence/releases/*.zip
+evidence/browser/qcg-console-redesign/candidate-*.png
+evidence/browser/qcg-console-redesign/after-local-dark-desktop-check.png
 
 # Raw Deep Research exports are retained locally for audit, but they contain
 # non-portable citation markers and unverified statements. Publish only the

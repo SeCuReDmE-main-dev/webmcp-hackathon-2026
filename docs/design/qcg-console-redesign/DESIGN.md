@@ -1,6 +1,6 @@
 # QCG console redesign — canonical three-surface design contract
 
-- Status: approved design direction; implementation remains separately gated
+- Status: implemented, locally validated and author-approved for a Vercel preview; cPanel promotion remains gated
 - Date: 2026-08-30
 - Branch: `redesign/qcg-console`
 - Baseline: `50e7de43bfbf2d2d11397ffa9339273f0c486329`
@@ -16,12 +16,13 @@ space. It does not introduce a Supabase dependency, copy its branding or change 
 QCG product contract.
 
 The existing `docs/design/DESIGN.md` remains the behavioral authority. This document
-defines how that behavior is presented across three surfaces. No implementation,
-deployment or public-site change is implied by this document.
+defines how that behavior is presented across three surfaces. The implementation
+exists on the redesign branch; deployment and public-site replacement remain
+separately gated.
 
 ## Frozen product contract
 
-The redesign preserves the existing five tabs, state machine, validation limits,
+The redesign preserves the existing seven views, state machine, validation limits,
 receipt semantics and progressive registration rules. It exposes exactly four
 quantum tools and four collaboration tools. Q# and OpenQASM remain the two bounded
 local executable paths. The other eight ecosystem profiles remain inspection-only.
@@ -43,17 +44,18 @@ local simulation and receipt export according to the existing contract.
 
 The side panel is a contextual companion for the inspected page. It shows bounded
 collaboration context, participants, responsibilities, messages, open review
-requests and transfer-package status. It may prepare or display a handoff, but it
-cannot approve a decision, create consent, write into native Gemini, or run a
-quantum operation.
+requests and transfer-package status. Visible human controls may accept, defer or
+override the active recommendation through the shared validated command envelope.
+The side panel cannot create consent, write into native Gemini, or run a quantum
+operation.
 
 ### 3. QCG DevTools/F12 panel
 
 The custom `QCG` panel is the inspection and evidence surface. It shows sanitized
 page-bound state, the collaboration ledger, tool discovery and human
-acknowledgement. It may post bounded messages through the existing collaboration
-contract. It cannot mutate the product decision, grant authority or turn a report
-state into execution permission.
+acknowledgement. It may post bounded messages and record a visible human decision
+through the same validated command contract. It cannot create simulation consent,
+run a simulation or turn a report state into external execution permission.
 
 All three surfaces use source labels (`human`, `webmcp`, `worker`, `extension`,
 `export`) and digest-bound identifiers where applicable. Shared state is sanitized,
@@ -67,15 +69,16 @@ of approximately 1,280 px:
 
 | Column | Responsibility | Required content |
 | --- | --- | --- |
-| Left rail | navigation and provenance | product identity, five tabs, source labels, gate stages and active context |
+| Left rail | navigation and provenance | product identity, seven views, source labels, gate stages and active context |
 | Center chamber | work and decision | current tab, artifact/profile controls, recommendation or human action, primary evidence |
 | Right rail | evidence and authority | `Artifact Integrity`, `Target Evidence`, `Authority & Effects`, receipt and review status |
 
 The center chamber receives the widest measure and strongest contrast. The left rail
-can become a compact navigation strip. The right rail can stack below the center
-when space requires it, but its authority content must remain discoverable without
-hover. No column is decorative: each contains real application information or
-explicitly documented empty/loading/error/recovery state.
+can become a compact navigation strip. The right rail remains persistent across
+center-view changes on desktop. At tablet and mobile widths it becomes an
+explicitly opened drawer and closes after a contextual jump. Its authority content
+remains discoverable without hover. No column is decorative: each contains real
+application information or explicitly documented empty/loading/error/recovery state.
 
 The first viewport identifies `SecuredMe / WebMCP-QCG`, the promise “Decide before
 quantum execution.” and the working-prototype status. It keeps the active gate
@@ -88,16 +91,15 @@ Dark and light are contrast-tested token sets, not separate products. Theme chan
 surface, text, border, focus and state tokens only; it never changes tools, fields,
 routes, capabilities or authority.
 
-- Light: mineral surfaces, graphite text, cool blue/cyan evidence lines and a
-  restrained leaf accent.
-- Dark: charcoal/navy surfaces, warm-white text, cyan/blue evidence lines and a
-  restrained leaf accent.
+- Light: mineral surfaces, graphite text, emerald selected-state accents and cyan
+  technical evidence.
+- Dark: charcoal/navy surfaces, warm-white text and stronger cyan active-state
+  accents.
 - Both: opaque or sufficiently dense text surfaces, visible 3 px focus treatment,
   non-color labels for every state and AA contrast for normal text.
 
-The four existing seasonal presentations remain available as visual tokens within
-the product contract. Spring is the current art direction; it does not add a fifth
-mode or imply a scientific result.
+Autumn, Winter, Spring and Summer remain the editorial structure of the article
+series. They are absent from the product theme contract.
 
 ## Authority boundary in the UI
 
@@ -117,9 +119,9 @@ controlled`. A status color is always paired with text, reason codes and an icon
 ## Visual grammar
 
 Use quiet panel borders, compact radii, an 8 px spacing rhythm, layered but light
-shadows and a restrained editorial botanical/circuit provenance motif. The gate
-remains the center of attention. Botanical lines may connect real evidence nodes;
-they may not obscure controls, impersonate data or look like a live QPU.
+shadows and a restrained static technical grid. The gate remains the center of
+attention. Avoid trees, botanical overlays, dramatic gradients, animated scenes,
+or decoration that can impersonate data.
 
 Use high-legibility sans text for controls and body content, with monospace only for
 digests, IDs and reason codes. Sentence case carries explanations. Avoid star
@@ -129,17 +131,21 @@ decorative “metrics” that have no receipt source.
 ## Responsive and accessibility contract
 
 The semantic order is: identity and navigation, active work, authority/evidence,
-then supporting activity. At narrow widths the columns stack in that order; no
-control is removed or hidden behind a visual-only gesture. The three surfaces must
-support keyboard navigation, landmarks, readable focus, screen-reader labels,
-reduced motion and touch-sized targets. Empty, loading, error, completed,
-cancelled and recovery states remain explicit.
+then supporting activity. At narrow widths the rail becomes horizontal navigation
+and the authority inspector becomes a labelled drawer. No control is removed or
+hidden behind a visual-only gesture. The three surfaces support keyboard
+navigation, landmarks, readable focus, screen-reader labels, reduced motion and
+touch-sized targets. The web surface also offers browser-local text scaling,
+stronger contrast, reduced motion, underlined controls and reset. This preference
+panel supports direct use; it does not replace semantic HTML, assistive technology,
+human testing or a conformance audit. Empty, loading, error, completed, cancelled
+and recovery states remain explicit.
 
 ## Implementation and proof gate
 
-This design is ready for a separately authorized source implementation only after:
+This implementation is ready for preview only after:
 
-1. the baseline 41/41 test and successful TypeScript/Vite build remain green;
+1. all 51 tests and the successful TypeScript/Vite build remain green;
 2. all four quantum and four collaboration tool counts remain unchanged;
 3. before/after screenshot receipts record surface, theme, viewport, state, commit,
    byte size and SHA-256;

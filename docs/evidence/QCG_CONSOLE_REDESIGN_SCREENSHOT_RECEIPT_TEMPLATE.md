@@ -12,7 +12,6 @@ private local paths or unredacted page content.
 - Commit: `<full git commit>`
 - Surface: `<workbench-console | extension-side-panel | qcg-devtools-panel>`
 - Theme: `<dark | light>`
-- Seasonal token set: `<autumn | winter | spring | summer>`
 - Viewport: `<width>x<height>`
 - State: `<empty | loading | active | completed | cancelled | error | recovery>`
 - Operator: `Jean-Sébastien Beaulieu`
@@ -36,10 +35,12 @@ private local paths or unredacted page content.
 
 ## Contract checks
 
-- [ ] Five product tabs and their semantic order are preserved.
+- [ ] Seven console views and their semantic order are preserved.
 - [ ] Four quantum tools and four collaboration tools remain the public surface.
 - [ ] Human authority and the locked `external — human controlled` stage remain visible.
 - [ ] No `Execute` command, provider selector, QPU claim or synthetic metric appears.
+- [ ] Every visually actionable control performs a bounded action; read-only evidence is identified as such.
+- [ ] The desktop inspector is persistent and the small-screen inspector behaves as an explicit drawer.
 - [ ] Keyboard navigation, landmarks, focus, contrast and reduced motion were checked.
 - [ ] No secret, credential, private path or unbounded page content appears in the image or notes.
 - [ ] The screenshot represents the selected state rather than an inferred state.

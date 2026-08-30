@@ -16,8 +16,9 @@ static-inspection surfaces and can never request simulation or external readines
 
 - Stable release URL: [https://qcg.securedme.ca/](https://qcg.securedme.ca/)
 - Current public status: the retained 2026-08-29 stable release serves QCG
-  directly. The Day 5 Spring candidate remains local under the author's visual
-  approval gate; the public release was intentionally left unchanged.
+  directly. The three-surface QCG Console candidate remains on the redesign
+  branch under the author's visual approval gate; the public release was
+  intentionally left unchanged.
 - License: [MIT](LICENSE). Dependency licenses remain with their authors; see
   [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
@@ -42,19 +43,24 @@ in this MVP. The QPU submission counter is structurally fixed at zero.
    provider diagnostics, or local filesystem paths. Receipts are also stored
    locally in browser IndexedDB when it is available.
 
-## Four seasons, one workflow
+## One console, three surfaces
 
-The interface now provides exactly four persistent presentations: **Autumn,
-Winter, Spring, and Summer**. The selector is a keyboard-operable radio group;
-the selected season is retained in `localStorage`. Seasons change design tokens
-and one decorative tree/gate SVG only. They never change the semantic DOM,
-quantum services, decision rules, authority states, or effect counters. Text and
-icons continue to identify every state when colour is unavailable, and reduced
-motion disables decorative transitions.
+The redesign branch presents the same bounded state through the web workbench,
+the QCG DevTools panel and an installable Chrome/Edge side panel. All three expose
+seven explicit views: **Inspector, Console, WebMCP, Decisions, Sources, Receipts,
+and Activity**. The left rail changes the center workbench; the right evidence
+inspector stays persistent on desktop and becomes a closing drawer on smaller
+screens.
 
-Winter is the visual edition used for the Day 3–4 evidence captures. Jean-Sébastien
-retains authorship of the final covers and editorial graphics; the small checked-in
-SVGs are deliberately modest implementation placeholders.
+The product has exactly two themes: **Dark** and **Light**. Cyan identifies active
+technical context in Dark, while emerald gives Light a clearer selected-state
+identity. Gold remains human authority and red remains refusal or error. Seasonal
+art direction belongs to the editorial series, not the application.
+
+An `Access` panel stores direct-use preferences locally: text size, stronger
+contrast, reduced motion and underlined controls. It complements semantic HTML,
+keyboard access, labels, action history and receipts; it does not claim to certify
+accessibility conformance or replace assistive technology.
 
 ## Quick start
 
@@ -95,12 +101,13 @@ after its one-use consent is consumed.
 ## Optional QCG DevTools companion
 
 `companion/qcg-devtools-extension/` contains an unpacked Manifest V3 extension
-that creates a local F12 panel named **QCG**. It reads the narrow
-`window.__QCG_DEVTOOLS_V1__` bridge and displays the structurally reduced artifact,
-recommendation, reason codes, counters, declared participants, collaboration
-messages, and pending human-review requests. A human can append a bounded
-observation or acknowledge a debug request. Both operations leave quantum
-authority unchanged.
+that creates a local F12 panel named **QCG** and a callable browser side panel.
+Both prioritize the sanitized `window.__QCG_CONSOLE_V2__` snapshot and command
+envelope, with the older collaboration bridge retained only as a bounded fallback.
+They display reduced artifact, recommendation, reason codes, counters, declared
+participants, collaboration messages and pending human-review requests. Visible
+human buttons may accept, defer or override the active recommendation; simulation
+remains website-only and consent tokens never cross the extension boundary.
 
 Four collaboration-only tools are exposed through the official
 `devtoolstooldiscovery` event: `read_debug_context`,
@@ -136,11 +143,11 @@ keeps the human workflow usable.
 The Day 5 QCG working tree was rechecked on 2026-08-30:
 
 - clean `npm ci`: pass, 0 vulnerabilities reported;
-- automated tests: 41 passed;
+- automated tests: 51 passed;
 - TypeScript check and Vite production build: pass;
 - Q# and OpenQASM Bell execution: pass; eight other profiles remain static-only;
-- 320 px, tablet and desktop layouts, keyboard season selection, contrast and
-  reduced motion: pass;
+- 320 px, tablet and desktop layouts, seven central views, Dark/Light persistence,
+  access preferences, contrast and reduced motion: pass on the local candidate;
 - live unpacked QCG F12 panel and four Chrome DevTools MCP collaboration tools:
   pass on one page ID;
 - native Gemini conversation access remains manual: export, human transfer,
@@ -177,8 +184,8 @@ See [`evidence/qa/`](evidence/qa/) for dated receipts.
 
 - [Getting started](docs/GETTING_STARTED.md) — install, test, build, run, sample,
   browser setup, workflow, and troubleshooting.
-- [Seasonal design system](docs/design/DESIGN.md) — four themes, tokens,
-  provenance, collaboration plane and visual boundaries.
+- [Console redesign contract](docs/design/qcg-console-redesign/DESIGN.md) — three
+  surfaces, two themes, access preferences, authority and visual boundaries.
 - [DevTools multi-agent runbook](docs/DEVTOOLS_MULTI_AGENT_RUNBOOK.md) — shared
   page routing, official experimental flags and the extension boundary.
 - [Release runbook](docs/RELEASE.md) — release artifact, gates, required headers,

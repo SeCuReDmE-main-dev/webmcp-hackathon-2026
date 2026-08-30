@@ -16,6 +16,61 @@ decisions, not unverified runtime outcomes.
 - Impact: implementation may improve legibility while preserving one engine contract and one authority model.
 - Proof/status: **Accepted; documentation contract recorded. Source implementation and deployment remain separately gated.**
 
+## Entry 0002 — accessibility is a direct-use surface, not an agent substitute
+
+- Timestamp: 2026-08-30T17:13:37-04:00 (America/Toronto)
+- Owner: Jean-Sébastien Beaulieu
+- Evidence: the existing SecuredMe access-console direction; Michał Kulikowski's article, `A more accessible web might be the Agentic Web's most overlooked gain`; the local QCG console source.
+- Selected: add a browser-local QCG access panel for text size, stronger contrast, reduced motion, underlined controls and reset; add skip navigation and preserve semantic labels, keyboard access, human-readable history and receipts.
+- Rejected: treating WebMCP as a replacement for an accessible UI, claiming automated conformance, using decorative toggles without functional state, or asking the same agent to be the sole verifier of its own action.
+- Architectural impact: direct human use and delegated agent use remain complementary paths over the same bounded application state. Preferences remain local and outside evidence receipts.
+- Editorial impact: the article can explain that better roles, names, states and receipts primarily improve human access, while browser agents benefit from the same reliable structure.
+- Proof/status: **Implemented locally; runtime, responsive, keyboard and accessibility validation remain open.**
+
+## Entry 0003 — make every visible control change a real surface
+
+- Timestamp: 2026-08-30T17:23:58-04:00 (America/Toronto)
+- Owner: Jean-Sébastien Beaulieu
+- Evidence: local runtime inspection of all seven navigation views; contextual links in the right inspector; desktop and mobile captures under `evidence/browser/qcg-console-redesign/`.
+- Selected: every left-rail item changes the centre workbench; desktop keeps the right inspector persistent; tablet and mobile use an explicit drawer; contextual inspector actions navigate to the matching centre view and close the drawer on small screens.
+- Rejected: decorative tabs, ephemeral desktop context, clickable effect counters without an action, or a right panel whose labels do not affect the workbench.
+- Architectural impact: navigation is now one explicit state shared by the console shell and its contextual inspector. Responsive presentation changes placement, not meaning.
+- Editorial impact: the article can describe the redesign as a move from visual promise to operational clarity: each label now exposes a real function or is presented as read-only evidence.
+- Proof/status: **Implemented and locally validated across seven views at 1440 px and 412 px.**
+
+## Entry 0004 — use colour as a semantic accent and preserve non-colour meaning
+
+- Timestamp: 2026-08-30T17:23:58-04:00 (America/Toronto)
+- Owner: Jean-Sébastien Beaulieu
+- Evidence: author direction requesting more cyan in Dark and more green in Light; final local captures and contrast-focused runtime checks.
+- Selected: cyan marks active technical state in Dark; emerald marks active state and primary action in Light; gold identifies human authority; text, headings, borders and labels preserve meaning independently of colour.
+- Rejected: colour-only status, spectacular gradients, decorative seasonal scenes inside the product, and one palette forced across both themes.
+- Architectural impact: semantic tokens vary by theme while DOM, tools, decisions and accessible names remain identical.
+- Editorial impact: the interface gains life without turning proof into decoration. Colour supports the hierarchy while receipts, labels and human authority carry the claim.
+- Proof/status: **Implemented locally; final captures have SHA-256 receipts in `QCG_CONSOLE_RUNTIME_QA_2026-08-30.md`.**
+
+## Entry 0005 — close the accessibility validation loop without claiming certification
+
+- Timestamp: 2026-08-30T17:26:30-04:00 (America/Toronto)
+- Owner: Jean-Sébastien Beaulieu
+- Evidence: 51/51 automated tests, successful TypeScript/Vite build, local keyboard and responsive runtime checks, and the access-panel capture.
+- Selected: retain browser-local preferences, explicit reset, Escape dismissal, skip navigation, semantic form controls and a disclaimer that the panel supports direct use without certifying conformance.
+- Rejected: presenting an overlay as WCAG certification or moving accessibility settings into evidence receipts.
+- Architectural impact: preferences modify presentation only and stay outside the quantum decision, consent and evidence contracts.
+- Editorial impact: the article can distinguish a useful accessibility mechanism from an accessibility claim, and connect clearer human interaction to clearer agent navigation.
+- Proof/status: **Locally validated; independent manual assistive-technology review remains a release gate rather than a completed claim.**
+
+## Entry 0006 — accept the current console and advance to Vercel synchronization
+
+- Timestamp: 2026-08-30T17:30:00-04:00 (America/Toronto)
+- Owner: Jean-Sébastien Beaulieu
+- Evidence: author review of the current Dark, Light and Access states; 51/51 tests; successful production build; runtime QA receipt.
+- Selected: accept the current console as the Day 5 visual baseline, defer the next graphics and user-experience refinement to tomorrow, and synchronize this validated artifact to a Vercel preview while keeping `qcg.securedme.ca` as the canonical stable address.
+- Rejected: reopening product features tonight, replacing cPanel before deployment parity is verified, or presenting a temporary Vercel hostname as the canonical product URL.
+- Architectural impact: the same production artifact advances to hosting validation. Vercel is a preview/proof surface; cPanel remains the stable public surface until a separate parity and promotion receipt succeeds.
+- Editorial impact: this marks the transition from design iteration to deployment coherence. The article can distinguish acceptance of a working baseline from tomorrow's graphic refinement.
+- Proof/status: **Author accepted the current state; Vercel synchronization is now authorized and cPanel remains unchanged.**
+
 ## Entry format for future additions
 
 Use a new numbered entry with timestamp and timezone, owner, evidence, selected and
