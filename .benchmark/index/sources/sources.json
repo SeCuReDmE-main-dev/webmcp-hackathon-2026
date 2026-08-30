@@ -1,0 +1,16 @@
+{
+  "schema_version": "benchmark-source-index.v1",
+  "sources": [
+    {"id":"repo-status","kind":"repository","path":"HACKATHON_STATUS.md","confidence":"confirmed by primary repository evidence"},
+    {"id":"runbook","kind":"repository","path":"docs/DEVTOOLS_MULTI_AGENT_RUNBOOK.md","confidence":"confirmed by primary repository documentation"},
+    {"id":"threat-model","kind":"repository","path":"docs/security/QCG_THREAT_MODEL.md","confidence":"confirmed by primary repository documentation"},
+    {"id":"qcg-receipts","kind":"repository","path":"evidence/qa/ACTIONS_99_117_CONSOLIDATED_RECEIPT_2026-08-29.md","confidence":"confirmed by primary repository evidence"},
+    {"id":"e2b-dashboard","kind":"author-supplied-ui","note":"Private author-supplied E2B Professional billing screenshot; excluded from the public repository","confidence":"observed account dashboard; not a billing API receipt"},
+    {"id":"gemini-devtools","kind":"primary-web-documentation","url":"https://developer.chrome.com/docs/devtools/ai-assistance","confidence":"confirmed by primary documentation"},
+    {"id":"devtools-mcp-third-party","kind":"primary-web-documentation","url":"https://github.com/ChromeDevTools/chrome-devtools-mcp/blob/main/docs/third-party-developer-tools.md","confidence":"confirmed by primary repository documentation"},
+    {"id":"openqasm","kind":"primary-web-documentation","url":"https://openqasm.com/versions/3.0/index.html","confidence":"confirmed by primary specification"},
+    {"id":"cudaq","kind":"primary-web-documentation","url":"https://nvidia.github.io/cuda-quantum/latest/index.html","confidence":"confirmed by primary documentation"},
+    {"id":"pennylane","kind":"primary-web-documentation","url":"https://docs.pennylane.ai/en/stable/introduction/circuits.html","confidence":"confirmed by primary documentation"},
+    {"id":"cirq","kind":"primary-web-documentation","url":"https://quantumai.google/cirq/google/concepts","confidence":"confirmed by primary documentation"}
+  ]
+}

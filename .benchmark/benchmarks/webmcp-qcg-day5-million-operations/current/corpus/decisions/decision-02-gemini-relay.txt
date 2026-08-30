@@ -1,0 +1,5 @@
+DECISION decision-02-gemini-relay
+question: How does native Gemini DevTools participate?
+accepted_rule: QCG exports a sanitized handoff for human copy/paste and preview/import; a separate Gemini MCP client may target the same page.
+evidence_boundary: Chrome documents a user-facing Gemini surface and DevTools MCP, not an extension API that writes the native conversation.
+benchmark_assertion: A fixture labelled Gemini is not a live Gemini exchange.

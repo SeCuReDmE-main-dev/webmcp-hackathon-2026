@@ -1,0 +1,16 @@
+{
+  "schema_version": "qcg-e2b-campaign-plan.v1",
+  "run_id": "e2b-full-20260830T190520Z",
+  "gate": "e2b-full",
+  "sandboxes": 100,
+  "operations_per_sandbox": 10000,
+  "target_operations": 1000000,
+  "corpus_digest": "caaa67b6e614626ab2e0e17fd34138bee0711b4c206980fe9336eec0ab60ca76",
+  "template": "base",
+  "network": "disabled",
+  "created_at": "2026-08-30T19:05:20.266145+00:00",
+  "dry_run": false,
+  "provider_calls": 0,
+  "qpu_calls": 0,
+  "payment_calls": 0
+}

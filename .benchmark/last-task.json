@@ -1,0 +1,12 @@
+{
+  "schema_version": "benchmark-last-task.v1",
+  "benchmark_slug": "webmcp-qcg-day5-million-operations",
+  "status": "campaign_passed",
+  "updated_at": "2026-08-30",
+  "active_report": "benchmarks/webmcp-qcg-day5-million-operations/current/report.md",
+  "active_config": "benchmarks/webmcp-qcg-day5-million-operations/current/config.json",
+  "preparation_plan": "benchmarks/webmcp-qcg-day5-million-operations/current/results/preparation-plan.json",
+  "campaign_aggregate": "benchmarks/webmcp-qcg-day5-million-operations/current/results/day5-campaign-aggregate.json",
+  "e2b_launched": true,
+  "http_canary_launched": true
+}

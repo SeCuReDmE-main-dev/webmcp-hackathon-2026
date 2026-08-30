@@ -16,8 +16,32 @@ export type EvidenceState = 'known' | 'unknown' | 'stale'
 export type ToolName =
   | 'inspect_quantum_experiment'
   | 'evaluate_quantum_call'
-  | 'run_bounded_qsharp_simulation'
+  | 'run_bounded_local_simulation'
   | 'export_quantum_evidence_report'
+
+export type QuantumProfileId =
+  | 'qsharp-qdk' | 'openqasm3-qdk' | 'qiskit-python' | 'cirq-tfq-python'
+  | 'torchquantum-python' | 'pennylane-python' | 'cudaq-python' | 'cudaq-cpp'
+  | 'braket-python' | 'qir-text'
+
+export type ArtifactFormat =
+  | 'qsharp' | 'openqasm3' | 'qiskit-python' | 'cirq-tfq-python'
+  | 'torchquantum-python' | 'pennylane-python' | 'cudaq-python' | 'cudaq-cpp'
+  | 'braket-python' | 'qir-text'
+
+export interface ProfileCapabilities {
+  inspect: boolean
+  compile: boolean
+  simulate: boolean
+  static_only: boolean
+}
+
+export interface QuantumProfileSummary {
+  id: QuantumProfileId
+  label: string
+  format: ArtifactFormat
+  capabilities: ProfileCapabilities
+}
 
 export interface RequestedLimits {
   shots: number
@@ -27,8 +51,8 @@ export interface RequestedLimits {
 }
 
 export interface CompilerEvidence {
-  name: 'qsharp-lang'
-  version: '1.31.0'
+  name: 'qsharp-lang' | 'qcg-static-inspector'
+  version: '1.31.0' | '1.0.0'
   status: 'compiled' | 'invalid' | 'unverified'
   diagnostic_count: number
   diagnostics: string[]
@@ -44,7 +68,9 @@ export interface ArtifactManifest {
   file_name: string
   artifact_digest: string
   byte_size: number
-  format: 'qsharp'
+  format: ArtifactFormat
+  artifact_profile: QuantumProfileId
+  capabilities: ProfileCapabilities
   provenance: 'human_import' | 'demo_fixture'
   compiler: CompilerEvidence
   created_at: string
@@ -122,7 +148,7 @@ export interface SimulationEvidence {
 }
 
 export interface EvidenceReceipt {
-  schema_version: 'webmcp-qcg.evidence-receipt.v2'
+  schema_version: 'webmcp-qcg.evidence-receipt.v3'
   receipt_id: string
   manifest: ArtifactManifest
   target_profile: TargetProfileSnapshot
@@ -130,10 +156,13 @@ export interface EvidenceReceipt {
   human_decision: HumanDecision | null
   simulation: SimulationEvidence | null
   effects: EffectCounters
+  format: ArtifactFormat
+  artifact_profile: QuantumProfileSummary
+  compiler_facts: CompilerEvidence
   digest: string
   created_at: string
   updated_at: string
-  migration?: { from: 'webmcp.qcg.evidence.v1'; source_digest: string }
+  migration?: { from: 'webmcp.qcg.evidence.v1' | 'webmcp-qcg.evidence-receipt.v2'; source_digest: string }
 }
 
 export interface Invocation {

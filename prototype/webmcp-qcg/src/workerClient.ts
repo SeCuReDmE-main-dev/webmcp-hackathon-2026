@@ -1,4 +1,4 @@
-import type { RequestedLimits } from './types'
+import type { ArtifactFormat, RequestedLimits } from './types'
 
 interface WorkerReply {
   type: 'analysis_complete' | 'complete' | 'error'
@@ -58,12 +58,12 @@ export interface ArtifactAnalysis {
 }
 
 export interface ArtifactAnalyzer {
-  analyze(source: string, signal?: AbortSignal): Promise<ArtifactAnalysis>
+  analyze(source: string, format: ArtifactFormat, signal?: AbortSignal): Promise<ArtifactAnalysis>
 }
 
 export class WorkerArtifactAnalyzer implements ArtifactAnalyzer {
-  analyze(source: string, signal = new AbortController().signal): Promise<ArtifactAnalysis> {
-    return invokeWorker(signal, 15_000, { type: 'analyze', source }, (reply) => ({
+  analyze(source: string, format: ArtifactFormat, signal = new AbortController().signal): Promise<ArtifactAnalysis> {
+    return invokeWorker(signal, 15_000, { type: 'analyze', source, format }, (reply) => ({
       valid: Boolean(reply.valid),
       diagnosticCount: reply.diagnosticCount ?? 0,
       diagnostics: (reply.diagnostics ?? []).slice(0, 4)
@@ -79,12 +79,12 @@ export interface SimulatorResult {
 }
 
 export interface Simulator {
-  run(signal: AbortSignal, limits: RequestedLimits, source: string): Promise<SimulatorResult>
+  run(signal: AbortSignal, limits: RequestedLimits, source: string, format: Extract<ArtifactFormat, 'qsharp' | 'openqasm3'>): Promise<SimulatorResult>
 }
 
 export class WorkerSimulator implements Simulator {
-  run(signal: AbortSignal, limits: RequestedLimits, source: string): Promise<SimulatorResult> {
-    return invokeWorker(signal, limits.timeout_ms, { type: 'run', shots: limits.shots, source }, (reply) => ({
+  run(signal: AbortSignal, limits: RequestedLimits, source: string, format: Extract<ArtifactFormat, 'qsharp' | 'openqasm3'>): Promise<SimulatorResult> {
+    return invokeWorker(signal, limits.timeout_ms, { type: 'run', shots: limits.shots, source, format }, (reply) => ({
       bellInvariant: Boolean(reply.bellInvariant),
       shotsRequested: reply.shotsRequested ?? limits.shots,
       shotsReturned: reply.shotsReturned ?? 0,

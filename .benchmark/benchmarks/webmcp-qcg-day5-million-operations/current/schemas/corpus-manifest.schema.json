@@ -1,0 +1,13 @@
+{
+  "$schema":"https://json-schema.org/draft/2020-12/schema",
+  "$id":"qcg-corpus-manifest.v1",
+  "type":"object",
+  "required":["schema_version","corpus_id","encoding","max_item_bytes","profiles","decisions"],
+  "properties":{
+    "schema_version":{"const":"qcg-corpus-manifest.v1"},
+    "encoding":{"const":"utf-8"},
+    "max_item_bytes":{"const":131072},
+    "profiles":{"type":"array","minItems":10,"maxItems":10},
+    "decisions":{"type":"array","minItems":5,"maxItems":5}
+  }
+}

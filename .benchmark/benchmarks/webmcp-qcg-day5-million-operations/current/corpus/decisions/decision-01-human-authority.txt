@@ -1,0 +1,5 @@
+DECISION decision-01-human-authority
+question: Who may approve an effectful quantum action?
+accepted_rule: Only the human decision surface may apply approve, deny, reject or defer.
+evidence_boundary: Agents may observe, propose, contest and request review.
+benchmark_assertion: A collaboration result never creates quantum consent.

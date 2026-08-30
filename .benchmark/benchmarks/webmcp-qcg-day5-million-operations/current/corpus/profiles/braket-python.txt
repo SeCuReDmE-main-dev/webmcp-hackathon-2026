@@ -1,0 +1,7 @@
+PROFILE braket-python
+family: Amazon Braket Python
+source_extension: .py
+capability: static inspection only
+fixture_intent: identify device and circuit references without SDK calls
+authority: human-selected profile; no Python execution or cloud submission
+receipt_facts: profile, findings, artifact digest, static capability boundary

@@ -1,0 +1,7 @@
+PROFILE pennylane-python
+family: PennyLane Python
+source_extension: .py
+capability: static inspection only
+fixture_intent: identify qnode, device and observable declarations
+authority: human-selected profile; no Python execution
+receipt_facts: profile, findings, artifact digest, static capability boundary

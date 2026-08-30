@@ -1,4 +1,4 @@
-import { convertV1Receipt } from './migrations'
+import { convertV1Receipt, convertV2Receipt } from './migrations'
 import type { EvidenceReceipt } from './types'
 
 const DB_NAME = 'webmcp-qcg'
@@ -42,8 +42,13 @@ export async function readReceipts(): Promise<EvidenceReceipt[]> {
   }).finally(() => database.close())
   const receipts: EvidenceReceipt[] = []
   for (const value of values) {
-    if ((value as EvidenceReceipt)?.schema_version === 'webmcp-qcg.evidence-receipt.v2') {
+    if ((value as EvidenceReceipt)?.schema_version === 'webmcp-qcg.evidence-receipt.v3') {
       receipts.push(value as EvidenceReceipt)
+      continue
+    }
+    const v2 = await convertV2Receipt(value)
+    if (v2) {
+      receipts.push(v2)
       continue
     }
     const converted = await convertV1Receipt(value)

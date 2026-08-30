@@ -1,0 +1,43 @@
+{
+  "schema_version": "qcg-e2b-campaign-summary.v1",
+  "run_id": "e2b-warmup-20260830T190214Z",
+  "gate": "e2b-warmup",
+  "status": "fail",
+  "sandboxes_requested": 1,
+  "sandboxes_completed": 0,
+  "operations": 0,
+  "target_operations": 10,
+  "wall_seconds": 0.8135030999983428,
+  "aggregate_throughput_ops_per_second": 0.0,
+  "latency_ms": {
+    "p95_min": null,
+    "p95_median": null,
+    "p95_max": null,
+    "stop_limit": 4.996399999999994
+  },
+  "error_rate": 0.1,
+  "unauthorized_effects": 0,
+  "missing_receipts": 0,
+  "receipt_digest_mismatches": 0,
+  "decision_mismatches": 0,
+  "reproducibility": {
+    "checked": false
+  },
+  "stop_reasons": [
+    "error_rate",
+    "operation_coverage"
+  ],
+  "kill_results": [
+    {
+      "sandbox_id": "iv0luxbh3ctpy6jxidsn8",
+      "killed": true
+    }
+  ],
+  "surviving_owned_sandboxes": [],
+  "cost_usd": null,
+  "cost_note": "The E2B SDK used by this campaign exposes runtime metrics, not an invoice total. No cost value is inferred.",
+  "provider_calls": 0,
+  "qpu_calls": 0,
+  "payment_calls": 0,
+  "completed_at": "2026-08-30T19:02:18.967467+00:00"
+}

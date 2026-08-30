@@ -1,0 +1,7 @@
+PROFILE qiskit-python
+family: Qiskit Python
+source_extension: .py
+capability: static inspection only
+fixture_intent: identify circuit construction and measurement calls
+authority: human-selected profile; no Python execution
+receipt_facts: profile, findings, artifact digest, static capability boundary

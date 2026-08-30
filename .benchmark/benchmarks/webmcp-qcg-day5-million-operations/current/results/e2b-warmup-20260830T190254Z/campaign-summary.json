@@ -1,0 +1,76 @@
+{
+  "schema_version": "qcg-e2b-campaign-summary.v1",
+  "run_id": "e2b-warmup-20260830T190254Z",
+  "gate": "e2b-warmup",
+  "status": "pass",
+  "sandboxes_requested": 10,
+  "sandboxes_completed": 10,
+  "operations": 100000,
+  "target_operations": 100000,
+  "wall_seconds": 12.174049000001105,
+  "aggregate_throughput_ops_per_second": 8214.193979340063,
+  "latency_ms": {
+    "p95_min": 1.1001729999989038,
+    "p95_median": 1.243593499999406,
+    "p95_max": 1.5747929999997723,
+    "stop_limit": 4.996399999999994
+  },
+  "error_rate": 0.0,
+  "unauthorized_effects": 0,
+  "missing_receipts": 0,
+  "receipt_digest_mismatches": 0,
+  "decision_mismatches": 0,
+  "reproducibility": {
+    "checked": false
+  },
+  "stop_reasons": [],
+  "kill_results": [
+    {
+      "sandbox_id": "i22qzqphkmg7j28r6q5u2",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i9dimcqgb80a16u9gga9b",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ipal7t3i8c7uc603b6rza",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ij0n7lgqwu1ebudmak7id",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i2yrfw0ny1mymzbyna9ya",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ibc612t8uewz6mxt22ue8",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ijtuhxvs2yylrr0yh85ob",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iqka8ute5l5qpey1e3oaq",
+      "killed": true
+    },
+    {
+      "sandbox_id": "itrvdzkcj0pujmnqqfemv",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iyva2ydqpaxrvyad9fn4c",
+      "killed": true
+    }
+  ],
+  "surviving_owned_sandboxes": [],
+  "cost_usd": null,
+  "cost_note": "The E2B SDK used by this campaign exposes runtime metrics, not an invoice total. No cost value is inferred.",
+  "provider_calls": 0,
+  "qpu_calls": 0,
+  "payment_calls": 0,
+  "completed_at": "2026-08-30T19:03:11.439399+00:00"
+}

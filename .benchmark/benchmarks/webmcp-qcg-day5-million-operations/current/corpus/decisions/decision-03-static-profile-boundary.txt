@@ -1,0 +1,5 @@
+DECISION decision-03-static-profile-boundary
+question: Which profiles may execute locally?
+accepted_rule: Q# and OpenQASM are bounded local execution profiles; Python, C++ and QIR are static inspection profiles.
+evidence_boundary: Static profiles never return simulate_first or ready_for_external_execution.
+benchmark_assertion: Inspection coverage does not imply backend conformance.

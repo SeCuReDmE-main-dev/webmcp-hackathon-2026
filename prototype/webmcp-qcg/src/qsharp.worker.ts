@@ -1,10 +1,12 @@
 /// <reference lib="webworker" />
 import { QscEventTarget, getCompiler, loadWasmModule } from 'qsharp-lang'
+import type { ArtifactFormat } from './types'
 
 interface Request {
   type: 'analyze' | 'run'
   requestId: string
   source: string
+  format: ArtifactFormat
   shots?: number
 }
 
@@ -24,11 +26,25 @@ function boundedDiagnostics(count: number): string[] {
   return [`Q# compiler reported ${count} bounded diagnostic${count === 1 ? '' : 's'}.`]
 }
 
+function executableFormat(format: ArtifactFormat): format is 'qsharp' | 'openqasm3' {
+  return format === 'qsharp' || format === 'openqasm3'
+}
+
+async function analyze(qsharp: Awaited<ReturnType<typeof getCompiler>>, source: string, format: ArtifactFormat) {
+  if (format === 'qsharp') return qsharp.checkCode(source)
+  if (format === 'openqasm3') {
+    await qsharp.getQir({ sources: [['main.qasm', source]], languageFeatures: [], projectType: 'openqasm' })
+    return []
+  }
+  throw new Error('Static profiles are not sent to the QDK worker')
+}
+
 self.onmessage = async (event: MessageEvent<Request>) => {
-  const { type, requestId, source } = event.data
+  const { type, requestId, source, format } = event.data
   try {
+    if (!executableFormat(format)) throw new Error('Unsupported worker format')
     const qsharp = await compiler()
-    const diagnostics = await qsharp.checkCode(source)
+    const diagnostics = await analyze(qsharp, source, format)
     if (type === 'analyze') {
       self.postMessage({
         type: 'analysis_complete',
@@ -43,7 +59,12 @@ self.onmessage = async (event: MessageEvent<Request>) => {
 
     const shotsRequested = Math.max(1, Math.min(256, Math.trunc(event.data.shots ?? 1)))
     const events = new QscEventTarget(true)
-    await qsharp.run({ sources: [['main.qs', source]], languageFeatures: [] }, 'Qcg.Main()', shotsRequested, events)
+    await qsharp.run(
+      { sources: [[format === 'qsharp' ? 'main.qs' : 'main.qasm', source]], languageFeatures: [], projectType: format === 'qsharp' ? 'qsharp' : 'openqasm' },
+      format === 'qsharp' ? 'Qcg.Main()' : '()',
+      shotsRequested,
+      events
+    )
     const shots = events.getResults()
     const outcomeCounts = shots.reduce<Record<string, number>>((counts, shot) => {
       const outcome = typeof shot.result === 'string' ? shot.result : 'compiler_error'

@@ -1,0 +1,7 @@
+PROFILE qir-text
+family: Quantum Intermediate Representation LLVM text
+source_extension: .ll
+capability: static inspection only
+fixture_intent: identify profile markers and operation declarations
+authority: human-selected profile; no LLVM parsing or execution
+receipt_facts: profile, findings, artifact digest, static capability boundary

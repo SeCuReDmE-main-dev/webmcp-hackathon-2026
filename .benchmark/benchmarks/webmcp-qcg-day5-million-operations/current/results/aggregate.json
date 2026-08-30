@@ -1,0 +1,26 @@
+{
+  "schema_version": "qcg-benchmark-aggregate.v1",
+  "benchmark_slug": "webmcp-qcg-day5-million-operations",
+  "status": "aggregated",
+  "engine_only": true,
+  "http_canary_included": false,
+  "files_seen": 4,
+  "accepted_results": 4,
+  "rejected_results": [],
+  "operations": 12000,
+  "target_operations": 1000000,
+  "coverage_ratio": 0.012,
+  "status_counts": {
+    "pass": 3,
+    "fail": 0,
+    "blocked": 1,
+    "skipped": 0
+  },
+  "elapsed_ms": {
+    "min": 0,
+    "max": 15951.889299999999
+  },
+  "digest_reproducibility": "verify per-run receipt digests before publication",
+  "cost_usd": null,
+  "next_action": "Review receipts and stop conditions before interpreting throughput."
+}

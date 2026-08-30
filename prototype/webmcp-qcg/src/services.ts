@@ -1,6 +1,7 @@
 import { evaluateInput, exportInput, humanDecisionInput, inspectInput, simulationInput } from './contracts'
-import { bellProgram, findDemoCard, type DemoCard } from './catalog'
+import { bellOpenQasmProgram, bellProgram, findDemoCard, type DemoCard } from './catalog'
 import { digest, digestBytes, id } from './crypto'
+import { getQuantumAdapter, profileSummary, staticCompilerEvidence, type QuantumAdapter } from './quantumAdapters'
 import { LOCAL_PROFILE_ID, snapshotTargetProfile } from './targetProfiles'
 import { WorkerArtifactAnalyzer, WorkerSimulator, type ArtifactAnalyzer, type Simulator, type SimulatorResult } from './workerClient'
 import {
@@ -16,7 +17,8 @@ import {
   type QcgState,
   type RequestedLimits,
   type SimulationEvidence,
-  type TargetProfileSnapshot
+  type TargetProfileSnapshot,
+  type QuantumProfileId
 } from './types'
 
 export type { ArtifactAnalyzer, Simulator, SimulatorResult } from './workerClient'
@@ -29,10 +31,12 @@ interface ArtifactRecord {
   manifest: ArtifactManifest
   source: string
   bellFixture: boolean
+  adapter: QuantumAdapter
 }
 
 interface RegisterOptions {
   provenance: ArtifactManifest['provenance']
+  profileId: QuantumProfileId
   artifactPrefix?: string
   compiledProfileDigest?: string
 }
@@ -42,7 +46,7 @@ function clone<T>(value: T): T {
 }
 
 function cleanFileName(name: string): string {
-  const leaf = name.replace(/\\/g, '/').split('/').pop()?.trim() || 'experiment.qs'
+  const leaf = name.replace(/\\/g, '/').split('/').pop()?.trim() || 'experiment'
   return leaf.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 128)
 }
 
@@ -56,6 +60,11 @@ function isBoundedEntrypoint(source: string, qubits: number | null): boolean {
   return /@EntryPoint\s*\(\s*\)/.test(source) &&
     /operation\s+Main\s*\([^)]*\)\s*:\s*Result\s*\[\s*\]/.test(source) &&
     qubits !== null && qubits >= 1 && qubits <= 8
+}
+
+function isBoundedOpenQasmBell(source: string, qubits: number | null): boolean {
+  return /OPENQASM\s+3(?:\.0)?\s*;/i.test(source) && /\bh\s+q\[0\]\s*;/i.test(source) &&
+    /\bcx\s+q\[0\]\s*,\s*q\[1\]\s*;/i.test(source) && qubits === 2
 }
 
 export class QcgServices {
@@ -115,28 +124,43 @@ export class QcgServices {
     bytes: Uint8Array,
     options: RegisterOptions
   ): Promise<ArtifactManifest> {
-    if (bytes.byteLength < 1) throw new Error('The Q# artifact is empty.')
-    if (bytes.byteLength > MAX_ARTIFACT_BYTES) throw new Error('The Q# artifact exceeds the 128 KiB local limit.')
+    if (bytes.byteLength < 1) throw new Error('The quantum artifact is empty.')
+    if (bytes.byteLength > MAX_ARTIFACT_BYTES) throw new Error('The quantum artifact exceeds the 128 KiB local limit.')
     const safeName = cleanFileName(fileName)
-    if (!safeName.toLowerCase().endsWith('.qs')) throw new Error('Only .qs Q# artifacts enter this preflight.')
+    const adapter = getQuantumAdapter(options.profileId)
+    if (!adapter) throw new Error('A supported quantum profile must be selected by the human.')
+    if (!adapter.extensions.some((extension) => safeName.toLowerCase().endsWith(extension))) {
+      throw new Error(`The selected ${adapter.id} profile does not accept this file extension (${adapter.extensions.join(', ')} required).`)
+    }
 
     let source: string
     try {
       source = new TextDecoder('utf-8', { fatal: true }).decode(bytes)
     } catch {
-      throw new Error('The Q# artifact must use valid UTF-8 encoding.')
+      throw new Error('The quantum artifact must use valid UTF-8 encoding.')
     }
-    if (source.includes('\0')) throw new Error('The Q# artifact contains an unsupported null byte.')
+    if (source.includes('\0')) throw new Error('The quantum artifact contains an unsupported null byte.')
+    if (/\b(?:https?|file|ftp):\/\//i.test(source)) throw new Error('URLs are not accepted in quantum artifacts.')
 
     const artifactDigest = await digestBytes(bytes)
-    let analysis
-    try {
-      analysis = await this.analyzer.analyze(source)
-    } catch {
-      analysis = { valid: false, diagnosticCount: 1, diagnostics: ['Q# compiler analysis could not complete within the local boundary.'] }
-    }
     const profile = await snapshotTargetProfile(LOCAL_PROFILE_ID, this.now())
-    const qubits = estimateQubits(source)
+    let compiler = staticCompilerEvidence(adapter)
+    if (adapter.executable) {
+      let analysis
+      try {
+        analysis = await this.analyzer.analyze(source, adapter.format)
+      } catch {
+        analysis = { valid: false, diagnosticCount: 1, diagnostics: ['QDK compiler analysis could not complete within the local boundary.'] }
+      }
+      const qubits = estimateQubits(source) ?? (adapter.format === 'openqasm3' ? (source.match(/qubit(?:\s*\[\s*(\d+)\s*\])?/i)?.[1] ? Number(source.match(/qubit(?:\s*\[\s*(\d+)\s*\])?/i)?.[1]) : null) : null)
+      compiler = {
+        name: 'qsharp-lang', version: '1.31.0', status: analysis.valid ? 'compiled' : 'invalid',
+        diagnostic_count: analysis.diagnosticCount, diagnostics: analysis.diagnostics.slice(0, 4),
+        profile_digest: options.compiledProfileDigest ?? profile.compiler_profile_digest,
+        bounded_entrypoint: analysis.valid && (adapter.format === 'qsharp' ? isBoundedEntrypoint(source, qubits) : isBoundedOpenQasmBell(source, qubits)),
+        estimated_qubits: qubits
+      }
+    }
     const artifactId = id(options.artifactPrefix ?? 'artifact', artifactDigest)
     const manifest: ArtifactManifest = {
       schema_version: 'webmcp-qcg.artifact-manifest.v2',
@@ -145,24 +169,18 @@ export class QcgServices {
       file_name: safeName,
       artifact_digest: artifactDigest,
       byte_size: bytes.byteLength,
-      format: 'qsharp',
+      format: adapter.format,
+      artifact_profile: adapter.id,
+      capabilities: adapter.capabilities,
       provenance: options.provenance,
-      compiler: {
-        name: 'qsharp-lang',
-        version: '1.31.0',
-        status: analysis.valid ? 'compiled' : 'invalid',
-        diagnostic_count: analysis.diagnosticCount,
-        diagnostics: analysis.diagnostics.slice(0, 4),
-        profile_digest: options.compiledProfileDigest ?? profile.compiler_profile_digest,
-        bounded_entrypoint: analysis.valid && isBoundedEntrypoint(source, qubits),
-        estimated_qubits: qubits
-      },
+      compiler: { ...compiler, profile_digest: options.compiledProfileDigest ?? compiler.profile_digest },
       created_at: new Date(this.now()).toISOString()
     }
     this.artifacts.set(artifactId, {
       manifest,
       source,
-      bellFixture: source.trim() === bellProgram.trim()
+      bellFixture: source.trim() === (adapter.format === 'openqasm3' ? bellOpenQasmProgram : bellProgram).trim(),
+      adapter
     })
     this.commit(
       {
@@ -179,7 +197,7 @@ export class QcgServices {
       {
         tool: 'human',
         status: 'completed',
-        summary: `Q# artifact loaded locally; byte digest ${artifactDigest.slice(0, 12)}…`,
+        summary: `${adapter.label} artifact inspected locally; byte digest ${artifactDigest.slice(0, 12)}…`,
         source: 'human'
       }
     )
@@ -187,7 +205,21 @@ export class QcgServices {
   }
 
   async importQsharpFile(fileName: string, bytes: Uint8Array): Promise<ArtifactManifest> {
-    return this.registerArtifact(fileName, bytes, { provenance: 'human_import' })
+    return this.registerArtifact(fileName, bytes, { provenance: 'human_import', profileId: 'qsharp-qdk' })
+  }
+
+  async importQuantumFile(fileName: string, bytes: Uint8Array, profileId: QuantumProfileId): Promise<ArtifactManifest> {
+    return this.registerArtifact(fileName, bytes, { provenance: 'human_import', profileId })
+  }
+
+  async importOpenQasmFile(fileName: string, bytes: Uint8Array): Promise<ArtifactManifest> {
+    return this.importQuantumFile(fileName, bytes, 'openqasm3-qdk')
+  }
+
+  async loadOpenQasmBellFixture(): Promise<ArtifactManifest> {
+    return this.registerArtifact('qcg-bell-sample.qasm', new TextEncoder().encode(bellOpenQasmProgram), {
+      provenance: 'demo_fixture', profileId: 'openqasm3-qdk', artifactPrefix: 'openqasm-bell'
+    })
   }
 
   async loadDemoArtifact(cardId: string): Promise<{ manifest: ArtifactManifest; card: DemoCard }> {
@@ -198,7 +230,7 @@ export class QcgServices {
       `${card.id}.qs`,
       new TextEncoder().encode(card.source),
       {
-        provenance: 'demo_fixture',
+        provenance: 'demo_fixture', profileId: 'qsharp-qdk',
         artifactPrefix: card.id,
         compiledProfileDigest: card.compiledProfile === 'legacy'
           ? 'qsharp-lang-legacy-profile'
@@ -223,7 +255,7 @@ export class QcgServices {
   async inspect(raw: unknown, source: Invocation['source'] = 'human'): Promise<ArtifactManifest> {
     const input = inspectInput.parse(raw)
     const record = this.artifacts.get(input.artifact_id)
-    if (!record) throw new Error('artifact_id is unknown. The human must load the Q# artifact first.')
+    if (!record) throw new Error('artifact_id is unknown. The human must load the quantum artifact first.')
     const effects = { ...this.state.effects, inspections: this.state.effects.inspections + 1 }
     this.commit(
       {
@@ -262,7 +294,7 @@ export class QcgServices {
       observable,
       shots: limits.shots,
       parameters_digest: parametersDigest,
-      compiler: `${manifest.compiler.name}@${manifest.compiler.version}`,
+      compiler: `${manifest.compiler.name}@${manifest.compiler.version}:${manifest.compiler.profile_digest}:${manifest.artifact_profile}`,
       target_profile_digest: profile.source_digest
     })
   }
@@ -280,9 +312,16 @@ export class QcgServices {
       confidence: 'high',
       safer_alternative: 'Refresh a sourced target-profile snapshot before any execution decision.'
     }
+    if (manifest.capabilities.static_only) return {
+      decision: 'reject',
+      reason_codes: ['STATIC_INSPECTION_ONLY'],
+      unknowns: ['This selected profile is inspected structurally only; QCG never compiles, simulates or externally executes it.'],
+      confidence: 'high',
+      safer_alternative: 'Review the static manifest or import an explicit Q# or OpenQASM 3 artifact for bounded local QDK evidence.'
+    }
     if (manifest.compiler.status !== 'compiled') return {
       decision: 'reject',
-      reason_codes: ['QSHARP_COMPILATION_INVALID'],
+      reason_codes: ['LOCAL_COMPILATION_INVALID'],
       unknowns: [],
       confidence: 'high',
       safer_alternative: 'Correct the local compiler diagnostics and import a new byte-identical artifact.'
@@ -353,8 +392,8 @@ export class QcgServices {
     if (policy.decision === 'simulate_first' && !record.bellFixture) {
       policy.decision = 'recompile'
       policy.reason_codes = ['BOUNDED_BELL_FIXTURE_REQUIRED']
-      policy.unknowns = ['The imported program is valid Q#, but the MVP executes only its auditable Bell fixture.']
-      policy.safer_alternative = 'Adapt the program to the published bounded Bell fixture or retain inspection-only evidence.'
+      policy.unknowns = ['The imported program is valid, but the MVP executes only its auditable Bell fixtures.']
+      policy.safer_alternative = 'Adapt the program to the published bounded Q# or OpenQASM Bell fixture, or retain inspection-only evidence.'
     }
     const recommendation: AgentRecommendation = {
       schema_version: 'webmcp-qcg.recommendation.v2',
@@ -502,7 +541,10 @@ export class QcgServices {
     const effects = { ...this.state.effects, local_simulations: this.state.effects.local_simulations + 1 }
     this.state = { ...this.state, effects, consent: { ...this.state.consent!, used: true } }
     try {
-      const result = await this.simulator.run(signal, recommendation.requested_limits, record.source)
+      if (!record.adapter.executable || (record.manifest.format !== 'qsharp' && record.manifest.format !== 'openqasm3')) {
+        throw new Error('Only Q# and OpenQASM 3 QDK artifacts can enter bounded local simulation.')
+      }
+      const result = await this.simulator.run(signal, recommendation.requested_limits, record.source, record.manifest.format)
       const simulation: SimulationEvidence = {
         run_id: id('run', `${recommendation.recommendation_id}-${this.now()}`),
         bell_invariant: result.bellInvariant,
@@ -525,7 +567,7 @@ export class QcgServices {
       this.commit(
         { phase: 'active', receipt, effects, error: undefined },
         {
-          tool: 'run_bounded_qsharp_simulation',
+          tool: 'run_bounded_local_simulation',
           status: 'completed',
           summary: `Bounded local Bell simulation completed; invariant=${result.bellInvariant}.`,
           source
@@ -540,10 +582,10 @@ export class QcgServices {
           effects,
           error: cancelled
             ? 'Local simulation was cancelled. Consent was consumed.'
-            : 'Local Q# simulation failed safely. Consent was consumed and no provider call occurred.'
+            : 'Local QDK simulation failed safely. Consent was consumed and no provider call occurred.'
         },
         {
-          tool: 'run_bounded_qsharp_simulation',
+          tool: 'run_bounded_local_simulation',
           status: cancelled ? 'cancelled' : 'error',
           summary: cancelled ? 'Bounded simulation cancelled.' : 'Bounded simulation failed safely.',
           source
@@ -614,9 +656,12 @@ export class QcgServices {
       effects
     }
     return {
-      schema_version: 'webmcp-qcg.evidence-receipt.v2',
+      schema_version: 'webmcp-qcg.evidence-receipt.v3',
       receipt_id: previous?.receipt_id ?? id('receipt', recommendation.recommendation_id),
       ...content,
+      format: manifest.format,
+      artifact_profile: profileSummary(getQuantumAdapter(manifest.artifact_profile)!),
+      compiler_facts: manifest.compiler,
       digest: await digest(content),
       created_at: previous?.created_at ?? timestamp,
       updated_at: timestamp
@@ -627,6 +672,7 @@ export class QcgServices {
     return `# WebMCP-QCG evidence receipt
 
 - Schema: ${receipt.schema_version}
+- Artifact profile: ${receipt.artifact_profile.id} (${receipt.format})
 - Artifact digest: ${receipt.manifest.artifact_digest}
 - Target profile: ${receipt.target_profile.profile_id} (${receipt.target_profile.evidence_state})
 - Agent recommendation: ${receipt.recommendation.decision}

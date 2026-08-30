@@ -11,9 +11,9 @@
     "direct_env_access": false
   },
   "settings_baseline": {
-    "workspace_root": "Z:\\SecuredMe Education suite",
-    "env_path": "Z:\\SecuredMe Education suite\\.env",
-    "venv_path": "Z:\\SecuredMe Education suite\\.venv",
+    "workspace_root": "<SETTINGS_WORKSPACE>",
+    "env_path": "<SETTINGS_WORKSPACE>/.env",
+    "venv_path": "<SETTINGS_WORKSPACE>/.venv",
     "env_exists": true,
     "venv_exists": true,
     "canonical_paths_enforced": true,

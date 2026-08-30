@@ -1,22 +1,28 @@
 # Hackathon status
 
-Updated: 2026-08-28
+Updated: 2026-08-30
 
 | Workstream | State | Evidence |
 |---|---|---|
-| Public repository foundation | active and public | README, charter, source registry, license, notices and evidence receipts |
-| Candidate history | preserved | Quantech Vid rejected for this challenge; WebCCP deferred; QCG selected |
-| Resource analysis | pass | 39 unique Devpost Resource-tab URLs plus a separately tracked OpenAI Site tools page |
-| Showcase analysis | pass with explicit gaps | five OpenAI examples mapped to transferable patterns and anti-patterns |
-| MVP interaction contract | accepted | four progressive tools and five falsifiable scenario cards |
-| Q# browser Worker | pass | `qsharp-lang@1.31.0`, 64/64 shots, Bell invariant true |
-| Native WebMCP path | pass in WebMCP-capable browser | inspection, evaluation, local simulation and export invoked natively |
-| External Chrome | partial environment gate | app and human fallback load; `document.modelContext` absent until Chrome 149+ WebMCP testing is enabled |
-| External/QPU execution | structurally zero | local simulations 1; provider calls 0; QPU calls 0 |
-| Automated validation | pass | clean `npm ci`, 11 tests, production build, zero reported vulnerabilities |
-| Public deployment proof | pass on expiring preview | hardened Vercel preview returned both security headers and passed the complete native WebMCP/Q# trace |
-| Stable deployment | pending authenticated hosting | Cloudflare Workers rejected the 6.07 MB WASM asset at its 5 MB per-file gate; the Vercel proof URL expires and is excluded from Devpost |
-| Devpost | project 1404828, `submission_draft` | project exists, `submitted_at=null`, video blank, no submission action performed |
-| Day 4 article | draft | `docs/journal/DAY_4_THE_QUANTUM_CALL_I_DID_NOT_MAKE_EN_DRAFT.md` |
+| Public repository foundation | active and public | README, MIT license, notices, source registry and receipts |
+| Product boundary | frozen after Day 5 | browser-native HITL quantum preflight; no QPU/provider/payment path |
+| Quantum artifacts | pass | Q# and OpenQASM 3 compile/simulate locally; eight other profiles are static-only |
+| Progressive WebMCP tools | pass | inspect, evaluate, bounded local simulation and evidence export |
+| Human authority | pass | accept/defer/justified override; one-use local consent; external readiness is never authorization |
+| DevTools collaboration | pass | unpacked QCG F12 panel plus four collaboration-only Chrome DevTools MCP tools on one page ID |
+| Native Gemini boundary | pass with manual relay | export, human transfer, preview and schema-validated import; no claim of a native conversation API |
+| Automated validation | pass | 41/41 tests and TypeScript/Vite production build |
+| Visual/accessibility QA | pass for local candidate | 320 px/tablet/desktop, keyboard, contrast AA and reduced motion |
+| Engine benchmark | pass | 2.6M operations; two 100-sandbox 1M passes; 100/100 repeated digests; zero unauthorized effects |
+| Public HTTP canary | pass | 80/80 HTTP 200; zero errors/timeouts; p95 30.825 ms |
+| Stable deployment | retained by author guard | <https://qcg.securedme.ca/> matches the 2026-08-29 release manifest |
+| Day 5 Spring candidate | local, author-review only | source/build/screenshots; public deployment deferred until visual approval |
+| Vercel parity | blocked | known preview expired; no authenticated named project was available |
+| Editorial Spring | author-review drafts | English/French long form and short extracts; no publication action |
+| Devpost | `submission_draft` | final submission remains an author-only decision |
 
-Next gate: authenticate an approved hosting provider, convert the passing preview into a stable public deployment, repeat the header and expiry checks, then prepare the video. Final Devpost submission remains an author-only decision.
+## Current release gate
+
+Feature work is frozen. Remaining work is limited to integrated QA, documentation, author review, video preparation, stable-release recovery and the final human submission decision.
+
+The public site remains deliberately unchanged while Jean-Sébastien refines the graphic direction. This protects the proven stable interface and avoids presenting an unapproved Spring candidate as the release.

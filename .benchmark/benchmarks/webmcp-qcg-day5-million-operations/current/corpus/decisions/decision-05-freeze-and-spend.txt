@@ -1,0 +1,5 @@
+DECISION decision-05-freeze-and-spend
+question: What authorizes the Day 5 campaign and freeze?
+accepted_rule: The observed Professional capacity enables staged E2B preparation; technical stop conditions remain active and new features stop after the freeze.
+evidence_boundary: The supplied dashboard shows USD 20,097.51 credits and 100 concurrent sandboxes; it does not authorize an unbounded run.
+benchmark_assertion: Evidence-producing spend is acceptable; purposeless consumption is not.

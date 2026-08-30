@@ -93,13 +93,13 @@ describe('WebMCP v2 lifecycle', () => {
     await waitFor(() => expect(registrations.map((tool) => tool.name)).toEqual([
       'inspect_quantum_experiment',
       'evaluate_quantum_call',
-      'run_bounded_qsharp_simulation',
+      'run_bounded_local_simulation',
       'export_quantum_evidence_report'
     ]))
     const snapshot = services.snapshot()
     let result: unknown
     await act(async () => {
-      result = await registrations.find((tool) => tool.name === 'run_bounded_qsharp_simulation')!.execute(
+      result = await registrations.find((tool) => tool.name === 'run_bounded_local_simulation')!.execute(
         {
           recommendation_id: snapshot.recommendation!.recommendation_id
         },

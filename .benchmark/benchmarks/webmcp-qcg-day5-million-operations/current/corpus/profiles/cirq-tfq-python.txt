@@ -1,0 +1,7 @@
+PROFILE cirq-tfq-python
+family: Cirq / TensorFlow Quantum Python
+source_extension: .py
+capability: static inspection only
+fixture_intent: identify gate and simulator references without importing packages
+authority: human-selected profile; no Python execution
+receipt_facts: profile, findings, artifact digest, static capability boundary

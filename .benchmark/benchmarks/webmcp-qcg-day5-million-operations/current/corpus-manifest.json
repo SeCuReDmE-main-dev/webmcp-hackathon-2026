@@ -1,0 +1,25 @@
+{
+  "schema_version": "qcg-corpus-manifest.v1",
+  "corpus_id": "qcg-day5-profiles-decisions-2026-08-30",
+  "encoding": "utf-8",
+  "max_item_bytes": 131072,
+  "profiles": [
+    {"id":"qsharp-qdk","extension":".qs","execution":"local-bounded","path":"corpus/profiles/qsharp-qdk.txt"},
+    {"id":"openqasm3-qdk","extension":".qasm","execution":"local-bounded","path":"corpus/profiles/openqasm3-qdk.txt"},
+    {"id":"qiskit-python","extension":".py","execution":"static-inspection","path":"corpus/profiles/qiskit-python.txt"},
+    {"id":"cirq-tfq-python","extension":".py","execution":"static-inspection","path":"corpus/profiles/cirq-tfq-python.txt"},
+    {"id":"torchquantum-python","extension":".py","execution":"static-inspection","path":"corpus/profiles/torchquantum-python.txt"},
+    {"id":"pennylane-python","extension":".py","execution":"static-inspection","path":"corpus/profiles/pennylane-python.txt"},
+    {"id":"cudaq-python","extension":".py","execution":"static-inspection","path":"corpus/profiles/cudaq-python.txt"},
+    {"id":"cudaq-cpp","extension":".cpp","alternate_extensions":[".cc"],"execution":"static-inspection","path":"corpus/profiles/cudaq-cpp.txt"},
+    {"id":"braket-python","extension":".py","execution":"static-inspection","path":"corpus/profiles/braket-python.txt"},
+    {"id":"qir-text","extension":".ll","execution":"static-inspection","path":"corpus/profiles/qir-text.txt"}
+  ],
+  "decisions": [
+    {"id":"decision-01","path":"corpus/decisions/decision-01-human-authority.txt"},
+    {"id":"decision-02","path":"corpus/decisions/decision-02-gemini-relay.txt"},
+    {"id":"decision-03","path":"corpus/decisions/decision-03-static-profile-boundary.txt"},
+    {"id":"decision-04","path":"corpus/decisions/decision-04-engine-vs-http.txt"},
+    {"id":"decision-05","path":"corpus/decisions/decision-05-freeze-and-spend.txt"}
+  ]
+}

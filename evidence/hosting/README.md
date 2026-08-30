@@ -8,8 +8,8 @@ The domain presents a valid TLS 1.3 certificate for `qcg.securedme.ca` and `www.
 
 ## Operator path
 
-- Settings source: `Z:\SecuredMe Education suite\.env`
-- Python runtime: `Z:\SecuredMe Education suite\.venv`
+- Settings source: `<SETTINGS_WORKSPACE>/.env`
+- Python runtime: `<SETTINGS_WORKSPACE>/.venv`
 - Settings validation: valid, zero errors
 - cPanel transport: brokered cPanel UAPI
 - SSH: unused

@@ -1,0 +1,7 @@
+PROFILE openqasm3-qdk
+family: OpenQASM 3 / QDK-compatible local path
+source_extension: .qasm
+capability: inspect, bounded local compile, bounded local simulation
+fixture_intent: two-qubit Bell circuit with explicit measurement
+authority: human-selected local artifact; no provider submission
+receipt_facts: dialect, compiler profile, artifact digest, shots

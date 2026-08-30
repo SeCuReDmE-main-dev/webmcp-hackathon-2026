@@ -1,6 +1,6 @@
 import type { QcgState } from './types'
 import { DebugLedger } from './debugLedger'
-import { debugMessageDraft, type QcgDebugMessage } from './debugContracts'
+import { createGeminiManualHandoff, debugMessageDraft, geminiManualReply, safeDebugText, type CollaborationIntent, type GeminiManualHandoff, type HumanMemoryDisposition, type HumanReviewDisposition, type QcgDebugMessage } from './debugContracts'
 
 export interface QcgDevtoolsCommandStatus {
   command_id: string
@@ -30,6 +30,7 @@ export interface QcgDevtoolsPanelSnapshot extends QcgDevtoolsSnapshot {
   messages: QcgDebugMessage[]
   participants: Array<{ actor: QcgDebugMessage['actor']; role: string }>
   human_review_requests: QcgDebugMessage[]
+  memories: Array<{ memory_id: string; disposition: 'remembered' | 'forgotten'; provenance_event_id: string; digest: string; created_at: string }>
   last_command?: QcgDevtoolsCommandStatus
 }
 
@@ -41,6 +42,11 @@ export interface QcgDevtoolsBridge {
   acknowledgeHumanReview(eventId: string): Promise<QcgDebugMessage>
   queueHumanMessage(input: { summary: string }): QcgDevtoolsQueueResult
   queueHumanReviewAcknowledgement(eventId: string): QcgDevtoolsQueueResult
+  queueHumanReviewDisposition(eventId: string, disposition: HumanReviewDisposition): QcgDevtoolsQueueResult
+  queueHumanMemory(eventId: string, disposition: HumanMemoryDisposition, content?: string): QcgDevtoolsQueueResult
+  createGeminiManualHandoff(input: { intent: CollaborationIntent; prompt: string; evidence_refs?: string[] }): GeminiManualHandoff
+  previewGeminiManualReply(raw: string): { accepted: boolean; summary?: string; error?: string }
+  queueGeminiManualReply(raw: string): QcgDevtoolsQueueResult
 }
 
 declare global { interface Window { __QCG_DEVTOOLS_V1__?: QcgDevtoolsBridge } }
@@ -63,10 +69,12 @@ export function installQcgDevtoolsBridge(getState: () => QcgState, ledger: Debug
     messages: [],
     participants: [],
     human_review_requests: [],
+    memories: [],
     last_command: undefined
   }
   const refreshCache = async (): Promise<QcgDevtoolsPanelSnapshot> => {
-    const messages = await ledger.messages(sessionId)
+    const session = await ledger.openSession(sessionId)
+    const messages = session.messages
     const participants = [...new Map(messages.map((message) => [`${message.actor}:${message.role}`, { actor: message.actor, role: message.role }])).values()]
     const acknowledged = new Set(messages
       .filter((message) => message.actor === 'human' && message.kind === 'receipt' && (message.status === 'acknowledged' || message.status === 'resolved'))
@@ -77,6 +85,7 @@ export function installQcgDevtoolsBridge(getState: () => QcgState, ledger: Debug
       messages,
       participants,
       human_review_requests: messages.filter((message) => message.kind === 'decision_request' && message.status !== 'resolved' && !acknowledged.has(message.event_id)),
+      memories: (session.memories ?? []).map(({ content: _content, ...memory }) => memory),
       last_command: lastCommand
     }
     return structuredClone(cached)
@@ -124,6 +133,33 @@ export function installQcgDevtoolsBridge(getState: () => QcgState, ledger: Debug
         'Human collaboration acknowledgement',
         () => queuedReviewIds.delete(eventId)
       )
+    },
+    queueHumanReviewDisposition: (eventId, disposition) => {
+      if (!cached.human_review_requests.some((message) => message.event_id === eventId)) return { accepted: false, error: 'The human review request is no longer active.' }
+      return queueCommand(() => ledger.applyHumanReview(sessionId, eventId, disposition), `Human review disposition (${disposition})`)
+    },
+    queueHumanMemory: (eventId, disposition, content) => {
+      try {
+        if (disposition === 'remember') safeDebugText(400).parse(content)
+        return queueCommand(() => ledger.applyHumanMemory(sessionId, eventId, disposition, content), `Human memory disposition (${disposition})`)
+      } catch { return { accepted: false, error: 'The memory summary violates the bounded collaboration contract.' } }
+    },
+    createGeminiManualHandoff: ({ intent, prompt, evidence_refs = [] }) => createGeminiManualHandoff({ session_id: sessionId, page_id: pageId(sessionId), intent, prompt, evidence_refs }),
+    previewGeminiManualReply: (raw) => {
+      try {
+        const reply = geminiManualReply.parse(JSON.parse(raw))
+        return { accepted: true, summary: `Untrusted ${reply.intent} reply preview: ${reply.summary}` }
+      } catch { return { accepted: false, error: 'The Gemini reply is not a valid bounded handoff response.' } }
+    },
+    queueGeminiManualReply: (raw) => {
+      try {
+        const reply = geminiManualReply.parse(JSON.parse(raw))
+        return queueCommand(() => ledger.append({
+          schema_version: 'qcg-debug-message.v2', session_id: sessionId, page_id: pageId(sessionId), actor: 'gemini', role: 'native-manual-relay',
+          intent: reply.intent, transport: 'native_gemini_manual', kind: 'observation', summary: reply.summary,
+          evidence_refs: reply.evidence_refs, confidence: reply.confidence, status: 'open', identity_assurance: 'declared'
+        }), 'Untrusted Gemini manual reply')
+      } catch { return { accepted: false, error: 'The Gemini reply is not a valid bounded handoff response.' } }
     }
   }
 
@@ -149,3 +185,5 @@ export function installQcgDevtoolsBridge(getState: () => QcgState, ledger: Debug
     if (window.__QCG_DEVTOOLS_V1__ === bridge) delete window.__QCG_DEVTOOLS_V1__
   }
 }
+
+function pageId(sessionId: string): string { return `qcg-page:${sessionId}` }

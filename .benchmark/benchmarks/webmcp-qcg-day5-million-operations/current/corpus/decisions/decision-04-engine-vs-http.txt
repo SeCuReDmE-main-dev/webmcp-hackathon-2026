@@ -1,0 +1,5 @@
+DECISION decision-04-engine-vs-http
+question: What does each performance experiment measure?
+accepted_rule: The million-operation campaign measures the engine; the bounded cPanel canary measures HTTP delivery.
+evidence_boundary: The canary uses 1, 2 and 5 RPS, 60 seconds and 300 requests maximum.
+benchmark_assertion: Hosting latency is not engine throughput.

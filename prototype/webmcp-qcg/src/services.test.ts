@@ -1,13 +1,13 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { convertV1Receipt } from './migrations'
+import { convertV1Receipt, convertV2Receipt } from './migrations'
 import { QcgServices, type ArtifactAnalyzer, type Simulator } from './services'
 
 class FakeAnalyzer implements ArtifactAnalyzer {
   calls = 0
   async analyze(source: string) {
     this.calls += 1
-    const valid = source.includes('ResetAll')
+    const valid = source.includes('ResetAll') || source.includes('OPENQASM 3.0')
     return {
       valid,
       diagnosticCount: valid ? 0 : 1,
@@ -18,10 +18,12 @@ class FakeAnalyzer implements ArtifactAnalyzer {
 
 class FakeSimulator implements Simulator {
   calls = 0
-  async run(signal: AbortSignal, limits: { shots: number }, source: string) {
+  formats: string[] = []
+  async run(signal: AbortSignal, limits: { shots: number }, source: string, format: 'qsharp' | 'openqasm3') {
     this.calls += 1
+    this.formats.push(format)
     if (signal.aborted) throw new DOMException('cancelled', 'AbortError')
-    expect(source).toContain('operation Main')
+    expect(source).toMatch(/operation Main|OPENQASM 3.0/)
     return {
       bellInvariant: true,
       shotsRequested: limits.shots,
@@ -69,6 +71,51 @@ describe('QCG v2 service contract', () => {
     await expect(qcg.importQsharpFile('program.txt', new Uint8Array([65]))).rejects.toThrow('.qs')
     await expect(qcg.importQsharpFile('large.qs', new Uint8Array(131_073))).rejects.toThrow('128 KiB')
     await expect(qcg.importQsharpFile('bad.qs', new Uint8Array([0xff]))).rejects.toThrow('UTF-8')
+  })
+
+  it('requires an explicit supported profile and rejects URLs, notebooks and foreign extensions', async () => {
+    const qcg = services()
+    const content = new TextEncoder().encode('OPENQASM 3.0;')
+    await expect(qcg.importQuantumFile('notebook.ipynb', content, 'qiskit-python')).rejects.toThrow('does not accept')
+    await expect(qcg.importQuantumFile('program.qs', new TextEncoder().encode('https://example.invalid'), 'qsharp-qdk')).rejects.toThrow('URLs')
+    await expect(qcg.importQuantumFile('circuit.py', content, 'qiskit-python')).resolves.toMatchObject({
+      artifact_profile: 'qiskit-python', capabilities: { static_only: true, simulate: false }
+    })
+  })
+
+  it('keeps static Python, C++ and QIR profiles inspection-only', async () => {
+    for (const [fileName, profileId] of [
+      ['circuit.py', 'qiskit-python'], ['kernel.cpp', 'cudaq-cpp'], ['program.ll', 'qir-text']
+    ] as const) {
+      const qcg = services()
+      const manifest = await qcg.importQuantumFile(fileName, new TextEncoder().encode('bounded static text'), profileId)
+      await qcg.inspect({ artifact_id: manifest.artifact_id })
+      const recommendation = await qcg.evaluate({
+        manifest_id: manifest.manifest_id, target_profile_id: 'qsharp-local-wasm-1310',
+        scientific_intent: 'Inspect a declared static profile without execution.', observable: 'static_structure', parameters: {},
+        requested_limits: { shots: 8, timeout_ms: 1000, max_qubits: 2, target: 'local_simulator' }
+      })
+      expect(recommendation.decision).toBe('reject')
+      expect(recommendation.reason_codes).toContain('STATIC_INSPECTION_ONLY')
+    }
+  })
+
+  it('routes the published OpenQASM Bell fixture through the bounded local simulation contract', async () => {
+    const simulator = new FakeSimulator()
+    const qcg = new QcgServices(simulator, Date.now, new FakeAnalyzer())
+    const manifest = await qcg.loadOpenQasmBellFixture()
+    await qcg.inspect({ artifact_id: manifest.artifact_id })
+    const recommendation = await qcg.evaluate({
+      manifest_id: manifest.manifest_id, target_profile_id: 'qsharp-local-wasm-1310',
+      scientific_intent: 'Measure the OpenQASM Bell correlation with bounded local QDK evidence.', observable: 'bell_correlation', parameters: {},
+      requested_limits: { shots: 16, timeout_ms: 2000, max_qubits: 2, target: 'local_simulator' }
+    })
+    expect(recommendation.decision).toBe('simulate_first')
+    await qcg.decide({ recommendation_id: recommendation.recommendation_id, choice: 'accepted', justification: 'I approve one bounded OpenQASM local simulation.' })
+    await expect(qcg.simulate({ recommendation_id: recommendation.recommendation_id }, new AbortController().signal)).resolves.toMatchObject({
+      schema_version: 'webmcp-qcg.evidence-receipt.v3', format: 'openqasm3'
+    })
+    expect(simulator.formats).toEqual(['openqasm3'])
   })
 
   it('rejects unknown properties at every public input boundary', async () => {
@@ -268,7 +315,7 @@ describe('QCG v2 service contract', () => {
     const markdown = await qcg.exportPacket({ receipt_id: receiptId, format: 'markdown' })
     const json = await qcg.exportPacket({ receipt_id: receiptId, format: 'json' })
     expect(markdown.content).toContain('WebMCP-QCG evidence receipt')
-    expect(json.content).toContain('webmcp-qcg.evidence-receipt.v2')
+    expect(json.content).toContain('webmcp-qcg.evidence-receipt.v3')
     expect(json.content).not.toContain('operation Main')
     expect(json.content).not.toMatch(/[A-Z]:\\/)
   })
@@ -281,9 +328,29 @@ describe('QCG v2 service contract', () => {
       evidence: { evidence_packet_id: 'evidence-legacy', created_at: '2026-08-28T12:00:00.000Z' }
     }
     const converted = await convertV1Receipt(legacy)
-    expect(converted?.schema_version).toBe('webmcp-qcg.evidence-receipt.v2')
+    expect(converted?.schema_version).toBe('webmcp-qcg.evidence-receipt.v3')
     expect(converted?.recommendation.valid).toBe(false)
     expect(converted?.migration?.from).toBe('webmcp.qcg.evidence.v1')
     expect(legacy).not.toHaveProperty('migration')
+  })
+
+  it('reads a v2 receipt as v3 in memory without changing its legacy source object', async () => {
+    const v2 = {
+      schema_version: 'webmcp-qcg.evidence-receipt.v2', receipt_id: 'receipt-v2',
+      manifest: {
+        schema_version: 'webmcp-qcg.artifact-manifest.v2', manifest_id: 'manifest-v2', artifact_id: 'artifact-v2',
+        file_name: 'bell.qs', artifact_digest: 'b'.repeat(64), byte_size: 12, format: 'qsharp', provenance: 'demo_fixture',
+        compiler: { name: 'qsharp-lang', version: '1.31.0', status: 'compiled', diagnostic_count: 0, diagnostics: [], profile_digest: 'qdk', bounded_entrypoint: true, estimated_qubits: 2 }, created_at: '2026-08-28T12:00:00.000Z'
+      },
+      target_profile: { schema_version: 'webmcp-qcg.target-profile.v2', profile_id: 'qsharp-local-wasm-1310', label: 'Local', source: 'test', source_digest: 'c'.repeat(64), captured_at: '2026-08-28T12:00:00.000Z', expires_at: '2026-09-01T12:00:00.000Z', evidence_state: 'known', execution_surface: 'local_wasm', max_qubits: 8, compiler_profile_digest: 'qdk', submission_enabled: false },
+      recommendation: { schema_version: 'webmcp-qcg.recommendation.v2', recommendation_id: 'recommendation-v2', manifest_id: 'manifest-v2', target_profile_id: 'qsharp-local-wasm-1310', decision: 'simulate_first', reason_codes: [], unknowns: [], confidence: 'high', safer_alternative: 'Review.', scientific_intent: 'Preserve v2 receipt readability.', observable: 'bell', parameters_digest: 'd'.repeat(64), requested_limits: { shots: 1, timeout_ms: 500, max_qubits: 1, target: 'local_simulator' }, reuse_key: 'e'.repeat(64), expires_at: '2026-08-28T12:05:00.000Z', valid: false },
+      human_decision: null, simulation: null,
+      effects: { inspections: 1, evaluations: 1, local_simulations: 0, metadata_validations: 1, qpu_submissions: 0, evidence_exports: 0 },
+      digest: 'f'.repeat(64), created_at: '2026-08-28T12:00:00.000Z', updated_at: '2026-08-28T12:00:00.000Z'
+    }
+    const converted = await convertV2Receipt(v2)
+    expect(converted).toMatchObject({ schema_version: 'webmcp-qcg.evidence-receipt.v3', artifact_profile: { id: 'qsharp-qdk' } })
+    expect(v2.schema_version).toBe('webmcp-qcg.evidence-receipt.v2')
+    expect(v2.manifest).not.toHaveProperty('artifact_profile')
   })
 })

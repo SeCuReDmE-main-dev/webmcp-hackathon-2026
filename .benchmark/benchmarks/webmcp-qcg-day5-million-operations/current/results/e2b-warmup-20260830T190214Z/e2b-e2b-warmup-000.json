@@ -1,0 +1,20 @@
+{
+  "schema_version": "qcg-benchmark-result.v1",
+  "benchmark_slug": "webmcp-qcg-day5-million-operations",
+  "run_id": "e2b-warmup-20260830T190214Z-000",
+  "gate": "e2b-warmup",
+  "sandbox_id": "iv0luxbh3ctpy6jxidsn8",
+  "seed": 20260830,
+  "corpus_digest": "caaa67b6e614626ab2e0e17fd34138bee0711b4c206980fe9336eec0ab60ca76",
+  "operations": 0,
+  "elapsed_ms": 0,
+  "status": "fail",
+  "error_count": 1,
+  "unauthorized_effects": 0,
+  "error_class": "CommandExitException",
+  "diagnostic": {
+    "command_exit_code": 1,
+    "stderr_tail": "(node:2002) Warning: To load an ES module, set \"type\": \"module\" in the package.json or use the .mjs extension.\n(Use `node --trace-warnings ...` to show where the warning was created)\n/home/user/qcg-decision-engine-runner.js:1\nimport { createHash } from \"node:crypto\";\n^^^^^^\n\nSyntaxError: Cannot use import statement outside a module\n    at internalCompileFunction (node:internal/vm:73:18)\n    at wrapSafe (node:internal/modules/cjs/loader:1153:20)\n    at Module._compile (node:internal/modules/cjs/loader:1205:27)\n    at Module._extensions..js (node:internal/modules/cjs/loader:1295:10)\n    at Module.load (node:internal/modules/cjs/loader:1091:32)\n    at Module._load (node:internal/modules/cjs/loader:938:12)\n    at Function.executeUserEntryPoint [as runMain] (node:internal/modules/run_main:83:12)\n    at node:internal/main/run_main_module:23:47\n\nNode.js v20.9.0\n",
+    "stdout_tail": ""
+  }
+}

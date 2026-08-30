@@ -1,0 +1,122 @@
+{
+  "schema_version": "qcg-day5-campaign-aggregate.v1",
+  "created_at": "2026-08-30T19:13:01.407590+00:00",
+  "status": "pass",
+  "benchmark_slug": "webmcp-qcg-day5-million-operations",
+  "engine_campaign": {
+    "passing_gates": [
+      "e2b-warmup",
+      "e2b-intermediate",
+      "e2b-full",
+      "e2b-repeat"
+    ],
+    "successful_sandboxes": 260,
+    "validated_operations": 2600000,
+    "full_pass_operations": 1000000,
+    "repeat_pass_operations": 1000000,
+    "repeat_digest_matches": 100,
+    "repeat_digest_total": 100,
+    "unauthorized_effects": 0,
+    "missing_receipts": 0,
+    "receipt_digest_mismatches": 0,
+    "decision_mismatches": 0,
+    "surviving_owned_sandboxes": 0,
+    "resource_profile_observed": {
+      "cpu_count": 2,
+      "memory_mb": 512,
+      "node": "v20.9.0",
+      "internet_access": false
+    }
+  },
+  "http_canary": {
+    "separate_from_engine": true,
+    "requests": 80,
+    "http_200": 80,
+    "errors": 0,
+    "timeouts": 0,
+    "p95_ms": 30.825,
+    "max_ms": 342.538
+  },
+  "failed_diagnostic_runs": [
+    {
+      "run_id": "e2b-warmup-20260830T185937Z",
+      "gate": "e2b-warmup",
+      "status": "fail",
+      "stop_reasons": [
+        "operation_coverage"
+      ],
+      "operations": 0,
+      "survivors": 0
+    },
+    {
+      "run_id": "e2b-warmup-20260830T190214Z",
+      "gate": "e2b-warmup",
+      "status": "fail",
+      "stop_reasons": [
+        "error_rate",
+        "operation_coverage"
+      ],
+      "operations": 0,
+      "survivors": 0
+    }
+  ],
+  "invariant_failures": [],
+  "cost_usd": null,
+  "cost_note": "No billing receipt was returned by the E2B SDK; no cost is inferred from account credits.",
+  "provider_calls": 0,
+  "qpu_calls": 0,
+  "payment_calls": 0,
+  "receipts": [
+    {
+      "path": "results/e2b-warmup-20260830T190254Z/campaign-summary.json",
+      "sha256": "016cc1d46cece7a8fb5d99d0c3c966fdda383cb38e599b8abf1991a8b46d7c44",
+      "run_id": "e2b-warmup-20260830T190254Z",
+      "gate": "e2b-warmup",
+      "sandboxes": 10,
+      "operations": 100000,
+      "wall_seconds": 12.174049000001105,
+      "throughput_ops_per_second": 8214.193979340063,
+      "p95_max_ms": 1.5747929999997723
+    },
+    {
+      "path": "results/e2b-intermediate-20260830T190335Z/campaign-summary.json",
+      "sha256": "e3844dfa66230e176081e5276f6ddbe02b1c8552168a1bdb416d0945070895b1",
+      "run_id": "e2b-intermediate-20260830T190335Z",
+      "gate": "e2b-intermediate",
+      "sandboxes": 50,
+      "operations": 500000,
+      "wall_seconds": 42.52188960000058,
+      "throughput_ops_per_second": 11758.649596794805,
+      "p95_max_ms": 1.748066000000108
+    },
+    {
+      "path": "results/e2b-full-20260830T190520Z/campaign-summary.json",
+      "sha256": "c3dca82ad729991235316fc9788d901c69c3d336bb0c4affa4b880670dd3d43d",
+      "run_id": "e2b-full-20260830T190520Z",
+      "gate": "e2b-full",
+      "sandboxes": 100,
+      "operations": 1000000,
+      "wall_seconds": 34.161153200002445,
+      "throughput_ops_per_second": 29273.01646245152,
+      "p95_max_ms": 1.710798000000068
+    },
+    {
+      "path": "results/e2b-repeat-20260830T190708Z/campaign-summary.json",
+      "sha256": "a69c51b0d3d7db614ffe92d5fb69746b7715818ecdde0f4d2c184a6a52e430b9",
+      "run_id": "e2b-repeat-20260830T190708Z",
+      "gate": "e2b-repeat",
+      "sandboxes": 100,
+      "operations": 1000000,
+      "wall_seconds": 57.11244010000519,
+      "throughput_ops_per_second": 17509.320180489176,
+      "p95_max_ms": 1.7446759999875212
+    },
+    {
+      "path": "results/http-canary-20260830T191121Z.json",
+      "sha256": "27e44771e0ac425788e663d3dd10af63b3db98bd90ba8303cb54728287878fa8",
+      "gate": "http-canary",
+      "requests": 80,
+      "p95_ms": 30.825
+    }
+  ]
+}

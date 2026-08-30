@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { decisions, humanChoices } from './types'
+import { quantumProfileIds } from './quantumAdapters'
 
 const identifier = z.string().regex(/^[a-z0-9][a-z0-9_-]{2,63}$/)
 const sha256 = z.string().regex(/^[a-f0-9]{64}$/)
@@ -45,6 +46,13 @@ const compilerEvidence = z.object({
   estimated_qubits: z.number().int().min(0).max(8).nullable()
 }).strict()
 
+const profileCapabilities = z.object({
+  inspect: z.literal(true),
+  compile: z.boolean(),
+  simulate: z.boolean(),
+  static_only: z.boolean()
+}).strict()
+
 export const manifestOutput = z.object({
   schema_version: z.literal('webmcp-qcg.artifact-manifest.v2'),
   manifest_id: identifier,
@@ -52,7 +60,9 @@ export const manifestOutput = z.object({
   file_name: z.string().max(128),
   artifact_digest: sha256,
   byte_size: z.number().int().min(1).max(131_072),
-  format: z.literal('qsharp'),
+  format: z.enum(['qsharp', 'openqasm3', 'qiskit-python', 'cirq-tfq-python', 'torchquantum-python', 'pennylane-python', 'cudaq-python', 'cudaq-cpp', 'braket-python', 'qir-text']),
+  artifact_profile: z.enum(quantumProfileIds as [string, ...string[]]),
+  capabilities: profileCapabilities,
   provenance: z.enum(['human_import', 'demo_fixture']),
   compiler: compilerEvidence,
   created_at: isoDate

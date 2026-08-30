@@ -1,0 +1,12 @@
+{
+  "schema_version": "benchmark-index.v1",
+  "benchmarks": [
+    {
+      "slug": "webmcp-qcg-day5-million-operations",
+      "title": "WebMCP-QCG Day 5 deterministic engine campaign",
+      "status": "prepared_not_executed",
+      "objective": "Measure reproducibility and throughput for one million bounded decision-engine evaluations.",
+      "entry": "benchmarks/webmcp-qcg-day5-million-operations/benchmark.json"
+    }
+  ]
+}

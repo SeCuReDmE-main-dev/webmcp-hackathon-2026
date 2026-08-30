@@ -21,6 +21,8 @@ artifacts/private/
 *.pfx
 .firecrawl/
 .vercel/
+.tmp/
+Thumbs.db
 
 # Stitch source exports can exceed GitHub's 100 MB object limit. Keep the local
 # archive intact and commit only reviewed/exported design assets.

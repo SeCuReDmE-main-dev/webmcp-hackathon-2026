@@ -1,0 +1,7 @@
+PROFILE qsharp-qdk
+family: Q# / Microsoft Quantum Development Kit
+source_extension: .qs
+capability: inspect, bounded local compile, bounded local simulation
+fixture_intent: Bell pair with explicit shot and timeout bounds
+authority: human-selected local artifact; no provider submission
+receipt_facts: compiler profile, artifact digest, observable, shots

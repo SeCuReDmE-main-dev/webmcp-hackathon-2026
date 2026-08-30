@@ -1,0 +1,11 @@
+{
+  "schema_version": "qcg-benchmark-config.v1",
+  "benchmark_slug": "webmcp-qcg-day5-million-operations",
+  "engine": {"name":"qcg-decision-engine", "version":"day5-pre-freeze", "seed":20260830, "operations_per_sandbox":10000, "sandbox_count":100, "total_operations":1000000},
+  "gates": [{"name":"local-validation","sandboxes":1},{"name":"e2b-warmup","sandboxes":10},{"name":"e2b-intermediate","sandboxes":50},{"name":"e2b-full","sandboxes":100},{"name":"e2b-repeat","sandboxes":100}],
+  "resource_profiles": [{"id":"light","vcpu":1,"ram_gb":1},{"id":"standard","vcpu":2,"ram_gb":2},{"id":"intensive","vcpu":4,"ram_gb":4},{"id":"max-control","vcpu":8,"ram_gb":8,"sandbox_count":10}],
+  "stop_conditions": {"error_rate_gt":0.005,"p95_baseline_multiplier_gt":2,"digest_mismatch":true,"unauthorized_effect":true,"secret_exposure":true,"receipt_loss":true},
+  "cost_alerts": {"usd_without_10_percent_progress_gt":100,"projected_campaign_usd_gt":500,"purpose_free_cost_increase":true},
+  "http_canary": {"rps_steps":[1,2,5],"max_seconds":60,"max_requests":300,"stop_on_status":[429,500,501,502,503,504],"p95_seconds_gt":1.5},
+  "execution_policy": {"launch_e2b":true,"authorization_recorded":"2026-08-30","launch_http_canary":true,"http_canary_authorization_recorded":"2026-08-30","allow_provider_calls":false,"allow_qpu_calls":false,"allow_payment_calls":false,"allow_local_windows_baseline":true,"allow_multipass_ubuntu_baseline":true,"multipass_limits":{"vcpu":2,"ram_gb":4,"disk_gb":20}}
+}

@@ -1,0 +1,144 @@
+{
+  "schema_version": "qcg-preparation-plan.v1",
+  "benchmark_slug": "webmcp-qcg-day5-million-operations",
+  "status": "prepared_not_executed",
+  "e2b_launched": false,
+  "http_canary_launched": false,
+  "provider_calls": 0,
+  "qpu_calls": 0,
+  "payment_calls": 0,
+  "corpus_digest": "caaa67b6e614626ab2e0e17fd34138bee0711b4c206980fe9336eec0ab60ca76",
+  "corpus_items": [
+    {
+      "path": "corpus/profiles/qsharp-qdk.txt",
+      "bytes": 354,
+      "sha256": "bc1de5f1ccace1cc5017207f6bb8f05481c79ef229286d4f1b7d304a5852035f"
+    },
+    {
+      "path": "corpus/profiles/openqasm3-qdk.txt",
+      "bytes": 357,
+      "sha256": "17837c8e695d9eacbb82191150633775bacd4e06d271cd4ffc0c93390ad240bf"
+    },
+    {
+      "path": "corpus/profiles/qiskit-python.txt",
+      "bytes": 302,
+      "sha256": "18931112d0573bc4a2b7897f8bc66d4458e6039d9983e27d866cb1cc92dd80b6"
+    },
+    {
+      "path": "corpus/profiles/cirq-tfq-python.txt",
+      "bytes": 337,
+      "sha256": "42b14433bd895983307d8b5e128a838d6e310633723a38c14bfea64a66f33be9"
+    },
+    {
+      "path": "corpus/profiles/torchquantum-python.txt",
+      "bytes": 307,
+      "sha256": "93faf0986a2547ced82214d5573e3e41c0906cb6e012c42327696c11ae0f07cc"
+    },
+    {
+      "path": "corpus/profiles/pennylane-python.txt",
+      "bytes": 307,
+      "sha256": "fc761bd5c00d021eb86fcebc074417676fd3db31d248bf7d2b232bcdd1f8c468"
+    },
+    {
+      "path": "corpus/profiles/cudaq-python.txt",
+      "bytes": 294,
+      "sha256": "27a334a8d88f4045123f87fdf46667e4d42ad82c2d6bc41887641e568ce13e17"
+    },
+    {
+      "path": "corpus/profiles/cudaq-cpp.txt",
+      "bytes": 322,
+      "sha256": "99f415300d04caddae4c0d6a35988b3005f764ccfb2788b89772bc4a06ab1ee2"
+    },
+    {
+      "path": "corpus/profiles/braket-python.txt",
+      "bytes": 334,
+      "sha256": "ab307047219a329c7795771a9bbe9068dbcd5a2fbc06f0a5fcc44de1dbf44723"
+    },
+    {
+      "path": "corpus/profiles/qir-text.txt",
+      "bytes": 338,
+      "sha256": "119e7f96929eff05f5f0acd301a68e163887c1bd4368d4610c32bbeae1c03c29"
+    },
+    {
+      "path": "corpus/decisions/decision-01-human-authority.txt",
+      "bytes": 332,
+      "sha256": "0424dfe12aa45a12c2b028878ef651b74bcc4b63a9123678f6c212f77a687b7a"
+    },
+    {
+      "path": "corpus/decisions/decision-02-gemini-relay.txt",
+      "bytes": 451,
+      "sha256": "45b94c5f8756f2b1d531385bfd064a71062a6381e726aeae80ecd42e4d570d0a"
+    },
+    {
+      "path": "corpus/decisions/decision-03-static-profile-boundary.txt",
+      "bytes": 385,
+      "sha256": "ff959b668f32d5d0400968cceb6f30572afbe3438c852c13a57ff32635bcb116"
+    },
+    {
+      "path": "corpus/decisions/decision-04-engine-vs-http.txt",
+      "bytes": 361,
+      "sha256": "1e375c3f1761f2317011328ef7ba2f64074eecfdbef3e8632d66013e404490dd"
+    },
+    {
+      "path": "corpus/decisions/decision-05-freeze-and-spend.txt",
+      "bytes": 490,
+      "sha256": "1c86affe7f4a11f953a19a7868833e1667474516f50666c2a182da877f46977e"
+    }
+  ],
+  "expected_total_operations": 1000000,
+  "operations_per_sandbox": 10000,
+  "gates": [
+    {
+      "name": "local-validation",
+      "sandboxes": 1
+    },
+    {
+      "name": "e2b-warmup",
+      "sandboxes": 10
+    },
+    {
+      "name": "e2b-intermediate",
+      "sandboxes": 50
+    },
+    {
+      "name": "e2b-full",
+      "sandboxes": 100
+    },
+    {
+      "name": "e2b-repeat",
+      "sandboxes": 100
+    }
+  ],
+  "resource_profiles": [
+    {
+      "id": "light",
+      "vcpu": 1,
+      "ram_gb": 1
+    },
+    {
+      "id": "standard",
+      "vcpu": 2,
+      "ram_gb": 2
+    },
+    {
+      "id": "intensive",
+      "vcpu": 4,
+      "ram_gb": 4
+    },
+    {
+      "id": "max-control",
+      "vcpu": 8,
+      "ram_gb": 8,
+      "sandbox_count": 10
+    }
+  ],
+  "stop_conditions": {
+    "error_rate_gt": 0.005,
+    "p95_baseline_multiplier_gt": 2,
+    "digest_mismatch": true,
+    "unauthorized_effect": true,
+    "secret_exposure": true,
+    "receipt_loss": true
+  },
+  "next_action": "Run the local validation gate only after explicit execution authorization; E2B remains unlaunched."
+}

@@ -1,0 +1,45 @@
+{
+  "schema_version": "qcg-benchmark-result.v1",
+  "benchmark_slug": "webmcp-qcg-day5-million-operations",
+  "run_id": "local-local-validation-0-20260830",
+  "gate": "local-validation",
+  "sandbox_id": "local-0",
+  "seed": 20260830,
+  "corpus_digest": "caaa67b6e614626ab2e0e17fd34138bee0711b4c206980fe9336eec0ab60ca76",
+  "operations": 1000,
+  "elapsed_ms": 2009.4424999999922,
+  "status": "pass",
+  "error_count": 0,
+  "unauthorized_effects": 0,
+  "engine_only": true,
+  "http_canary_included": false,
+  "execution": {
+    "runtime": "node",
+    "platform": "win32",
+    "arch": "x64",
+    "sandbox_index": 0,
+    "deterministic_worker_boundary": true
+  },
+  "latency_ms": {
+    "p50": 1.5497000000000298,
+    "p95": 4.139400000000023,
+    "p99": 11.282600000000002,
+    "min": 0.8450000000002547,
+    "max": 35.978799999999865
+  },
+  "throughput_ops_per_second": 497.65046772923534,
+  "decision_counts": {
+    "reuse_result": 213,
+    "simulate_first": 204,
+    "recompile": 204,
+    "reject": 182,
+    "ready_for_external_execution": 197
+  },
+  "checks": {
+    "expected_decision_mismatches": 0,
+    "unauthorized_effect_mismatches": 0,
+    "receipt_missing": 0,
+    "receipt_digest_mismatches": 0,
+    "operation_digest": "916dc89468a3ce2ffd2932897c77e3c6d7b71ff0e712a87f284003ed0af4c795"
+  }
+}

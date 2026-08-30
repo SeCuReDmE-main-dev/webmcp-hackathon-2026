@@ -1,4 +1,5 @@
 import { digest, id } from './crypto'
+import { getQuantumAdapter, profileSummary } from './quantumAdapters'
 import type { EvidenceReceipt } from './types'
 
 interface LegacyPacket {
@@ -43,6 +44,8 @@ export async function convertV1Receipt(value: unknown): Promise<EvidenceReceipt 
     artifact_digest: artifactDigest,
     byte_size: 1,
     format: 'qsharp' as const,
+    artifact_profile: 'qsharp-qdk' as const,
+    capabilities: { inspect: true, compile: true, simulate: true, static_only: false },
     provenance: 'demo_fixture' as const,
     compiler: {
       name: 'qsharp-lang' as const,
@@ -98,12 +101,66 @@ export async function convertV1Receipt(value: unknown): Promise<EvidenceReceipt 
   }
   const body = { manifest, target_profile: targetProfile, recommendation, human_decision: null, simulation: null, effects }
   return {
-    schema_version: 'webmcp-qcg.evidence-receipt.v2',
+    schema_version: 'webmcp-qcg.evidence-receipt.v3',
     receipt_id: id('receipt', legacy.evidence?.evidence_packet_id ?? sourceDigest),
     ...body,
+    format: manifest.format,
+    artifact_profile: profileSummary(getQuantumAdapter('qsharp-qdk')!),
+    compiler_facts: manifest.compiler,
     digest: await digest(body),
     created_at: created,
     updated_at: created,
     migration: { from: 'webmcp.qcg.evidence.v1', source_digest: sourceDigest }
+  }
+}
+
+interface V2Receipt {
+  schema_version?: string
+  receipt_id?: string
+  manifest?: Record<string, unknown>
+  target_profile?: EvidenceReceipt['target_profile']
+  recommendation?: EvidenceReceipt['recommendation']
+  human_decision?: EvidenceReceipt['human_decision']
+  simulation?: EvidenceReceipt['simulation']
+  effects?: EvidenceReceipt['effects']
+  digest?: string
+  created_at?: string
+  updated_at?: string
+}
+
+/** Reads a v2 receipt into v3 memory only; IndexedDB is never rewritten during migration. */
+export async function convertV2Receipt(value: unknown): Promise<EvidenceReceipt | null> {
+  const legacy = value as V2Receipt
+  if (legacy?.schema_version !== 'webmcp-qcg.evidence-receipt.v2' || !legacy.manifest || !legacy.target_profile || !legacy.recommendation || !legacy.effects) return null
+  const sourceDigest = await digest(legacy)
+  const adapter = getQuantumAdapter(typeof legacy.manifest.artifact_profile === 'string' ? legacy.manifest.artifact_profile : 'qsharp-qdk')!
+  const compiler = (legacy.manifest.compiler ?? {
+    name: 'qsharp-lang', version: '1.31.0', status: 'unverified', diagnostic_count: 0,
+    diagnostics: ['Converted v2 receipt lacks complete compiler facts.'], profile_digest: 'legacy-unverified', bounded_entrypoint: false, estimated_qubits: null
+  }) as EvidenceReceipt['compiler_facts']
+  const manifest = {
+    ...legacy.manifest,
+    schema_version: 'webmcp-qcg.artifact-manifest.v2' as const,
+    format: adapter.format,
+    artifact_profile: adapter.id,
+    capabilities: adapter.capabilities,
+    compiler
+  } as EvidenceReceipt['manifest']
+  const created = legacy.created_at ?? legacy.updated_at ?? new Date(0).toISOString()
+  const body = {
+    manifest, target_profile: legacy.target_profile, recommendation: legacy.recommendation,
+    human_decision: legacy.human_decision ?? null, simulation: legacy.simulation ?? null, effects: legacy.effects
+  }
+  return {
+    schema_version: 'webmcp-qcg.evidence-receipt.v3',
+    receipt_id: legacy.receipt_id ?? id('receipt', sourceDigest),
+    ...body,
+    format: adapter.format,
+    artifact_profile: profileSummary(adapter),
+    compiler_facts: compiler,
+    digest: await digest(body),
+    created_at: created,
+    updated_at: legacy.updated_at ?? created,
+    migration: { from: 'webmcp-qcg.evidence-receipt.v2', source_digest: sourceDigest }
   }
 }

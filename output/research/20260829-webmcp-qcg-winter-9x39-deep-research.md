@@ -15,7 +15,7 @@ The questions are practical:
 
 ## Local ground truth reviewed
 
-- Repository: `Z:\03_LABS_EXPERIMENTS\WebMCP-Hackathon-2026`
+- Repository: `<REPO_ROOT>`
 - Baseline commit reviewed: `2c3b4cd`
 - Current engineering receipt: `34/34` tests in six files and a successful TypeScript/Vite production build.
 - Quantum surface: four progressively registered WebMCP tools, local bounded Q# execution in a Worker and five deterministic recommendations.

@@ -1,16 +1,34 @@
-import { createDebugMessage, qcgDebugMessage, type DebugMessageDraft, type QcgDebugMessage } from './debugContracts'
+import { createDebugMessage, anyQcgDebugMessage, type AnyDebugMessageDraft, type DebugMessageDraft, type HumanMemoryDisposition, type HumanReviewDisposition, type QcgDebugMessage } from './debugContracts'
 
 const DB_NAME = 'qcg-debug-ledger.v1'
 const STORE = 'sessions'
 const MAX_MESSAGES = 200
 const MAX_SESSIONS = 10
 const SESSION_TTL_MS = 8 * 60 * 60 * 1000
+const MAX_MEMORIES = 50
+
+export interface DebugMemory {
+  memory_id: string
+  disposition: 'remembered' | 'forgotten'
+  provenance_event_id: string
+  content?: string
+  digest: string
+  created_at: string
+}
+
+export interface DebugReviewDisposition {
+  event_id: string
+  disposition: HumanReviewDisposition
+  decided_at: string
+}
 
 export interface DebugSession {
   session_id: string
   created_at: string
   touched_at: string
   messages: QcgDebugMessage[]
+  memories: DebugMemory[]
+  review_dispositions: DebugReviewDisposition[]
 }
 
 export interface DebugLedgerBackend {
@@ -94,18 +112,18 @@ export class DebugLedger {
   constructor(private readonly now = () => Date.now(), store?: DebugLedgerBackend) { this.store = store ?? backend() }
   get storageMode(): 'indexeddb' | 'memory' { return this.store.storageMode }
 
-  async openSession(sessionId = crypto.randomUUID()): Promise<DebugSession> {
+  async openSession(sessionId: string = crypto.randomUUID()): Promise<DebugSession> {
     const existing = await this.store.get(sessionId)
     if (existing) return structuredClone(existing)
     const timestamp = new Date(this.now()).toISOString()
-    const session: DebugSession = { session_id: sessionId, created_at: timestamp, touched_at: timestamp, messages: [] }
+    const session: DebugSession = { session_id: sessionId, created_at: timestamp, touched_at: timestamp, messages: [], memories: [], review_dispositions: [] }
     await this.store.put(session)
     await this.prune()
     this.notify()
     return structuredClone(session)
   }
 
-  async append(draft: DebugMessageDraft): Promise<QcgDebugMessage> {
+  async append(draft: AnyDebugMessageDraft): Promise<QcgDebugMessage> {
     return this.inWriteOrder(() => this.appendUnlocked(draft))
   }
 
@@ -134,6 +152,56 @@ export class DebugLedger {
     })
   }
 
+  async applyHumanReview(sessionId: string, eventId: string, disposition: HumanReviewDisposition): Promise<QcgDebugMessage> {
+    return this.inWriteOrder(async () => {
+      const session = await this.store.get(sessionId)
+      if (!session || !session.messages.some((entry) => entry.event_id === eventId && entry.kind === 'decision_request')) throw new Error('Human review request is unknown.')
+      session.review_dispositions ??= []
+      if (session.review_dispositions.some((entry) => entry.event_id === eventId)) throw new Error('Human review request already has a disposition.')
+      const reference = `debug-event:${eventId}`
+      if (session.messages.some((entry) => entry.actor === 'human' && entry.kind === 'receipt' && entry.evidence_refs.includes(reference))) throw new Error('Human review request already has a disposition.')
+      const receipt = await this.appendUnlocked({
+        schema_version: 'qcg-debug-message.v1', session_id: sessionId, actor: 'human', role: 'operator', kind: 'receipt',
+        summary: `Human review disposition recorded: ${disposition}. Collaboration authority remains separate from quantum authority.`,
+        evidence_refs: [reference], confidence: 'high', status: disposition === 'approve' ? 'acknowledged' : 'resolved', identity_assurance: 'declared'
+      })
+      const updated = await this.store.get(sessionId)
+      if (updated) {
+        updated.review_dispositions ??= []
+        updated.review_dispositions.push({ event_id: eventId, disposition, decided_at: receipt.issued_at })
+        await this.store.put(updated)
+      }
+      return receipt
+    })
+  }
+
+  async applyHumanMemory(sessionId: string, eventId: string, disposition: HumanMemoryDisposition, content?: string): Promise<DebugMemory> {
+    return this.inWriteOrder(async () => {
+      const session = await this.store.get(sessionId)
+      if (!session || !session.messages.some((entry) => entry.event_id === eventId)) throw new Error('Memory provenance event is unknown.')
+      session.memories ??= []
+      const existing = session.memories.find((entry) => entry.provenance_event_id === eventId)
+      if (disposition === 'remember') {
+        if (!content) throw new Error('A bounded memory summary is required.')
+        if (existing) throw new Error('Memory provenance is already recorded.')
+        if (session.memories.filter((entry) => entry.disposition === 'remembered').length >= MAX_MEMORIES) throw new Error('Human memory limit reached.')
+        const memory: DebugMemory = { memory_id: crypto.randomUUID(), disposition: 'remembered', provenance_event_id: eventId, content, digest: digest(content), created_at: new Date(this.now()).toISOString() }
+        session.memories.push(memory)
+        session.touched_at = memory.created_at
+        await this.store.put(session)
+        this.notify()
+        return structuredClone(memory)
+      }
+      if (!existing) throw new Error('Only a recorded memory can be forgotten.')
+      const tombstone: DebugMemory = { memory_id: existing.memory_id, disposition: 'forgotten', provenance_event_id: eventId, digest: existing.digest, created_at: new Date(this.now()).toISOString() }
+      session.memories = session.memories.map((entry) => entry.memory_id === existing.memory_id ? tombstone : entry)
+      session.touched_at = tombstone.created_at
+      await this.store.put(session)
+      this.notify()
+      return structuredClone(tombstone)
+    })
+  }
+
   async messages(sessionId: string): Promise<QcgDebugMessage[]> {
     const session = await this.store.get(sessionId)
     return session ? structuredClone(session.messages) : []
@@ -142,7 +210,7 @@ export class DebugLedger {
   async export(sessionId: string): Promise<string> {
     const session = await this.store.get(sessionId)
     if (!session) throw new Error('Debug session is unknown.')
-    return JSON.stringify({ schema_version: 'qcg-debug-handoff.v1', session_id: sessionId, messages: session.messages }, null, 2)
+    return JSON.stringify({ schema_version: 'qcg-debug-handoff.v2', session_id: sessionId, messages: session.messages, review_dispositions: session.review_dispositions ?? [], memories: (session.memories ?? []).map(({ content: _content, ...memory }) => memory) }, null, 2)
   }
 
   subscribe(listener: () => void): () => void {
@@ -155,14 +223,14 @@ export class DebugLedger {
     await Promise.all(sessions.slice(0, Math.max(0, sessions.length - MAX_SESSIONS)).map((entry) => this.store.delete(entry.session_id)))
   }
 
-  private async appendUnlocked(draft: DebugMessageDraft): Promise<QcgDebugMessage> {
+  private async appendUnlocked(draft: AnyDebugMessageDraft): Promise<QcgDebugMessage> {
     const session = await this.store.get(draft.session_id)
     if (!session) throw new Error('Debug session is unknown or stale.')
     if (this.now() - new Date(session.touched_at).getTime() > SESSION_TTL_MS) throw new Error('Debug session is stale.')
     if (session.messages.some((entry) => entry.event_id === draft.event_id)) throw new Error('Duplicate debug event ID.')
     if (session.messages.length >= MAX_MESSAGES) throw new Error('Debug session message limit reached.')
     const message = createDebugMessage(draft, session.messages.length + 1, new Date(this.now()))
-    session.messages.push(qcgDebugMessage.parse(message))
+    session.messages.push(anyQcgDebugMessage.parse(message))
     session.touched_at = message.issued_at
     await this.store.put(session)
     this.notify()
@@ -182,4 +250,10 @@ export class DebugLedger {
 
 export function createInMemoryDebugLedger(now?: () => number): DebugLedger {
   return new DebugLedger(now ?? (() => Date.now()), new MemoryBackend())
+}
+
+function digest(value: string): string {
+  let hash = 2166136261
+  for (let index = 0; index < value.length; index += 1) hash = Math.imul(hash ^ value.charCodeAt(index), 16777619)
+  return `fnv1a32:${(hash >>> 0).toString(16).padStart(8, '0')}`
 }

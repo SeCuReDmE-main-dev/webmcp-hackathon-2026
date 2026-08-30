@@ -37,7 +37,7 @@ const schemas: Record<ToolName, JsonSchema> = {
     additionalProperties: false,
     required: ['artifact_id'],
     properties: {
-      artifact_id: { ...identifier, description: 'Identifier of the Q# artifact already loaded by the human.' }
+      artifact_id: { ...identifier, description: 'Identifier of the human-selected quantum artifact already loaded locally.' }
     }
   },
   evaluate_quantum_call: {
@@ -67,7 +67,7 @@ const schemas: Record<ToolName, JsonSchema> = {
       }
     }
   },
-  run_bounded_qsharp_simulation: {
+  run_bounded_local_simulation: {
     type: 'object',
     additionalProperties: false,
     required: ['recommendation_id'],
@@ -80,7 +80,7 @@ const schemas: Record<ToolName, JsonSchema> = {
     additionalProperties: false,
     required: ['receipt_id', 'format'],
     properties: {
-      receipt_id: { ...identifier, description: 'Current v2 evidence receipt.' },
+      receipt_id: { ...identifier, description: 'Current v3 evidence receipt.' },
       format: { type: 'string', enum: ['json', 'markdown'] }
     }
   }
@@ -95,8 +95,8 @@ function failure(error: unknown): never {
   const message = error instanceof DOMException && error.name === 'AbortError'
     ? 'Tool execution cancelled.'
     : error instanceof ZodError
-      ? 'Arguments failed the strict QCG v2 contract.'
-      : error instanceof Error && /^(artifact_id|manifest_id|recommendation_id|receipt_id|The artifact|The recommendation|A valid|The bounded|Local Q#)/.test(error.message)
+      ? 'Arguments failed the strict QCG v3 contract.'
+      : error instanceof Error && /^(artifact_id|manifest_id|recommendation_id|receipt_id|The artifact|The recommendation|A valid|The bounded|Local Q#|Local QDK|Only Q#)/.test(error.message)
         ? error.message
         : 'QCG request could not be completed.'
   throw new Error(message.slice(0, 260))
@@ -125,7 +125,7 @@ export function useQcgWebMcp(
       names.push('inspect_quantum_experiment', 'evaluate_quantum_call')
     }
     if (state.recommendation?.decision === 'simulate_first' && consentIsValid) {
-      names.push('run_bounded_qsharp_simulation')
+      names.push('run_bounded_local_simulation')
     }
     if (state.receipt) names.push('export_quantum_evidence_report')
     return names
@@ -144,7 +144,7 @@ export function useQcgWebMcp(
       tools.push({
         name: 'inspect_quantum_experiment',
         title: 'Inspect quantum experiment',
-        description: 'Verify the manifest of a Q# artifact already loaded by the human. Raw Q# never crosses this tool contract.',
+        description: 'Verify the manifest of a human-selected quantum artifact already loaded locally. Raw source never crosses this tool contract.',
         inputSchema: schemas.inspect_quantum_experiment,
         annotations: { readOnlyHint: true, untrustedContentHint: true, destructiveHint: false },
         execute: async (input, options) => {
@@ -175,10 +175,10 @@ export function useQcgWebMcp(
     }
     if (state.recommendation?.decision === 'simulate_first' && consentIsValid && state.consent) {
       tools.push({
-        name: 'run_bounded_qsharp_simulation',
-        title: 'Run bounded Q# simulation',
-        description: 'Consume the private visible-human consent state and run the approved Bell simulation locally in a Worker. No provider or QPU call occurs.',
-        inputSchema: schemas.run_bounded_qsharp_simulation,
+        name: 'run_bounded_local_simulation',
+        title: 'Run bounded local simulation',
+        description: 'Consume private visible-human consent and run the approved Q# or OpenQASM Bell fixture locally in a Worker. No provider or QPU call occurs.',
+        inputSchema: schemas.run_bounded_local_simulation,
         annotations: { readOnlyHint: false, destructiveHint: false },
         execute: async (input, options) => {
           try {
@@ -207,7 +207,7 @@ export function useQcgWebMcp(
       tools.push({
         name: 'export_quantum_evidence_report',
         title: 'Export quantum evidence report',
-        description: 'Export the current v2 receipt without re-evaluating or executing the experiment.',
+        description: 'Export the current v3 receipt without re-evaluating or executing the experiment.',
         inputSchema: schemas.export_quantum_evidence_report,
         annotations: { readOnlyHint: true, destructiveHint: false },
         execute: async (input, options) => {

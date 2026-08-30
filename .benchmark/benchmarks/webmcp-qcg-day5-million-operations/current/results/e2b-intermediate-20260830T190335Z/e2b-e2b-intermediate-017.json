@@ -1,0 +1,62 @@
+{
+  "schema_version": "qcg-benchmark-result.v1",
+  "benchmark_slug": "webmcp-qcg-day5-million-operations",
+  "run_id": "e2b-intermediate-20260830T190335Z-017",
+  "gate": "e2b-intermediate",
+  "sandbox_id": "imksxn51yc5oems9bs532",
+  "seed": 20260830,
+  "corpus_digest": "caaa67b6e614626ab2e0e17fd34138bee0711b4c206980fe9336eec0ab60ca76",
+  "operations": 10000,
+  "elapsed_ms": 17356.140428999985,
+  "status": "pass",
+  "error_count": 0,
+  "unauthorized_effects": 0,
+  "engine_only": true,
+  "http_canary_included": false,
+  "execution": {
+    "runtime": "node",
+    "platform": "linux",
+    "arch": "x64",
+    "sandbox_index": 17,
+    "deterministic_worker_boundary": true,
+    "environment": "e2b",
+    "node_version": "v20.9.0",
+    "template_id": "rki5dems9wqfm4r03t7g",
+    "cpu_count": 2,
+    "memory_mb": 512,
+    "internet_access": false,
+    "provision_attempt": 1,
+    "command_exit_code": 0,
+    "metrics": {
+      "samples": 13,
+      "cpu_count": 2,
+      "cpu_used_pct_max": 25.62,
+      "mem_total_bytes": 501293056,
+      "mem_used_bytes_max": 73789440,
+      "disk_total_bytes": 22757814272,
+      "disk_used_bytes_max": 1653420032
+    }
+  },
+  "latency_ms": {
+    "p50": 1.0408129999996163,
+    "p95": 1.526867000007769,
+    "p99": 1.8659049999987474,
+    "min": 0.31323800000245683,
+    "max": 3400.2880260000093
+  },
+  "throughput_ops_per_second": 576.1649625334458,
+  "decision_counts": {
+    "ready_for_external_execution": 2018,
+    "simulate_first": 2012,
+    "reject": 2023,
+    "recompile": 2001,
+    "reuse_result": 1946
+  },
+  "checks": {
+    "expected_decision_mismatches": 0,
+    "unauthorized_effect_mismatches": 0,
+    "receipt_missing": 0,
+    "receipt_digest_mismatches": 0,
+    "operation_digest": "ba3b655328235f3dc4ae30d07ce5b247122847c6646d6014b0b2ceb9c65e03fe"
+  }
+}

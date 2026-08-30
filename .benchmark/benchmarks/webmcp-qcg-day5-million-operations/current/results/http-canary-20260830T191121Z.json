@@ -1,0 +1,603 @@
+{
+  "schema_version": "qcg-http-canary.v1",
+  "target": "https://qcg.securedme.ca/",
+  "started_at": "2026-08-30T19:10:52.9363757+00:00",
+  "completed_at": "2026-08-30T19:11:21.4502668+00:00",
+  "status": "pass",
+  "bounds": {
+    "rps_steps": [
+      1,
+      2,
+      5
+    ],
+    "seconds_per_step": 10,
+    "max_seconds": 60,
+    "max_requests": 300,
+    "timeout_seconds": 5
+  },
+  "requests": 80,
+  "status_counts": [
+    {
+      "status": "200",
+      "count": 80
+    }
+  ],
+  "errors": 0,
+  "error_rate": 0.0,
+  "timeouts": 0,
+  "latency_ms": {
+    "p50": 19.295,
+    "p95": 30.825,
+    "p99": 342.538,
+    "max": 342.538,
+    "stop_limit": 1500.0
+  },
+  "elapsed_seconds": 28.488,
+  "stop_reasons": [],
+  "engine_benchmark_included": false,
+  "qpu_calls": 0,
+  "provider_calls": 0,
+  "payment_calls": 0,
+  "observations": [
+    {
+      "sequence": 1,
+      "rps_step": 1,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 342.538
+    },
+    {
+      "sequence": 2,
+      "rps_step": 1,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 40.624
+    },
+    {
+      "sequence": 3,
+      "rps_step": 1,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 23.574
+    },
+    {
+      "sequence": 4,
+      "rps_step": 1,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 24.067
+    },
+    {
+      "sequence": 5,
+      "rps_step": 1,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 23.001
+    },
+    {
+      "sequence": 6,
+      "rps_step": 1,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 27.034
+    },
+    {
+      "sequence": 7,
+      "rps_step": 1,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 26.546
+    },
+    {
+      "sequence": 8,
+      "rps_step": 1,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 29.236
+    },
+    {
+      "sequence": 9,
+      "rps_step": 1,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 16.732
+    },
+    {
+      "sequence": 10,
+      "rps_step": 1,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 25.469
+    },
+    {
+      "sequence": 11,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 19.765
+    },
+    {
+      "sequence": 12,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 16.509
+    },
+    {
+      "sequence": 13,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 16.811
+    },
+    {
+      "sequence": 14,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 21.462
+    },
+    {
+      "sequence": 15,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 15.365
+    },
+    {
+      "sequence": 16,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 15.427
+    },
+    {
+      "sequence": 17,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 20.99
+    },
+    {
+      "sequence": 18,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 17.098
+    },
+    {
+      "sequence": 19,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 16.512
+    },
+    {
+      "sequence": 20,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 30.825
+    },
+    {
+      "sequence": 21,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 22.304
+    },
+    {
+      "sequence": 22,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 15.328
+    },
+    {
+      "sequence": 23,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 16.039
+    },
+    {
+      "sequence": 24,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 15.578
+    },
+    {
+      "sequence": 25,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 27.189
+    },
+    {
+      "sequence": 26,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 15.777
+    },
+    {
+      "sequence": 27,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 20.407
+    },
+    {
+      "sequence": 28,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 23.514
+    },
+    {
+      "sequence": 29,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 15.135
+    },
+    {
+      "sequence": 30,
+      "rps_step": 2,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 15.908
+    },
+    {
+      "sequence": 31,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 17.435
+    },
+    {
+      "sequence": 32,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 23.158
+    },
+    {
+      "sequence": 33,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 21.178
+    },
+    {
+      "sequence": 34,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 17.202
+    },
+    {
+      "sequence": 35,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 17.004
+    },
+    {
+      "sequence": 36,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 15.59
+    },
+    {
+      "sequence": 37,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 15.812
+    },
+    {
+      "sequence": 38,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 22.459
+    },
+    {
+      "sequence": 39,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 17.171
+    },
+    {
+      "sequence": 40,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 29.68
+    },
+    {
+      "sequence": 41,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 23.505
+    },
+    {
+      "sequence": 42,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 17.292
+    },
+    {
+      "sequence": 43,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 20.867
+    },
+    {
+      "sequence": 44,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 16.376
+    },
+    {
+      "sequence": 45,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 22.077
+    },
+    {
+      "sequence": 46,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 19.295
+    },
+    {
+      "sequence": 47,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 16.381
+    },
+    {
+      "sequence": 48,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 19.953
+    },
+    {
+      "sequence": 49,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 16.81
+    },
+    {
+      "sequence": 50,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 13.779
+    },
+    {
+      "sequence": 51,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 25.224
+    },
+    {
+      "sequence": 52,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 12.199
+    },
+    {
+      "sequence": 53,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 16.857
+    },
+    {
+      "sequence": 54,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 21.154
+    },
+    {
+      "sequence": 55,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 17.45
+    },
+    {
+      "sequence": 56,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 23.733
+    },
+    {
+      "sequence": 57,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 13.336
+    },
+    {
+      "sequence": 58,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 24.903
+    },
+    {
+      "sequence": 59,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 28.524
+    },
+    {
+      "sequence": 60,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 11.844
+    },
+    {
+      "sequence": 61,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 24.438
+    },
+    {
+      "sequence": 62,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 14.706
+    },
+    {
+      "sequence": 63,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 26.127
+    },
+    {
+      "sequence": 64,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 24.55
+    },
+    {
+      "sequence": 65,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 16.584
+    },
+    {
+      "sequence": 66,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 23.899
+    },
+    {
+      "sequence": 67,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 24.339
+    },
+    {
+      "sequence": 68,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 16.279
+    },
+    {
+      "sequence": 69,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 22.501
+    },
+    {
+      "sequence": 70,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 16.747
+    },
+    {
+      "sequence": 71,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 23.051
+    },
+    {
+      "sequence": 72,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 21.939
+    },
+    {
+      "sequence": 73,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 15.873
+    },
+    {
+      "sequence": 74,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 35.64
+    },
+    {
+      "sequence": 75,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 19.187
+    },
+    {
+      "sequence": 76,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 19.229
+    },
+    {
+      "sequence": 77,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 17.019
+    },
+    {
+      "sequence": 78,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 17.455
+    },
+    {
+      "sequence": 79,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 18.627
+    },
+    {
+      "sequence": 80,
+      "rps_step": 5,
+      "status": 200,
+      "outcome": "ok",
+      "latency_ms": 31.05
+    }
+  ]
+}

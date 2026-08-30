@@ -1,0 +1,18 @@
+{
+  "schema_version": "benchmark-entry.v1",
+  "slug": "webmcp-qcg-day5-million-operations",
+  "title": "WebMCP-QCG Day 5 deterministic engine campaign",
+  "status": "campaign_passed",
+  "created_at": "2026-08-30",
+  "objective": "Measure deterministic QCG engine work and receipt reproducibility under bounded local profiles.",
+  "subject": "QCG decision and evidence path",
+  "primary_dimension": ["throughput", "latency", "digest reproducibility", "resource profile"],
+  "comparators": ["local baseline", "E2B Professional sandbox profiles"],
+  "current_report": "current/report.md",
+  "current_config": "current/config.json",
+  "e2b_execution_authorized": true,
+  "http_canary_execution_authorized": true,
+  "validated_operations": 2600000,
+  "full_repeat_digest_matches": "100/100",
+  "campaign_aggregate": "current/results/day5-campaign-aggregate.json"
+}

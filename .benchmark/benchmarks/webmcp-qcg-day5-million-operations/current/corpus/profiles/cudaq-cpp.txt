@@ -1,0 +1,7 @@
+PROFILE cudaq-cpp
+family: CUDA-Q C++
+source_extension: .cpp (alternate .cc)
+capability: static inspection only
+fixture_intent: identify kernel and measurement declarations without compilation
+authority: human-selected profile; no C++ execution
+receipt_facts: profile, findings, artifact digest, static capability boundary

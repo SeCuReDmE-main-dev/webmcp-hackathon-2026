@@ -1,10 +1,10 @@
-# WebMCP-QCG design contract — Winter editorial handoff
+# WebMCP-QCG design contract — Day 5 Spring proof candidate
 
 ## Scope and authority
 
 This is the canonical visual and interaction contract for the WebMCP-QCG browser workbench. The runnable authority is `prototype/webmcp-qcg`; this document describes how to present that behavior, not how to add behavior. The public destination is [qcg.securedme.ca](https://qcg.securedme.ca/), and the repository is [SeCuReDmE-main-dev/webmcp-hackathon-2026](https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026).
 
-The product line is **Decide before quantum execution.** QCG is a browser-native preflight gate: it inspects a known Q# artifact, evaluates one bounded recommendation, optionally runs one fixed local Q# Bell fixture after a visible one-time consent, and exports a reproducible receipt. Provider credentials, paid calls, QPU submission, arbitrary code execution, and scientific interpretation are outside the product boundary.
+The product line is **Decide before quantum execution.** QCG is a browser-native preflight gate: it inspects a bounded quantum artifact, evaluates one deterministic recommendation, optionally runs an approved Q# or OpenQASM 3 Bell fixture after visible one-time consent, and exports a reproducible receipt. Eight additional ecosystem profiles are static inspection surfaces. Provider credentials, paid calls, QPU submission, arbitrary Python/C++/QIR execution, and scientific interpretation are outside the product boundary.
 
 The interface is evidence-led and human-in-the-loop. Human controls and WebMCP tools call one service layer and update one canonical state. A visual treatment can make a state legible; it cannot invent a state.
 
@@ -12,7 +12,7 @@ The interface is evidence-led and human-in-the-loop. Human controls and WebMCP t
 
 The current app has exactly five top-level tabs, in this order:
 
-1. `Experiment` — import a UTF-8 Q# file (128 KiB maximum), edit bounded inputs, select one of five fixtures, inspect.
+1. `Experiment` — import a supported UTF-8 artifact (128 KiB maximum), explicitly choose its profile, edit bounded inputs, select one of five fixtures, inspect.
 2. `Agent Review` — show the recommendation, confidence, reason codes, safer alternative, manifest and expiry.
 3. `Human Decision` — accept, defer, or justified override; accepted `simulate_first` creates one short-lived consent token.
 4. `Evidence Receipt` — show the bound receipt and export JSON or Markdown without rerunning.
@@ -26,12 +26,14 @@ Exactly four progressive tools exist:
 | --- | --- | --- |
 | `inspect_quantum_experiment` | after a valid human-loaded artifact exists | Creates a versioned manifest and digest. |
 | `evaluate_quantum_call` | after a valid human-loaded artifact exists | Returns exactly one decision, reason codes and one next action. |
-| `run_bounded_qsharp_simulation` | only during accepted `simulate_first` consent | Runs the fixed local Bell fixture in a Worker. |
+| `run_bounded_local_simulation` | only during accepted executable-profile `simulate_first` consent | Runs an approved Q# or OpenQASM Bell fixture in a Worker. |
 | `export_quantum_evidence_report` | after evidence exists | Exports the current bounded receipt. |
 
 The five deterministic fixture hypotheses map to `reuse_result`, `reject`, `recompile`, `simulate_first`, and `ready_for_external_execution`. The final value is a report state only; it is never permission. There is no `Execute` button, provider selector, QPU claim, or hidden execution path.
 
-The current repository test command is `npm test` (`vitest run`). On 2026-08-29 the seasonal checkout returned 34 passing tests in six files. This is a dated engineering receipt, not a performance, safety, provider, or quantum-advantage claim. The visible app may show this number only with its receipt date and source link.
+The current repository test command is `npm test` (`vitest run`). On 2026-08-30 the Day 5 checkout returned 41 passing tests and a passing TypeScript/Vite build. This is a dated engineering receipt, not a provider, quantum-advantage or universal-compatibility claim. The visible app may show this number only with its receipt date and source link.
+
+The profile selector exposes exactly ten profiles. `qsharp-qdk` and `openqasm3-qdk` can compile and simulate within the bounded Worker. Qiskit Python, Cirq/TFQ Python, TorchQuantum Python, PennyLane Python, CUDA-Q Python/C++, Braket Python and QIR text are labelled `static_only`; they can inspect and create evidence but cannot return `simulate_first` or `ready_for_external_execution`.
 
 ## Four themes — exactly four
 
@@ -92,7 +94,7 @@ QCG UI ─────── one canonical QcgServices state ──────�
                                                    human review / receipt
 ```
 
-The UI and agent call the same service functions. DevTools may inspect registration, schemas, invocation input/output, errors and source; it may not add a tool, bypass consent, edit the receipt, or unlock external execution. The collaboration loop is: (1) human selects a fixture, (2) agent discovers only currently registered tools, (3) the UI shows the same transition and provenance, (4) DevTools confirms the trace, (5) the human reviews/export the receipt. Keep raw Q# out of compact agent results and never expose credentials or local paths.
+The UI and agent call the same service functions. DevTools may inspect registration, schemas, invocation input/output, errors and source; it may not add a quantum tool, bypass consent, edit the receipt, or unlock external execution. Four collaboration-only tools (`read_debug_context`, `post_debug_message`, `request_human_review`, `export_debug_handoff`) expose the sanitized ledger through Chrome DevTools MCP. Codex, Gemini CLI/Code Assist or Antigravity can target one page ID through that lane. Chrome's native Gemini DevTools conversation has no documented write API: QCG supports only a human-mediated export, preview and schema-validated import for that surface. Keep raw quantum source out of compact agent results and never expose credentials or local paths.
 
 ## Responsive and full-state contract
 
@@ -118,7 +120,7 @@ Stitch output is reference material. Do not copy raw screens into public asset f
 
 The handoff is accepted only when:
 
-- the UI still has exactly five tabs, exactly four tools, five hypotheses and five decisions;
+- the UI still has exactly five tabs, four progressive quantum tools, four separate collaboration tools, five hypotheses and five decisions;
 - all four themes preserve the same behavior and information hierarchy;
 - DevTools collaboration is shown as inspection/provenance, separate from product authority;
 - no generated HTML, fake metrics, `Execute` control, provider/QPU claim or invented date appears;

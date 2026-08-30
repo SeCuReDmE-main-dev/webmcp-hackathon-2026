@@ -1,8 +1,9 @@
-# Getting started with QCG v2
+# Getting started with QCG v3
 
 This guide runs the current browser prototype from the repository. It covers
-the verified local path only: Q# preflight, optional native WebMCP discovery,
-bounded Bell simulation, and local evidence export.
+the verified local paths: Q#/OpenQASM preflight, optional native WebMCP
+discovery, bounded Bell simulation, static ecosystem inspection and evidence
+export.
 
 ## 1. Prerequisites
 
@@ -42,12 +43,12 @@ npm run build
 ```
 
 `npm test` runs the service, WebMCP lifecycle, seasonal selector, strict debug
-contract, bridge-authority and third-party tool suites. The current verification
-result is 6 test files and 34 tests passing.
+contract, bridge-authority, adapter and third-party tool suites. The current
+verification result is 41 tests passing.
 
 `npm run build` runs `tsc --noEmit` before Vite and writes the production bundle
-to `prototype/webmcp-qcg/dist/`. The build includes the Q# Worker, the pinned Q#
-WebAssembly asset, the public Bell sample, and the `_headers` file.
+to `prototype/webmcp-qcg/dist/`. The build includes the bounded QDK Worker, the
+pinned WebAssembly asset, both executable Bell samples, and the `_headers` file.
 
 With the local Vite server running on port `5173`, execute the pinned official
 smoke suite with `npm run eval:smoke`. To repeat the same two-step suite against
@@ -69,11 +70,11 @@ The application shell and the checked-in sample should then respond at:
 
 - `http://127.0.0.1:4179/`
 - `http://127.0.0.1:4179/fixtures/qcg-bell-sample.qs`
+- `http://127.0.0.1:4179/fixtures/qcg-bell-sample.qasm`
 
-The repository copy of the sample is
-[`prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qs`](../prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qs).
-The **Download Bell sample** button generates the same published program in the
-browser.
+The repository samples are
+[`qcg-bell-sample.qs`](../prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qs)
+and [`qcg-bell-sample.qasm`](../prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qasm).
 
 ## 5. Choose a browser mode
 
@@ -106,7 +107,7 @@ failure; QCG keeps the full human workflow available.
 3. In **Agent Review**, confirm that the recommendation is `simulate_first`.
 4. In **Human Decision**, record an accepted decision. This creates private,
    short-lived, one-use consent inside QCG.
-5. Run the bounded local Q# simulation. The consent is consumed even if the run
+5. Run the bounded local simulation. The consent is consumed even if the run
    is cancelled or fails.
 6. Inspect **Evidence Receipt** and export JSON or Markdown if needed.
 7. Confirm in **Activity** that QPU submissions remain `0`.
@@ -118,8 +119,9 @@ native WebMCP exposes:
 - `evaluate_quantum_call`
 
 After evaluation, `export_quantum_evidence_report` becomes available because a
-v2 receipt exists. `run_bounded_qsharp_simulation` appears only during the valid
-accepted-consent window for `simulate_first` and is removed after consent use.
+v3 receipt exists. `run_bounded_local_simulation` appears only during the valid
+accepted-consent window for an executable `simulate_first` profile and is
+removed after consent use.
 
 ## 7. Use the seasonal selector
 
@@ -152,14 +154,16 @@ fallback. QCG itself does not require the extension or a Gemini client.
 
 ## 9. Imported artifact behavior
 
-QCG accepts a non-empty UTF-8 `.qs` file no larger than 128 KiB. The filename is
-reduced to its leaf component, and SHA-256 is computed over the exact bytes.
+QCG accepts a non-empty UTF-8 artifact no larger than 128 KiB after explicit
+profile selection. The filename is reduced to its leaf component, and SHA-256
+is computed over the exact bytes.
 
-An imported artifact can be inspected and evaluated. The current MVP executes
-only the exact published Bell sample. Other valid Q# programs remain on the
-inspection/recommendation path and receive `recompile` when they would otherwise
-enter local simulation. This is an intentional safety boundary, not generalized
-Q# execution support.
+Q# (`.qs`) and OpenQASM 3 (`.qasm`) use the bounded QDK runtime. Their approved
+Bell fixtures can execute locally. Qiskit, Cirq/TFQ, TorchQuantum, PennyLane,
+CUDA-Q Python/C++, Braket and QIR text profiles remain static-only: QCG can
+inspect and create evidence, but cannot compile, simulate or return external
+readiness for them. Notebooks, archives, binary QIR, URLs and invalid encodings
+are rejected.
 
 ## 10. Troubleshooting
 
@@ -184,9 +188,9 @@ can treat the target as known.
 
 ### A valid imported program will not simulate
 
-Compare its program text with the published Bell sample. QCG allows leading or
-trailing whitespace, but does not execute arbitrary imported Q#; the fixed Bell
-program is the only auditable local execution fixture in this MVP.
+Confirm that the selected profile is executable and compare the program with
+the matching published Q# or OpenQASM Bell fixture. QCG does not execute Python,
+C++ or QIR text and does not treat a static profile as locally runnable.
 
 ### A recommendation is no longer executable
 
@@ -196,8 +200,8 @@ replay expired authority.
 
 ## 11. Security and data boundary
 
-- Raw Q# stays in session memory and does not cross the WebMCP tool contract.
-- Exported receipts omit raw Q#, secrets, provider diagnostics, credentials, and
+- Raw quantum source stays in session memory and does not cross the WebMCP tool contract.
+- Exported receipts omit raw source, secrets, provider diagnostics, credentials, and
   local filesystem paths.
 - Receipts stored in IndexedDB remain local to that browser profile.
 - No analytics, authentication, remote persistence, provider submission, paid

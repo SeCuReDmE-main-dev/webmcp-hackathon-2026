@@ -1,18 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { bellProgram, demoCards } from './catalog'
+import { bellOpenQasmProgram, bellProgram, demoCards } from './catalog'
 import { saveReceipt, readReceipts } from './receiptStore'
 import { QcgServices } from './services'
 import { EXTERNAL_PROFILE_ID, LOCAL_PROFILE_ID } from './targetProfiles'
 import { useQcgWebMcp } from './webmcp'
-import type { HumanChoice, QcgState } from './types'
+import type { HumanChoice, QcgState, QuantumProfileId } from './types'
 import { DebugLedger } from './debugLedger'
 import { installQcgDevtoolsBridge } from './devtoolsBridge'
 import { registerQcgDevtoolsTools } from './devtoolsTools'
 import type { QcgDebugMessage } from './debugContracts'
-import { qcgSeasons, readWindowQcgSeason, saveWindowQcgSeason, type QcgSeason } from './season'
-
-const tabs = ['Experiment', 'Agent Review', 'Human Decision', 'Evidence Receipt', 'Activity'] as const
-type Tab = (typeof tabs)[number]
+import { readWindowQcgSeason, saveWindowQcgSeason, type QcgSeason } from './season'
+import { getQuantumAdapter, quantumAdapters } from './quantumAdapters'
+import { SecurityRail, WorkbenchHeader, WorkflowTabs, workflowTabs, type WorkflowTab } from './components/WorkbenchShell'
 
 function download(name: string, content: string, type: string): void {
   const url = URL.createObjectURL(new Blob([content], { type }))
@@ -33,10 +32,11 @@ export default function App() {
   const [state, setState] = useState<QcgState>(services.snapshot())
   const [selected, setSelected] = useState(demoCards[3].id)
   const selectedCard = demoCards.find((card) => card.id === selected)!
-  const [activeTab, setActiveTab] = useState<Tab>('Experiment')
+  const [activeTab, setActiveTab] = useState<WorkflowTab>('Experiment')
   const [intent, setIntent] = useState(selectedCard.scientificIntent)
   const [observable, setObservable] = useState(selectedCard.observable)
   const [profileId, setProfileId] = useState(selectedCard.profileId)
+  const [artifactProfileId, setArtifactProfileId] = useState<QuantumProfileId>('qsharp-qdk')
   const [shots, setShots] = useState(selectedCard.requestedLimits.shots)
   const [timeoutMs, setTimeoutMs] = useState(selectedCard.requestedLimits.timeout_ms)
   const [maxQubits, setMaxQubits] = useState(selectedCard.requestedLimits.max_qubits)
@@ -52,8 +52,6 @@ export default function App() {
   const [humanDebugSummary, setHumanDebugSummary] = useState('')
   const [debugError, setDebugError] = useState('')
   const simulationController = useRef<AbortController | null>(null)
-  const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
-  const seasonRefs = useRef<Array<HTMLButtonElement | null>>([])
   const evalFixtureLoaded = useRef(false)
   const stateRef = useRef(state)
   stateRef.current = state
@@ -169,9 +167,9 @@ export default function App() {
   async function importArtifact(file: File): Promise<void> {
     setBusy(true)
     try {
-      await services.importQsharpFile(file.name, new Uint8Array(await file.arrayBuffer()))
+      await services.importQuantumFile(file.name, new Uint8Array(await file.arrayBuffer()), artifactProfileId)
       setProfileId(LOCAL_PROFILE_ID)
-      setIntent('Review the imported Q# artifact and choose the minimum justified next action.')
+      setIntent(`Review the imported ${getQuantumAdapter(artifactProfileId)?.label ?? 'quantum'} artifact and choose the minimum justified next action.`)
       setObservable('compile_validity')
       setActiveTab('Experiment')
     } catch {
@@ -271,31 +269,8 @@ export default function App() {
     }
   }
 
-  function onTabKeyDown(index: number, event: React.KeyboardEvent<HTMLButtonElement>): void {
-    let next = index
-    if (event.key === 'ArrowRight') next = (index + 1) % tabs.length
-    else if (event.key === 'ArrowLeft') next = (index - 1 + tabs.length) % tabs.length
-    else if (event.key === 'Home') next = 0
-    else if (event.key === 'End') next = tabs.length - 1
-    else return
-    event.preventDefault()
-    setActiveTab(tabs[next])
-    tabRefs.current[next]?.focus()
-  }
-
-  function onSeasonKeyDown(index: number, event: React.KeyboardEvent<HTMLButtonElement>): void {
-    let next = index
-    if (event.key === 'ArrowRight' || event.key === 'ArrowDown') next = (index + 1) % qcgSeasons.length
-    else if (event.key === 'ArrowLeft' || event.key === 'ArrowUp') next = (index - 1 + qcgSeasons.length) % qcgSeasons.length
-    else if (event.key === 'Home') next = 0
-    else if (event.key === 'End') next = qcgSeasons.length - 1
-    else return
-    event.preventDefault()
-    setSeason(qcgSeasons[next])
-    seasonRefs.current[next]?.focus()
-  }
-
   const consentValid = state.authority_state === 'authorized'
+  const artifactAdapter = getQuantumAdapter(artifactProfileId)!
 
   const visibleDebugMessages = debugMessages.filter((message) =>
     (debugActorFilter === 'all' || message.actor === debugActorFilter) &&
@@ -303,85 +278,39 @@ export default function App() {
   )
 
   return <main data-season={season}>
-    <header className="hero">
-      <img className="seasonal-mark" src={`/seasonal/${season}.svg`} alt="" aria-hidden="true" />
-      <div>
-        <p className="eyebrow">WebMCP-QCG · browser-native HITL preflight</p>
-        <h1>Review before you run.</h1>
-        <p className="lede">I make a quantum call inspectable before compute, shots or provider budget can enter the workflow. The agent recommends; the human accepts, defers or overrides.</p>
-      </div>
-      <div className="hero-actions">
-        <div className="season-selector" role="radiogroup" aria-label="Interface season">
-          {qcgSeasons.map((option, index) => <button key={option} ref={(node) => { seasonRefs.current[index] = node }} role="radio" tabIndex={season === option ? 0 : -1} aria-checked={season === option} className={season === option ? 'selected' : ''} onClick={() => setSeason(option)} onKeyDown={(event) => onSeasonKeyDown(index, event)}>{option}</button>)}
-        </div>
-        <p className={`status-chip ${registrationStatus === 'registered' ? 'pass' : 'caution'}`} role="status">
-          <span aria-hidden="true">{registrationStatus === 'registered' ? '●' : '△'}</span>
-          {!supported
-            ? 'Human mode · WebMCP unavailable'
-            : registrationStatus === 'registered'
-              ? toolNames.length
-                ? `${toolNames.length} native tools registered`
-                : 'WebMCP ready · load an artifact'
-              : registrationStatus === 'error'
-                ? 'WebMCP registration needs recovery'
-                : 'Registering WebMCP tools'}
-        </p>
-      </div>
-    </header>
+    <WorkbenchHeader season={season} onSeasonChange={setSeason} supported={supported} toolCount={toolNames.length} registrationStatus={registrationStatus} />
+    <SecurityRail state={state} />
+    <WorkflowTabs active={activeTab} onChange={setActiveTab} />
 
-    <section className="security-rail" aria-label="Persistent security checks">
-      <article>
-        <span className="security-icon" aria-hidden="true">#</span>
-        <div><h2>Artifact Integrity</h2><p>{state.manifest ? shortHash(state.manifest.artifact_digest) : 'Awaiting a local Q# artifact'}</p></div>
-        <strong>{state.manifest?.compiler.status ?? 'empty'}</strong>
-      </article>
-      <article>
-        <span className="security-icon" aria-hidden="true">◎</span>
-        <div><h2>Target Evidence</h2><p>{state.targetProfile?.label ?? 'No target snapshot selected'}</p></div>
-        <strong>{state.targetProfile?.evidence_state ?? 'empty'}</strong>
-      </article>
-      <article>
-        <span className="security-icon" aria-hidden="true">✓</span>
-        <div><h2>Authority &amp; Effects</h2><p>Agent: {state.recommendation?.decision ?? 'pending'} · Human: {state.humanDecision?.choice ?? 'pending'}</p></div>
-        <strong>{state.effects.qpu_submissions} QPU</strong>
-      </article>
-    </section>
-
-    <nav className="tabs" role="tablist" aria-label="QCG workflow">
-      {tabs.map((tab, index) => <button
-        key={tab}
-        ref={(node) => { tabRefs.current[index] = node }}
-        role="tab"
-        aria-selected={activeTab === tab}
-        aria-controls={`panel-${index}`}
-        id={`tab-${index}`}
-        tabIndex={activeTab === tab ? 0 : -1}
-        onClick={() => setActiveTab(tab)}
-        onKeyDown={(event) => onTabKeyDown(index, event)}
-      >{index + 1}. {tab}</button>)}
-    </nav>
-
-    <section className="workspace" role="tabpanel" id={`panel-${tabs.indexOf(activeTab)}`} aria-labelledby={`tab-${tabs.indexOf(activeTab)}`}>
+    <section className="workspace" role="tabpanel" id={`panel-${workflowTabs.indexOf(activeTab)}`} aria-labelledby={`tab-${workflowTabs.indexOf(activeTab)}`}>
       {activeTab === 'Experiment' && <>
-        <div className="section-title"><div><p className="step">01 · Input boundary</p><h2>Experiment</h2></div><p>Raw Q# stays in session memory. WebMCP receives identifiers and bounded evidence only.</p></div>
+        <div className="section-title"><div><p className="step">01 · Input boundary</p><h2>Experiment</h2></div><p>Raw quantum source stays in session memory. WebMCP receives identifiers and bounded evidence only.</p></div>
         <div className="two-column">
           <article className="panel">
-            <h3>Import a real Q# artifact</h3>
+            <h3>Import a real quantum artifact</h3>
+            <label>Artifact profile<select value={artifactProfileId} onChange={(event) => setArtifactProfileId(event.target.value as QuantumProfileId)}>
+              {quantumAdapters.map((adapter) => <option key={adapter.id} value={adapter.id}>{adapter.label}{adapter.executable ? ' · local executable' : ' · inspection only'}</option>)}
+            </select></label>
+            <p className="capability-line"><strong>Capabilities</strong><span>{artifactAdapter.capabilities.inspect ? 'inspect' : '—'} · {artifactAdapter.capabilities.compile ? 'compile' : 'no compile'} · {artifactAdapter.capabilities.simulate ? 'simulate' : 'no simulation'}</span></p>
             <label className="file-drop">
-              <span>Choose a UTF-8 <code>.qs</code> file (maximum 128 KiB)</span>
-              <input type="file" accept=".qs,text/plain" disabled={busy} onChange={(event) => {
+              <span>Choose UTF-8 {artifactAdapter.extensions.map((extension) => <code key={extension}>{extension} </code>)} (maximum 128 KiB)</span>
+              <input type="file" accept={`${artifactAdapter.extensions.join(',')},text/plain`} disabled={busy} onChange={(event) => {
                 const file = event.currentTarget.files?.[0]
                 if (file) void importArtifact(file)
               }} />
             </label>
             <div className="action-row">
-              <button onClick={() => download('qcg-bell-sample.qs', bellProgram, 'text/plain')}>Download Bell sample</button>
+              <button onClick={() => download('qcg-bell-sample.qs', bellProgram, 'text/plain')}>Q# Bell sample</button>
+              <button onClick={() => download('qcg-bell-sample.qasm', bellOpenQasmProgram, 'text/plain')}>OpenQASM Bell sample</button>
               <button className="primary" disabled={busy || state.manifest?.provenance !== 'human_import'} onClick={inspectImported}>Inspect imported artifact</button>
             </div>
             {state.manifest && <dl className="facts">
               <dt>File</dt><dd>{state.manifest.file_name}</dd>
               <dt>Artifact ID</dt><dd><code>{state.manifest.artifact_id}</code></dd>
               <dt>Bytes</dt><dd>{state.manifest.byte_size}</dd>
+              <dt>Profile</dt><dd>{state.manifest.artifact_profile}</dd>
+              <dt>Format</dt><dd>{state.manifest.format}</dd>
+              <dt>Capability</dt><dd>{state.manifest.capabilities.static_only ? 'inspection only' : 'local compile + simulation'}</dd>
               <dt>SHA-256</dt><dd><code>{shortHash(state.manifest.artifact_digest)}</code></dd>
               <dt>Compiler</dt><dd>{state.manifest.compiler.status} · {state.manifest.compiler.diagnostic_count} diagnostics</dd>
             </dl>}
@@ -468,7 +397,7 @@ export default function App() {
                 <dt>QPU submission</dt><dd>disabled · {state.effects.qpu_submissions} calls</dd>
               </dl>
               {consentValid && <div className="action-row">
-                <button className="primary" disabled={busy} onClick={runSimulation}>Run bounded local Q# simulation</button>
+                <button className="primary" disabled={busy} onClick={runSimulation}>Run bounded local simulation</button>
                 <button disabled={busy} onClick={revokeConsent}>Revoke consent</button>
                 {busy && <button onClick={() => simulationController.current?.abort()}>Cancel</button>}
               </div>}
@@ -479,7 +408,7 @@ export default function App() {
 
       {activeTab === 'Evidence Receipt' && <>
         <div className="section-title"><div><p className="step">04 · Portable proof</p><h2>Evidence Receipt</h2></div><p>The receipt binds the artifact, target snapshot, recommendation, human choice and measured effects.</p></div>
-        {!state.receipt ? <div className="empty-state"><span>▣</span><h3>No receipt yet</h3><p>Evaluate an experiment to create the first v2 receipt.</p></div> :
+        {!state.receipt ? <div className="empty-state"><span>▣</span><h3>No receipt yet</h3><p>Evaluate an experiment to create the first v3 receipt.</p></div> :
           <div className="two-column">
             <article className="panel receipt">
               <p className="step">{state.receipt.schema_version}</p>
@@ -494,7 +423,7 @@ export default function App() {
             </article>
             <article className="panel">
               <h3>Export without execution</h3>
-              <p>JSON and Markdown exports contain no raw Q#, local path, secret, provider error or network credential.</p>
+              <p>JSON and Markdown exports contain no raw quantum source, local path, secret, provider error or network credential.</p>
               <div className="action-row">
                 <button className="primary" disabled={busy} onClick={() => exportEvidence('json')}>Export JSON</button>
                 <button disabled={busy} onClick={() => exportEvidence('markdown')}>Export Markdown</button>

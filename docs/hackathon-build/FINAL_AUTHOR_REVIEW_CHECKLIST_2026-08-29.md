@@ -9,7 +9,7 @@ State: **ready for video production; Devpost remains unsubmitted**
 - [x] Public repository: <https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026>
 - [x] MIT license is present and detectable.
 - [x] Four progressive WebMCP tools are implemented.
-- [x] A real Q# artifact is inspected and hashed from its bytes.
+- [x] Real Q# and OpenQASM artifacts are inspected and hashed from their bytes; eight other profiles are explicitly static-only.
 - [x] Five deterministic recommendations are covered.
 - [x] Human authority is distinct from agent recommendation.
 - [x] Local Q# Worker simulation is bounded, cancellable and consent-gated.

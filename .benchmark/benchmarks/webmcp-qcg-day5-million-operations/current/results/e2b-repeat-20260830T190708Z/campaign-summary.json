@@ -1,0 +1,438 @@
+{
+  "schema_version": "qcg-e2b-campaign-summary.v1",
+  "run_id": "e2b-repeat-20260830T190708Z",
+  "gate": "e2b-repeat",
+  "status": "pass",
+  "sandboxes_requested": 100,
+  "sandboxes_completed": 100,
+  "operations": 1000000,
+  "target_operations": 1000000,
+  "wall_seconds": 57.11244010000519,
+  "aggregate_throughput_ops_per_second": 17509.320180489176,
+  "latency_ms": {
+    "p95_min": 0.8386310000059893,
+    "p95_median": 1.234237499993469,
+    "p95_max": 1.7446759999875212,
+    "stop_limit": 4.996399999999994
+  },
+  "error_rate": 0.0,
+  "unauthorized_effects": 0,
+  "missing_receipts": 0,
+  "receipt_digest_mismatches": 0,
+  "decision_mismatches": 0,
+  "reproducibility": {
+    "checked": true,
+    "prior_results": 100,
+    "mismatched_indices": []
+  },
+  "stop_reasons": [],
+  "kill_results": [
+    {
+      "sandbox_id": "ibwdmivtwxxwxc2zwl097",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iz45sbz7k3ojbo3ibnvzs",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ie4il3o25hh8jtt8h59l3",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i6ttegc8gqcbmb2hbevdl",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ikq09n8vh8z5x5qc0sbgd",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ia4k787iswind4trfmawc",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i0jv2lbcwbk1ugftfzcke",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i1gvd8h8zc5r8655crmuj",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i5tm7dvsjjq73gbpn705e",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ignllkgdjlmsmom07uww9",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i1sk8i8zv8xa3yji93p36",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i9r6yhj7yvya2rxcz18we",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i2paccoxk64cy2nwj2fb6",
+      "killed": true
+    },
+    {
+      "sandbox_id": "imkxyjl53ke0w57jplyxs",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ij5rnxmxv10odccys0gok",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ixkrel9y107b4wypwgmkz",
+      "killed": true
+    },
+    {
+      "sandbox_id": "if7g700re09qa6ro3jcj4",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iyk8jxu0w038jh6zaqnjo",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i5de5szusc22rcji2f804",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iusicnqhw6i3w5yo7rajx",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ietfj6yyry0veadecsv1c",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i6ttnark1wk8ddqcgg0i3",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ioq5h8k4ok9iaq6wzma2x",
+      "killed": true
+    },
+    {
+      "sandbox_id": "id1q55x3v3q9omzef5y5i",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ibd2nfhmo50vmrx92tk49",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iy1lhlmkzxq9wze1wphmr",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ibo28yvbv4e3lj7tvp3ky",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iw2hlwmy6wjf9vbxfo7e3",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i3xuqz675833qwa3o3skm",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iu4en8wa49ifolatcddjq",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ioxf7x2coumsockip1twd",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ifg3fq44f7u4ctpocjdyo",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iof8obfwiqsy13a7rfvdl",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iex4s53ngdtefi5j1iegt",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ileg8fmq3t8o128de1lfw",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i0y6qy2i6lu1y3rh7tjco",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iiyukazq8vxo5hp0it7ng",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iv4q6r45q460al0x7l9ik",
+      "killed": true
+    },
+    {
+      "sandbox_id": "idamlf4hfr4naeq9oacab",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iwt7kkreo7i6homm5ek7x",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ixrj876z594j6zbksnx8b",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iofkt8rb0efmsro99rgt0",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iv9gw1bct855hg8afm1u8",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iwv7fowj7978041ojbyn9",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ic2pc8ekmr4cccunyo0gd",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ib0qkkv1o03ortbpbsw5s",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i0oygkfnbewir9zgpstop",
+      "killed": true
+    },
+    {
+      "sandbox_id": "isv51j4gcl5soxey54ykt",
+      "killed": true
+    },
+    {
+      "sandbox_id": "it2km26s3bn4l0rhebmcy",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iersttfrnoyfh84ok8tly",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i33racosy7gb4x0tgtm8q",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ifmdvvmbo7rdrxx0z288l",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iaurtcu863iogtc5dplum",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i3luc6i1te13ha0ujn1go",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iqoehirani5wnvmgz97yp",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ioipl1ddt17ek1ywpkgzy",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ixox4lajsahujbazhpc8i",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i4m9u11rdkovipi7u8z9r",
+      "killed": true
+    },
+    {
+      "sandbox_id": "io3nz13elapt3mc4qhay5",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ig8tke5bn9jhm7pfz8fk2",
+      "killed": true
+    },
+    {
+      "sandbox_id": "id7e9bsqv1xb79yg5r1p0",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ifc56u6o61mwys5kjriq7",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iw81ctnzstec74hgvl0gb",
+      "killed": true
+    },
+    {
+      "sandbox_id": "il39dtbth4t8qsxk4048v",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i5sj59jwq79om90atqg0y",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i7tbbljq2byjuxghr5zb6",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iqbckmyib1aoq395ojsa7",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ivkuozpjmgdadgh3w7k2x",
+      "killed": true
+    },
+    {
+      "sandbox_id": "idor7452kd19o68wx0olj",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i4mvkxx2wq5zgyal20vbe",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i40fu8zmbg4x6nwgfpp1x",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ilpg33v6rc8mafdowmgxp",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ig3d6jaqdl2wx5a22fi4g",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i637w75ez321ota9f6nss",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i17acjb40n8x5wmzk9bde",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ijz7x89nrutgb43rkw8jx",
+      "killed": true
+    },
+    {
+      "sandbox_id": "imrrvaqmby4h7gq19p7jb",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iamjsfhulz6vi1o2xllqq",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iqaillmng7lkvneirpog4",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iwl2sg6rk7ffdhv4zz07r",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ie4a2laxjy4x9e3lc137y",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ieioquy32y37y1yq3x6nm",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i2297as7gxbhhv4vsz5sz",
+      "killed": true
+    },
+    {
+      "sandbox_id": "isqlq33oabse4m8om4a3e",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iab60207s5v6ddg8br5iw",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i3c8xr6q315cmabu20mfg",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ibfepq0k28xwxvuhh28sd",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i0i84da23nobaxd1ib6cd",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i2pnmqidj2owcc1vbftt2",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ifpdpvk2ubd5an18rhv19",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ithrn68iodimklgoctqis",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ivcm7sii2fgmq6m5oy9wd",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ih6bfiowlfz7tom3b6kr1",
+      "killed": true
+    },
+    {
+      "sandbox_id": "i05eys3k2pgahog8bvift",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ipv9l1q4wjpc07s0jlur3",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iznpompboyviamdpwyhq4",
+      "killed": true
+    },
+    {
+      "sandbox_id": "igghjo0qs2r9tnon62aet",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ite785khbh9vrat5hhfku",
+      "killed": true
+    },
+    {
+      "sandbox_id": "ixoul2v0bkrtabi27vrs7",
+      "killed": true
+    },
+    {
+      "sandbox_id": "iraqht5d1ym2ehrrzwmao",
+      "killed": true
+    }
+  ],
+  "surviving_owned_sandboxes": [],
+  "cost_usd": null,
+  "cost_note": "The E2B SDK used by this campaign exposes runtime metrics, not an invoice total. No cost value is inferred.",
+  "provider_calls": 0,
+  "qpu_calls": 0,
+  "payment_calls": 0,
+  "completed_at": "2026-08-30T19:09:00.915613+00:00"
+}
