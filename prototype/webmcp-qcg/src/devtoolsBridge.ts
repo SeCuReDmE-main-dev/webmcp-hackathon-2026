@@ -1,6 +1,7 @@
 import type { QcgState } from './types'
 import { DebugLedger } from './debugLedger'
 import { createGeminiManualHandoff, debugMessageDraft, geminiManualReply, safeDebugText, type CollaborationIntent, type GeminiManualHandoff, type HumanMemoryDisposition, type HumanReviewDisposition, type QcgDebugMessage } from './debugContracts'
+import { safeConsoleCommand, sanitizedConsoleSnapshot, type ConsoleCommandResultV1, type ConsoleTransport, type SanitizedConsoleSnapshotV2 } from './console/contracts'
 
 export interface QcgDevtoolsCommandStatus {
   command_id: string
@@ -49,7 +50,16 @@ export interface QcgDevtoolsBridge {
   queueGeminiManualReply(raw: string): QcgDevtoolsQueueResult
 }
 
-declare global { interface Window { __QCG_DEVTOOLS_V1__?: QcgDevtoolsBridge } }
+export interface QcgConsoleBridgeV2 extends ConsoleTransport {
+  getSnapshot(): SanitizedConsoleSnapshotV2
+  executeConsoleCommand(command: unknown): Promise<ConsoleCommandResultV1>
+}
+
+export interface QcgConsoleDecisionExecutor {
+  (input: { recommendation_id: string; choice: 'accepted' | 'deferred' | 'overridden'; justification?: string }): Promise<void>
+}
+
+declare global { interface Window { __QCG_DEVTOOLS_V1__?: QcgDevtoolsBridge; __QCG_CONSOLE_V2__?: QcgConsoleBridgeV2 } }
 
 export function makeSanitizedSnapshot(state: QcgState, storageMode: 'indexeddb' | 'memory' = 'memory'): QcgDevtoolsSnapshot {
   return {
@@ -60,7 +70,12 @@ export function makeSanitizedSnapshot(state: QcgState, storageMode: 'indexeddb' 
   }
 }
 
-export function installQcgDevtoolsBridge(getState: () => QcgState, ledger: DebugLedger, sessionId: string): () => void {
+export function installQcgDevtoolsBridge(
+  getState: () => QcgState,
+  ledger: DebugLedger,
+  sessionId: string,
+  options: { executeHumanDecision?: QcgConsoleDecisionExecutor } = {}
+): () => void {
   let lastCommand: QcgDevtoolsCommandStatus | undefined
   const queuedReviewIds = new Set<string>()
   let cached: QcgDevtoolsPanelSnapshot = {
@@ -163,6 +178,60 @@ export function installQcgDevtoolsBridge(getState: () => QcgState, ledger: Debug
     }
   }
 
+  const reject = (message: string): ConsoleCommandResultV1 => ({ schema_version: 'qcg-console-command-result.v1', accepted: false, status: 'rejected', message })
+  const queued = (message: string, result: QcgDevtoolsQueueResult): ConsoleCommandResultV1 => result.accepted
+    ? { schema_version: 'qcg-console-command-result.v1', accepted: true, status: 'queued', message, command_id: result.command_id }
+    : reject(result.error ?? 'The bounded console command was rejected.')
+  const consoleBridge: QcgConsoleBridgeV2 = {
+    // This bridge is hosted by the inspected page. Extension clients identify their own render surface.
+    surface: 'web',
+    getSnapshot: () => sanitizedConsoleSnapshot(getState(), sessionId, ledger.storageMode, 'web'),
+    executeConsoleCommand: async (input) => {
+      const parsed = safeConsoleCommand.safeParse(input)
+      if (!parsed.success) return reject('The console command does not match qcg-console-command.v1.')
+      const command = parsed.data
+      if (command.session_id !== sessionId) return reject('The console command does not match the active session.')
+      try {
+        switch (command.kind) {
+          case 'human_decision': {
+            const recommendation = getState().recommendation
+            if (!recommendation || recommendation.recommendation_id !== command.recommendation_id) return reject('The recommendation is not active in this session.')
+            if (command.choice === 'overridden' && (!command.justification || command.justification.trim().length < 12)) return reject('An override requires at least 12 characters of justification.')
+            if (!options.executeHumanDecision) return reject('This surface cannot apply a human decision.')
+            await options.executeHumanDecision({ recommendation_id: command.recommendation_id, choice: command.choice, justification: command.justification?.trim() })
+            return { schema_version: 'qcg-console-command-result.v1', accepted: true, status: 'completed', message: `Human decision ${command.choice} applied.` }
+          }
+          case 'human_review_disposition':
+            return queued('Human review disposition queued.', bridge.queueHumanReviewDisposition(command.event_id, command.disposition))
+          case 'human_memory_disposition':
+            return queued('Human memory disposition queued.', bridge.queueHumanMemory(command.event_id, command.disposition, command.content))
+          case 'human_message':
+            return queued('Human message queued.', bridge.queueHumanMessage({ summary: command.summary }))
+          case 'human_override_note':
+            return queued('Human override note queued.', bridge.queueHumanMessage({ summary: `Override note: ${command.justification}` }))
+          case 'gemini_manual_handoff_create': {
+            const handoff = bridge.createGeminiManualHandoff({ intent: command.intent, prompt: command.prompt })
+            return { schema_version: 'qcg-console-command-result.v1', accepted: true, status: 'completed', message: 'Gemini manual handoff created.', handoff: JSON.stringify(handoff) }
+          }
+          case 'gemini_manual_reply_preview': {
+            const result = bridge.previewGeminiManualReply(command.raw)
+            return result.accepted
+              ? { schema_version: 'qcg-console-command-result.v1', accepted: true, status: 'completed', message: 'Gemini manual reply previewed as untrusted data.', preview: result.summary }
+              : reject(result.error ?? 'The Gemini manual reply was rejected.')
+          }
+          case 'gemini_manual_reply_import':
+            return queued('Gemini manual reply import queued.', bridge.queueGeminiManualReply(command.raw))
+          case 'export_debug_handoff': {
+            const exported = await ledger.export(sessionId)
+            return { schema_version: 'qcg-console-command-result.v1', accepted: true, status: 'completed', message: 'Sanitized debug handoff exported.', handoff: exported }
+          }
+        }
+      } catch {
+        return reject('The console command failed safely.')
+      }
+    }
+  }
+
   function queueCommand(work: () => Promise<unknown>, label: string, afterSettled?: () => void): QcgDevtoolsQueueResult {
     const commandId = crypto.randomUUID()
     lastCommand = { command_id: commandId, status: 'queued', message: `${label} queued.` }
@@ -180,9 +249,11 @@ export function installQcgDevtoolsBridge(getState: () => QcgState, ledger: Debug
     return { accepted: true, command_id: commandId }
   }
   window.__QCG_DEVTOOLS_V1__ = Object.freeze(bridge)
+  window.__QCG_CONSOLE_V2__ = Object.freeze(consoleBridge)
   return () => {
     unsubscribe()
     if (window.__QCG_DEVTOOLS_V1__ === bridge) delete window.__QCG_DEVTOOLS_V1__
+    if (window.__QCG_CONSOLE_V2__ === consoleBridge) delete window.__QCG_CONSOLE_V2__
   }
 }
 
