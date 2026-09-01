@@ -52,3 +52,13 @@ technology testing.
 - Muted and semantic text accents: at least 4.5:1, PASS.
 - Functional component boundaries: at least 3:1, PASS.
 - Final side-panel visual review: pending one unpacked-extension reload.
+
+## Runtime follow-up
+
+Later on 2026-09-01, Jean-Sebastien reloaded the unpacked extension, restarted
+Chrome, pinned the QCG extension and opened the Companion from the canonical QCG
+page. The side panel opened successfully and its shared QCG context was visible.
+
+This closes the narrow reload/opening gate. Final release and video QA still need
+to repeat the same interaction on the retained recording tab and preserve the
+same session evidence.
