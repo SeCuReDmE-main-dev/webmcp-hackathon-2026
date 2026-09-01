@@ -30,6 +30,12 @@ import Gemini's real response as untrusted evidence, and let the human
 acknowledge the collaboration. Companion open, same-tab attachment and the
 Gemini relay must all pass release QA before recording.
 
+Between those lifecycles, a 13-second `Access` segment demonstrates that the
+same legible structure serves direct human use and agent-assisted use. The
+panel changes presentation only; it never changes a decision, receipt or effect
+counter and is presented as a useful direct-use mechanism rather than a
+conformance certificate.
+
 The voice-over may describe genuine commands in present tense, but it must
 never imply that a staged voice request triggered the already recorded actions.
 The final edit should carry the discreet caption `Live screen proof • narration
@@ -49,10 +55,13 @@ what the retained take visibly proves and introduces no additional claim.
 7. The evidence receipt shows the artifact/profile references and `external_provider_calls: 0`.
 8. The WebMCP or Activity view confirms the progressive tool lifecycle and the
    corresponding invocation trail.
-9. Companion synchronization and one genuine Gemini manual relay are verified
+9. The Access panel visibly changes a browser-local preference while preserving
+   the active authority and effect state. The narration connects readable
+   controls for people with clear names, roles and states for agents.
+10. Companion synchronization and one genuine Gemini manual relay are verified
    against the same tab and session before recording.
-10. Codex and Gemini may observe, challenge and request review. Only the human
-    acknowledges the review, and that action never changes quantum consent.
+11. Codex and Gemini may observe, challenge and request review. Only the human
+     acknowledges the review, and that action never changes quantum consent.
 
 ## Editorial responsibilities
 
@@ -79,9 +88,12 @@ source of technical proof. Every spoken factual claim maps to
 - Confirm the author click is visible before the simulation tool appears.
 - Confirm the retained sequence reaches the receipt, WebMCP lifecycle and
   activity evidence without becoming a button-by-button tour.
+- Confirm the Access sequence takes approximately 13 seconds, demonstrates a
+  real preference change and never implies accessibility certification or an
+  assistive-technology replacement.
 - Confirm any Companion footage was captured only after open, attachment and
-  same-session synchronization passed QA; otherwise use the closing-slide
-  fallback.
+  same-session synchronization passed QA. If the genuine relay fails, postpone
+  recording; a closing slide cannot replace the retained A2A proof.
 - Confirm the voice-over never poses as the live trigger for prerecorded
   actions.
 - Confirm the stable URL and public repository appear accurately.

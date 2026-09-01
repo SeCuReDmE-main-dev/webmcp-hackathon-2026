@@ -38,6 +38,14 @@ human acknowledgement. Failed extension interactions, permission prompts,
 fabricated agent attribution and recovery attempts stay outside the retained
 cut.
 
+The accepted choreography also reserves 13 seconds for `Access`. This is not a
+feature detour: QCG's authority boundary is meaningful only when a person can
+perceive and operate the decision surface. The same semantic names, roles,
+states and histories that support direct human use give browser agents a more
+reliable map. The retained sequence attributes this framing to Kasper
+Kulikowski, demonstrates one real browser-local preference change and preserves
+the active decision, receipt and effect counters.
+
 ## Human-authority boundary
 
 Codex may inspect, evaluate, wait, simulate after consent and export evidence.
@@ -58,6 +66,8 @@ action cannot change quantum consent.
 - It lets the narration describe an already observed result.
 - It makes the separation among agent recommendation, human authority and local
   execution visible rather than merely stated.
+- It shows that clarity for agents and accessibility for people reinforce one
+  shared interface while preserving human control.
 - It reduces recording risk to one clean technical take and one clean audio take.
 
 ## Article impact

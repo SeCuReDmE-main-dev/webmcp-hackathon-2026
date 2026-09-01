@@ -60,6 +60,11 @@ or simulated voice command appear to have triggered the screen actions.
   `simulate-first` Bell fixture ready.
 - Open the Chrome side panel and attach it to the QCG tab.
 - Verify Companion open, same-tab attachment and same-session synchronization.
+- Open the `Access` panel once and verify text-size, stronger-contrast,
+  reduced-motion and underlined-control preferences respond without changing
+  the QCG decision state. Preserve any preference Jean-Sebastien needs; choose
+  one initially inactive control for the retained proof instead of resetting an
+  accessibility preference purely for the recording.
 - Prove one fresh Codex-to-Gemini manual relay in a rehearsal session. The
   retained take creates a new packet and receives a real Gemini response;
   never reuse or fabricate the rehearsal response.
@@ -91,7 +96,9 @@ or simulated voice command appear to have triggered the screen actions.
 > Remember or Forget. Jean-Sebastien will click Accept directly in the QCG page.
 > Once the consent-gated simulation tool appears, run the bounded local
 > simulation and export the evidence receipt as Markdown. Show the progressive
-> WebMCP surface. Then post one bounded Codex observation, open the verified
+> WebMCP surface. Open Access, show the browser-local direct-use preferences,
+> and preserve the same decision state while changing presentation only. Then
+> post one bounded Codex observation, open the verified
 > same-session Companion, create and copy a sanitized Gemini debug handoff, and
 > stop at the relay boundary. Jean-Sebastien will paste the packet into native
 > Gemini DevTools and return the structured reply. Preview and import that reply
@@ -102,7 +109,7 @@ or simulated voice command appear to have triggered the screen actions.
 > code or local paths, use arbitrary page evaluation, submit to a provider or
 > QPU, or make the human decision on my behalf.
 
-## Take 1 — exact 2:53 screen choreography
+## Take 1 — exact 2:55 screen choreography
 
 ### 00:00–00:06 — already-active proof
 
@@ -159,7 +166,21 @@ or simulated voice command appear to have triggered the screen actions.
   after the human decision, while the export tool reflects the completed proof.
 - Avoid opening schemas or scrolling through every field.
 
-### 02:08–02:38 — real Codex-to-Gemini handoff
+### 02:08–02:21 — accessible clarity for people and agents
+
+- Open `Access` through the visible top-bar control.
+- Set text size to 125% or enable one initially inactive preference, and leave
+  the remaining choices visible. Preserve any preference Jean-Sebastien already
+  relies on. This is a proof of one functional preference, not a toggle tour.
+- Keep the decision and effect counters visible enough to show that presentation
+  preferences do not alter authority or evidence.
+- Add the discreet source caption `Accessibility framing: Kasper Kulikowski,
+  2026-08-20`.
+- Describe this as support for direct use and clearer agent interpretation.
+  Never call the panel an accessibility certification or an assistive-technology
+  replacement.
+
+### 02:21–02:43 — real Codex-to-Gemini handoff
 
 - Codex posts one bounded `debug` observation through `post_debug_message`.
 - Open the verified same-session Companion and create a sanitized native-Gemini
@@ -172,7 +193,7 @@ or simulated voice command appear to have triggered the screen actions.
 - Never synthesize a Gemini reply, post a Gemini-attributed message from Codex,
   or reuse the rehearsal packet.
 
-### 02:38–02:47 — human acknowledgement and unchanged authority
+### 02:43–02:49 — human acknowledgement and unchanged authority
 
 - Show the Activity trail with the Codex observation, Gemini counter-analysis
   and open human review request.
@@ -182,11 +203,11 @@ or simulated voice command appear to have triggered the screen actions.
 - If Companion or the genuine Gemini relay fails release QA, postpone recording;
   a slide cannot replace the A2A proof.
 
-### 02:47–02:53 — final identity frame
+### 02:49–02:55 — final identity frame
 
 - Hold a clean final frame with `WebMCP-QCG — Review before you run`.
 - Display `qcg.securedme.ca` and the public GitHub repository URL.
-- Fade out by 02:53, leaving seven seconds of compliance margin below
+- Fade out by 02:55, leaving five seconds of compliance margin below
   Devpost's three-minute limit.
 
 ## Take 2 — synchronized voice-over
@@ -238,7 +259,13 @@ voice.
 > Four WebMCP tools form a progressive contract: inspect, evaluate, simulate
 > under consent, and export. Their registration stays visible to me.
 
-### 02:08–02:38
+### 02:08–02:21
+
+> Even for an underlying engine, Access matters to both sides. Kulikowski's
+> point is practical: people need a readable decision surface, while agents
+> benefit from the same clear names, roles and states—without taking control.
+
+### 02:21–02:43
 
 > Now Codex opens a second, independent loop. It records a bounded observation
 > and prepares a sanitized packet for Gemini in DevTools. I carry that packet
@@ -246,13 +273,12 @@ voice.
 > and imported as untrusted evidence, with declared provenance rather than
 > borrowed authority.
 
-### 02:38–02:47
+### 02:43–02:49
 
-> I acknowledge the review request myself. Codex and Gemini can observe,
-> challenge and hand off; neither can change quantum consent. The authority and
-> the zero-provider counters remain unchanged.
+> I acknowledge the review. Both agents can challenge; neither changes quantum
+> consent. The zero-provider counters hold.
 
-### 02:47–02:53
+### 02:49–02:55
 
 > WebMCP-QCG: review before you run. The live application and public source are
 > available now.
@@ -263,7 +289,8 @@ voice.
 - Remove every loading or idle-polling frame from the retained cut; never
   reorder causality.
 - Add short captions for `inspect`, `evaluate`, `human decision`, `simulate`
-  and `receipt`, followed by `WebMCP lifecycle` and `activity trail`.
+  and `receipt`, followed by `WebMCP lifecycle`, `accessible clarity` and
+  `activity trail`.
 - Keep the opening disclosure that narration was recorded afterward; never cut
   the voice-over to imitate a live voice command.
 - Remove Gemini response latency, but retain the real packet, real reply and
@@ -281,6 +308,9 @@ voice.
 - One-use, expiring and revocable human consent.
 - Bell invariant pass for the demonstrated fixture.
 - Zero external provider calls and zero QPU submissions in the retained proof.
+- Browser-local Access preferences that alter presentation without altering
+  decision state, paired with semantic names, roles and states shared by direct
+  and agent-assisted use.
 - Fifty-one automated tests from a clean clone and the official live WebMCP
   smoke, if shown with current receipts.
 
@@ -291,6 +321,8 @@ voice.
 - Hardware execution or QPU validation.
 - Autonomous scientific authority.
 - Production security certification.
+- Accessibility certification or any claim that the Access panel replaces
+  assistive technology, semantic implementation or manual testing.
 - Any suggestion that OpenAI, Google, IBM, Microsoft, NVIDIA or a hackathon supporter endorses QCG.
 
 ## Final QA gate
@@ -313,6 +345,11 @@ voice.
 - [ ] The measured final duration is between 2:50 and 2:55.
 - [ ] The WebMCP and Activity views complete the evidence lifecycle without a
       generic button tour.
+- [ ] The 13-second Access segment demonstrates a real preference change,
+      preserves authority/effect state and attributes the framing to Kasper
+      Kulikowski.
+- [ ] The narration distinguishes accessible direct use from agent assistance
+      and makes no conformance or assistive-technology claim.
 - [ ] A genuine Codex observation and native Gemini reply appear with declared
       provenance in the same session.
 - [ ] The Gemini reply is previewed before import and remains labelled untrusted.

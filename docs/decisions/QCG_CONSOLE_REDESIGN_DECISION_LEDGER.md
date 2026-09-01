@@ -93,6 +93,18 @@ decisions, not unverified runtime outcomes.
 - Editorial impact: this closes the design and implementation deployment phase with verifiable receipts while leaving the Day 5 article open for Jean-Sébastien's writing, graphics and publication decisions.
 - Proof/status: **Canonical deployment PASS; 14/14 expected paths verified, 12/12 public content hashes exact, required headers present, Bell inspection/evaluation passed, human decision pending, local simulations 0 and QPU submissions 0.**
 
+## Entry 0009 — make accessible clarity part of the final proof
+
+- Timestamp: 2026-09-01T13:37:29-04:00 (America/Toronto)
+- Owner: Jean-Sébastien Beaulieu
+- Evidence: Kasper Kulikowski, `A more accessible web might be the Agentic Web's most overlooked gain`, published 2026-08-20; the implemented QCG Access panel; the accepted Day 7 video choreography.
+- Correction: Entry 0002 attributed the referenced article to Michał Kulikowski. Its author is Kasper Kulikowski. The append-only record preserves the original entry and records the correction here.
+- Selected: reserve 13 seconds in the final demonstration for the visible `Access` control, one functional preference change and an explanation that clear names, roles, states and history serve both direct human use and agent-assisted use.
+- Rejected: treating accessibility as agent infrastructure, presenting an overlay as certification, implying agents replace established assistive technologies, or allowing the segment to displace the genuine A2A proof.
+- Architectural impact: presentation preferences remain browser-local and outside decision, consent and evidence state; the semantic interface remains common to the human and agent paths.
+- Editorial impact: the Summer narrative can state that an underlying engine still requires an accessible authority surface, and that clarity for agents is also useful to people, while keeping people as the primary accessibility beneficiary.
+- Proof/status: **Accepted for the 2:55 storyboard; retained footage and final voice-over remain production gates.**
+
 ## Entry format for future additions
 
 Use a new numbered entry with timestamp and timezone, owner, evidence, selected and

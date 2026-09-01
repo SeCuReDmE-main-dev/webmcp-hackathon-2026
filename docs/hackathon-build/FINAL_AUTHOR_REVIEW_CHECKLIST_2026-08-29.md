@@ -41,6 +41,11 @@ State: **ready for video production; Devpost remains unsubmitted**
 - [ ] Capture a real Codex observation, sanitized Gemini handoff, genuine Gemini
       reply, preview, untrusted import and human acknowledgement.
 - [ ] Confirm the A2A exchange changes no quantum consent or execution counter.
+- [ ] Capture the 13-second Access proof between the WebMCP lifecycle and A2A
+      handoff: one visible preference change, unchanged authority/effects and a
+      discreet Kasper Kulikowski source caption.
+- [ ] Confirm the Access narration serves people and agents while avoiding any
+      accessibility-certification or assistive-technology-replacement claim.
 - [ ] Confirm no failed Companion click, extension setup or permission prompt is retained.
 - [ ] Measure a final duration between 2:50 and 2:55, always below 3:00.
 - [ ] Verify the final cut against `VIDEO_SCRIPT_AND_STORYBOARD_2026-08-29.md`.

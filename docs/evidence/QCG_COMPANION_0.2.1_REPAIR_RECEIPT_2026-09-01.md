@@ -1,7 +1,7 @@
 # QCG Companion 0.2.1 repair receipt
 
 Date: 2026-09-01
-Status: implementation, automated validation and public application deployment complete; unpacked-extension reload and browser smoke remain author-operated gates
+Status: implementation, automated validation, public deployment and live page-button smoke complete; same-session A2A and F12 proof remain production gates
 
 ## Observed symptom
 
@@ -41,12 +41,29 @@ The previous QCG path moved the click through `window.postMessage`, then awaited
 The archive is local release evidence and is ignored by Git. The auditable
 extension source remains under `companion/qcg-devtools-extension/`.
 
-## Remaining browser gate
+## Live Chrome proof after unpacked-extension reload
 
-Chrome must reload the unpacked extension and the QCG page before the repaired
-scripts can run. The final smoke must prove page-button opening, same-tab and
-same-session attachment, F12 panel state, the Codex-to-Gemini manual relay and
-unchanged quantum authority.
+Jean-Sebastien reloaded the unpacked QCG Companion, restarted Chrome and pinned
+the extension. Codex then claimed the fresh Chrome tab, opened the canonical
+public application and observed this bounded state transition:
+
+- before click: `Companion not requested`;
+- trusted human-surface click: `Open Companion`;
+- after click: `Companion side panel opened`.
+
+The same live page exposed the functional `Access preferences` dialog with
+browser-local text-size, stronger-contrast, reduced-motion and underlined-control
+settings. Its visible disclaimer correctly separates direct-use support from
+accessibility certification.
+
+Result: **PASS for trusted page-button opening on the canonical origin.**
+
+## Remaining A2A and F12 gate
+
+The final retained smoke must still prove same-tab and same-session attachment,
+F12 panel state, the Codex-to-Gemini manual relay and unchanged quantum
+authority. The successful opening status alone does not prove those later
+states.
 
 ## Public application deployment
 
