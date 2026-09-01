@@ -105,6 +105,17 @@ decisions, not unverified runtime outcomes.
 - Editorial impact: the Summer narrative can state that an underlying engine still requires an accessible authority surface, and that clarity for agents is also useful to people, while keeping people as the primary accessibility beneficiary.
 - Proof/status: **Accepted for the 2:55 storyboard; retained footage and final voice-over remain production gates.**
 
+## Entry 0010 — recognize the Companion as the A2A surface and reduce Light glare
+
+- Timestamp: 2026-09-01T13:44:58-04:00 (America/Toronto)
+- Owner: Jean-Sébastien Beaulieu
+- Evidence: successful live `Open Companion` state transition on the canonical origin; author inspection of the pinned Chrome side panel; direct author report that the original Light palette was bright enough to blur visual focus.
+- Selected: treat the Companion as an essential same-context A2A surface, preserve its human-authority boundary, and replace its near-white Light palette with a lower-luminance sage-mineral token set whose text, accents and component boundaries pass explicit contrast gates.
+- Rejected: removing Light mode, dimming text, adding a new product feature, hiding the side panel, or treating visual discomfort as a cosmetic preference without a testable correction.
+- Architectural impact: the Web page, F12 panel and side panel continue to share bounded state while the extension presentation gains a tested low-glare Light variant. Agent messages remain proposals and evidence; only the human applies dispositions.
+- Editorial impact: the Summer article can identify the side panel as the practical meeting surface for inter-agent work and record that accessibility feedback changed the implementation immediately.
+- Proof/status: **Implemented as Companion 0.2.2; manifest/bridge tests and low-glare luminance/contrast gates pass. Live visual validation awaits one unpacked-extension reload.**
+
 ## Entry format for future additions
 
 Use a new numbered entry with timestamp and timezone, owner, evidence, selected and

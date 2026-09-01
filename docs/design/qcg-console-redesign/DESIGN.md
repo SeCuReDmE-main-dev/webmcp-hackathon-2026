@@ -92,8 +92,10 @@ Dark and light are contrast-tested token sets, not separate products. Theme chan
 surface, text, border, focus and state tokens only; it never changes tools, fields,
 routes, capabilities or authority.
 
-- Light: mineral surfaces, graphite text, emerald selected-state accents and cyan
-  technical evidence.
+- Light: low-glare sage-mineral surfaces, deep graphite-green text, emerald
+  selected-state accents and cyan technical evidence. Pure-white primary
+  surfaces are excluded from the Companion because the narrow persistent panel
+  concentrates luminance beside the browser viewport.
 - Dark: charcoal/navy surfaces, warm-white text and stronger cyan active-state
   accents.
 - Both: opaque or sufficiently dense text surfaces, visible 3 px focus treatment,

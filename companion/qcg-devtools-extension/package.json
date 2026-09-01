@@ -1,10 +1,10 @@
 {
   "name": "qcg-devtools-extension",
   "private": true,
-  "version": "0.2.1",
+  "version": "0.2.2",
   "type": "module",
   "scripts": {
-    "test": "node ./validate.mjs && node ./openCompanion.test.mjs",
+    "test": "node ./validate.mjs && node ./openCompanion.test.mjs && node ./lightTheme.test.mjs",
     "validate": "node ./validate.mjs"
   }
 }

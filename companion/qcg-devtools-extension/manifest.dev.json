@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "QCG Console Companion (development)",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Development companion for local WebMCP-QCG only.",
   "minimum_chrome_version": "116",
   "action": { "default_title": "Open QCG Companion" },
