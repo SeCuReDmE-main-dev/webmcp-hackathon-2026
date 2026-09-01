@@ -12,6 +12,7 @@ const baseProps = {
   registrationStatus: 'unsupported',
   sessionId: 'session-12345678',
   companionStatus: 'Companion not requested',
+  companionTriggerId: '7310b1d5-2f9f-45a9-9f77-55f73d1f5189',
   onOpenCompanion: vi.fn(),
 }
 
@@ -26,6 +27,11 @@ afterEach(() => {
 })
 
 describe('QCG console shell', () => {
+  it('marks the companion button with the bounded extension handshake id', () => {
+    render(<ConsoleShell {...baseProps} onViewChange={vi.fn()} inspector={() => <p>State inspector</p>}><h1>Inspector</h1></ConsoleShell>)
+    expect(screen.getByRole('button', { name: 'Open Companion' }).getAttribute('data-qcg-open-companion')).toBe(baseProps.companionTriggerId)
+  })
+
   it('gives every left-rail view a real central navigation action', async () => {
     const user = userEvent.setup()
     const onViewChange = vi.fn()
