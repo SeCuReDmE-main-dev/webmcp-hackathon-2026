@@ -34,19 +34,20 @@ raw source.
 
 ## Page open-companion handshake
 
-The QCG page can request an extension opening only through a same-window,
-same-origin `postMessage` envelope:
+The QCG page marks its real button with a single-use UUID:
 
-```js
-{ channel: 'qcg-console-extension-control.v1', type: 'open_companion', request_id: '<uuid>' }
+```html
+<button data-qcg-open-companion="<uuid>">Open Companion</button>
 ```
 
-`contentBridge.js` validates the window source, origin, channel, type and UUID,
-then sends only the request ID to the service worker. The worker derives the
-target from `sender.tab.id`; it never accepts a page-supplied tab identifier.
-The content bridge emits the paired `open_companion_result` with the same UUID
-and a bounded `side_panel`, `companion_tab`, or `none` status. The extension
-action keeps its direct user-click path.
+`contentBridge.js` accepts only a trusted click on that marked control, validates
+the UUID, and sends only the request ID to the service worker. This preserves
+Chrome's required user-gesture boundary. The worker derives the target from
+`sender.tab.id`; it never accepts a page-supplied tab identifier. Tab-specific
+options are prepared when the content bridge connects, so `sidePanel.open()` is
+the first browser operation on the click path. The content bridge emits a paired
+`open_companion_result` with the same UUID and a bounded `side_panel`,
+`companion_tab`, or `none` status plus a non-sensitive reason code.
 
 ## Shared console information architecture
 
@@ -73,12 +74,17 @@ npm test
 
 Manual smoke matrix:
 
-1. Load unpacked extension and open the QCG DevTools panel on the public QCG
-   tab; verify its snapshot is bounded.
-2. Click the extension action; verify side-panel opening or the companion-tab
-   fallback.
-3. Navigate away and switch tabs; verify the companion shows no other tab's
+1. In `chrome://extensions`, enable Developer mode and choose `Load unpacked`.
+   Select this `qcg-devtools-extension` directory. After any source update,
+   press the extension card's Reload control and reload the QCG page.
+2. Open the QCG DevTools panel on the public QCG tab; verify its snapshot is
+   bounded.
+3. Click the page's `Open Companion` button; verify the side panel opens and the
+   page reports `Companion side panel opened`. If Chrome declines the side
+   panel, verify the explicit companion-tab fallback and status instead.
+4. Click the extension action; verify it opens the same side-panel surface.
+5. Navigate away and switch tabs; verify the companion shows no other tab's
    context.
-4. Use decision, review, memory, observation, and Gemini relay buttons;
+6. Use decision, review, memory, observation, and Gemini relay buttons;
    verify QCG records only explicit human actions.
-5. Confirm no UI offers consent, simulation, provider, or QPU execution.
+7. Confirm no UI offers consent, simulation, provider, or QPU execution.

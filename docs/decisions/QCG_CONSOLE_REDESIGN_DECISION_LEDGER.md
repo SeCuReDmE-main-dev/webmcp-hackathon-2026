@@ -93,6 +93,29 @@ decisions, not unverified runtime outcomes.
 - Editorial impact: this closes the design and implementation deployment phase with verifiable receipts while leaving the Day 5 article open for Jean-Sébastien's writing, graphics and publication decisions.
 - Proof/status: **Canonical deployment PASS; 14/14 expected paths verified, 12/12 public content hashes exact, required headers present, Bell inspection/evaluation passed, human decision pending, local simulations 0 and QPU submissions 0.**
 
+## Entry 0009 — make accessible clarity part of the final proof
+
+- Timestamp: 2026-09-01T13:37:29-04:00 (America/Toronto)
+- Owner: Jean-Sébastien Beaulieu
+- Evidence: Kasper Kulikowski, `A more accessible web might be the Agentic Web's most overlooked gain`, published 2026-08-20; the implemented QCG Access panel; the accepted Day 7 video choreography.
+- Correction: Entry 0002 attributed the referenced article to Michał Kulikowski. Its author is Kasper Kulikowski. The append-only record preserves the original entry and records the correction here.
+- Selected: reserve 13 seconds in the final demonstration for the visible `Access` control, one functional preference change and an explanation that clear names, roles, states and history serve both direct human use and agent-assisted use.
+- Rejected: treating accessibility as agent infrastructure, presenting an overlay as certification, implying agents replace established assistive technologies, or allowing the segment to displace the genuine A2A proof.
+- Architectural impact: presentation preferences remain browser-local and outside decision, consent and evidence state; the semantic interface remains common to the human and agent paths.
+- Editorial impact: the Summer narrative can state that an underlying engine still requires an accessible authority surface, and that clarity for agents is also useful to people, while keeping people as the primary accessibility beneficiary.
+- Proof/status: **Accepted for the 2:55 storyboard; retained footage and final voice-over remain production gates.**
+
+## Entry 0010 — recognize the Companion as the A2A surface and reduce Light glare
+
+- Timestamp: 2026-09-01T13:44:58-04:00 (America/Toronto)
+- Owner: Jean-Sébastien Beaulieu
+- Evidence: successful live `Open Companion` state transition on the canonical origin; author inspection of the pinned Chrome side panel; direct author report that the original Light palette was bright enough to blur visual focus.
+- Selected: treat the Companion as an essential same-context A2A surface, preserve its human-authority boundary, and replace its near-white Light palette with a lower-luminance sage-mineral token set whose text, accents and component boundaries pass explicit contrast gates.
+- Rejected: removing Light mode, dimming text, adding a new product feature, hiding the side panel, or treating visual discomfort as a cosmetic preference without a testable correction.
+- Architectural impact: the Web page, F12 panel and side panel continue to share bounded state while the extension presentation gains a tested low-glare Light variant. Agent messages remain proposals and evidence; only the human applies dispositions.
+- Editorial impact: the Summer article can identify the side panel as the practical meeting surface for inter-agent work and record that accessibility feedback changed the implementation immediately.
+- Proof/status: **Implemented as Companion 0.2.2; manifest/bridge tests and low-glare luminance/contrast gates pass. Live visual validation awaits one unpacked-extension reload.**
+
 ## Entry format for future additions
 
 Use a new numbered entry with timestamp and timezone, owner, evidence, selected and

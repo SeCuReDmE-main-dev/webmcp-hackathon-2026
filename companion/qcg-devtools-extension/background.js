@@ -14,6 +14,14 @@ chrome.runtime.onConnect.addListener((port) => {
   else attachSidePanel(port)
 })
 
+chrome.runtime.onInstalled.addListener(() => {
+  void chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: true }).catch(() => undefined)
+})
+
+chrome.runtime.onStartup.addListener(() => {
+  void chrome.sidePanel?.setPanelBehavior?.({ openPanelOnActionClick: true }).catch(() => undefined)
+})
+
 chrome.action.onClicked.addListener((tab) => { if (typeof tab.id === 'number') void openCompanion(tab.id) })
 
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
@@ -41,6 +49,7 @@ function attachContent(port) {
   const tabId = port.sender?.tab?.id
   if (!Number.isInteger(tabId)) { port.disconnect(); return }
   contentPorts.set(tabId, port)
+  void prepareCompanion(tabId)
   port.onMessage.addListener((message) => {
     if (!message || typeof message !== 'object') return
     if (message.type === 'qcg-console-snapshot.v1' && validSnapshot(message.snapshot)) {
@@ -53,6 +62,11 @@ function attachContent(port) {
   })
   port.onDisconnect.addListener(() => { if (contentPorts.get(tabId) === port) contentPorts.delete(tabId) })
   try { port.postMessage({ type: 'qcg-console-request-snapshot.v1' }) } catch {}
+}
+
+async function prepareCompanion(tabId) {
+  if (!chrome.sidePanel?.setOptions) return
+  try { await chrome.sidePanel.setOptions({ tabId, path: 'panel.html', enabled: true }) } catch {}
 }
 
 function attachDevtools(port) {
@@ -91,15 +105,17 @@ function attachSidePanel(port) {
 async function openCompanion(tabId) {
   if (chrome.sidePanel?.open) {
     try {
-      await chrome.sidePanel.setOptions({ tabId, path: 'panel.html', enabled: true })
+      // `open()` must be the first awaited browser operation in this user-gesture
+      // path. The tab-specific options are prepared when the content bridge
+      // connects so an asynchronous setup call cannot consume the gesture.
       await chrome.sidePanel.open({ tabId })
-      return { opened: 'side_panel' }
+      return { opened: 'side_panel', reason: 'opened' }
     } catch {}
   }
   try {
     await chrome.tabs.create({ url: chrome.runtime.getURL(`panel.html?surface=companion-tab&tab_id=${encodeURIComponent(String(tabId))}`) })
-    return { opened: 'companion_tab' }
-  } catch { return { opened: 'none' } }
+    return { opened: 'companion_tab', reason: 'side_panel_declined' }
+  } catch { return { opened: 'none', reason: 'browser_declined' } }
 }
 
 function deliverSnapshot(tabId, port) { const snapshot = snapshots.get(tabId); if (snapshot) port.postMessage({ type: 'qcg-console-snapshot.v1', snapshot }) }

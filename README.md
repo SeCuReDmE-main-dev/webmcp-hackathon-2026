@@ -1,4 +1,4 @@
-![WebMCP-QCG: Quantum Call Gate](asset/thumbnail/thumbnail_devpost.png)
+![WebMCP-QCG: Quantum Call Gate — Autumn](asset/thumbnail/thumbnail_devpost.png)
 
 # WebMCP Quantum Call Gate
 
@@ -27,6 +27,22 @@ static-inspection surfaces and can never request simulation or external readines
 
 No QPU submission, paid API, provider credential, or remote quantum job exists
 in this MVP. The QPU submission counter is structurally fixed at zero.
+
+## The build in four seasons
+
+The seasons describe how the code matured; they are an editorial map, not
+runtime themes. QCG itself deliberately exposes only **Dark** and **Light**.
+
+| Season | Engineering threshold | Evidence trail | Thumbnail |
+|---|---|---|---|
+| **Autumn — choose** | The broad quantum-router idea became one browser-native call gate with explicit non-goals. | [Initial portfolio](docs/decisions/2026-08-27-initial-portfolio.md) and [progressive four-tool decision](docs/decisions/2026-08-28-progressive-four-tool-browser-gate.md) | Current cover above |
+| **Winter — bound** | Tool contracts, five deterministic recommendations, human authority and evidence receipts replaced architectural ambition with inspectable states. | [Browser-native HITL workbench ADR](docs/decisions/2026-08-29-browser-native-hitl-quantum-preflight-workbench.md) | asset/thumbnail/thumbnail_winter.png — in production |
+| **Spring — prove** | Functional expansion stopped; Q#, OpenQASM, benchmarks, accessibility and one console across three surfaces became release gates. | [Day 5 feature freeze](docs/decisions/2026-08-30-day5-spring-proof-and-feature-freeze.md) and [console authority ADR](docs/decisions/2026-08-30-qcg-console-redesign-authority.md) | asset/thumbnail/thumbnail_spring.png — in production |
+| **Summer — converge** | Web, F12 and Companion now share sanitized evidence while agents contribute and the human remains the decision holder. The remaining work is proof, documentation, video and release QA. | [Day 7 public-safe trace](research/day7/DAY7_PUBLIC_SAFE_TRACE_2026-09-01.md) and [video/A2A/README status](research/day7/DAY7_VIDEO_A2A_README_STATUS_2026-09-01.md) | asset/thumbnail/thumbnail_summer.png — in production |
+
+The complete four-image gallery will be enabled when the Winter, Spring and
+Summer assets exist. Keeping the filenames explicit avoids broken public images
+while the artwork is still being produced.
 
 ## What QCG v3 actually does
 
@@ -165,6 +181,13 @@ and kept local simulations and QPU submissions at zero. A fresh native-agent
 invocation and a full author-controlled simulation/export remain separate gates.
 See [`evidence/qa/`](evidence/qa/) for dated receipts.
 
+On 2026-09-01, the unpacked extension was reloaded and pinned, and the canonical
+QCG page opened the Companion side panel successfully. The narrow Light surface
+was also moved to lower-glare sage-mineral neutrals after direct user feedback.
+The final recording must still repeat F12, Companion and same-session proof on
+the retained tab. See the
+[Day 7 Companion trace](research/day7/COMPANION_A2A_AND_LOW_GLARE_TRACE_2026-09-01.md).
+
 ## Limits and non-goals
 
 - QCG v3 executes only its bounded Q# and OpenQASM 3 paths. Qiskit, Cirq/TFQ,
@@ -205,6 +228,13 @@ See [`evidence/qa/`](evidence/qa/) for dated receipts.
 - [`evidence/`](evidence/) — machine-readable receipts and provenance.
 - [`evidence/hosting/`](evidence/hosting/) — current read-only hosting baseline.
 - [`docs/journal/`](docs/journal/) — public development journal.
+
+- [Day 7 public-safe trace](research/day7/DAY7_PUBLIC_SAFE_TRACE_2026-09-01.md)
+  — Summer closure, privacy boundaries and feature-freeze scope.
+- [Day 7 video/A2A/README status](research/day7/DAY7_VIDEO_A2A_README_STATUS_2026-09-01.md)
+  — current production gates and thumbnail contract.
+- [Summer 9/39 source register](research/day7/SUMMER_9_39_SOURCE_REGISTER_2026-09-01.md)
+  — thirty exclusive sources routed across nine editorial chapters.
 
 ## Governance
 

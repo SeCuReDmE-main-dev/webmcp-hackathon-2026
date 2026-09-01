@@ -30,6 +30,7 @@ export default function App() {
   const [debugMessages, setDebugMessages] = useState<QcgDebugMessage[]>([])
   const [debugReady, setDebugReady] = useState(false)
   const [companionStatus, setCompanionStatus] = useState('Companion not requested')
+  const [companionTriggerId, setCompanionTriggerId] = useState(() => crypto.randomUUID())
   const [actorFilter, setActorFilter] = useState('all')
   const [kindFilter, setKindFilter] = useState('all')
   const simulationController = useRef<AbortController | null>(null)
@@ -62,13 +63,15 @@ export default function App() {
   useEffect(() => {
     const receive = (event: MessageEvent<unknown>) => {
       if (event.origin !== window.location.origin || !event.data || typeof event.data !== 'object') return
-      const data = event.data as { channel?: unknown; type?: unknown; request_id?: unknown; status?: unknown }
+      const data = event.data as { channel?: unknown; type?: unknown; request_id?: unknown; status?: unknown; reason?: unknown }
       if (data.channel !== 'qcg-console-extension-control.v1' || data.type !== 'open_companion_result' || data.request_id !== companionRequestRef.current) return
       if (companionTimerRef.current !== null) window.clearTimeout(companionTimerRef.current)
       companionTimerRef.current = null
       if (data.status === 'side_panel') setCompanionStatus('Companion side panel opened')
-      else if (data.status === 'companion_tab') setCompanionStatus('Companion tab opened')
-      else setCompanionStatus('Companion unavailable')
+      else if (data.status === 'companion_tab') setCompanionStatus('Companion tab opened · side panel declined')
+      else if (data.reason === 'extension_transport_failed') setCompanionStatus('QCG Companion needs a reload')
+      else setCompanionStatus('Browser declined Companion opening')
+      companionRequestRef.current = null
     }
     window.addEventListener('message', receive)
     return () => {
@@ -86,17 +89,17 @@ export default function App() {
   function humanMessage(summary: string): void { void window.__QCG_DEVTOOLS_V1__?.appendHumanMessage({ summary }).then(refreshDebug).catch(() => undefined) }
   async function exportEvidence(format: 'json' | 'markdown'): Promise<void> { if (!state.receipt) return; setBusy(true); try { const result = await services.exportPacket({ receipt_id: state.receipt.receipt_id, format }); download(`webmcp-qcg-evidence.${format === 'json' ? 'json' : 'md'}`, result.content, format === 'json' ? 'application/json' : 'text/markdown') } finally { refresh(); setBusy(false) } }
   function openCompanion(): void {
-    const requestId = crypto.randomUUID()
+    const requestId = companionTriggerId
     companionRequestRef.current = requestId
+    setCompanionTriggerId(crypto.randomUUID())
     if (companionTimerRef.current !== null) window.clearTimeout(companionTimerRef.current)
     setCompanionStatus('Requesting companion…')
-    window.postMessage({ channel: 'qcg-console-extension-control.v1', type: 'open_companion', request_id: requestId }, window.location.origin)
     companionTimerRef.current = window.setTimeout(() => {
       if (companionRequestRef.current !== requestId) return
       companionRequestRef.current = null
       companionTimerRef.current = null
-      setCompanionStatus('Extension unavailable · load QCG Companion')
-    }, 1500)
+      setCompanionStatus('QCG Companion extension not connected · load or reload it')
+    }, 4000)
   }
   async function requestHandoff(intent: 'debug' | 'search' | 'find' | 'brainstorm' | 'decision'): Promise<string> {
     const result = await (window.__QCG_CONSOLE_V2__?.executeConsoleCommand({ schema_version: 'qcg-console-command.v1', session_id: debugSessionId, kind: 'gemini_manual_handoff_create', intent, prompt: `Prepare a bounded ${intent} handoff from the current QCG evidence.` }) ?? Promise.resolve({ message: 'The bounded bridge is not ready.' }))
@@ -105,7 +108,7 @@ export default function App() {
 
   const webTransport = useMemo(() => createWebConsoleTransport(() => sanitizedConsoleSnapshot(stateRef.current, debugSessionId, debugLedger.storageMode, 'web', { toolNames, invocations: stateRef.current.invocations }), (command) => window.__QCG_CONSOLE_V2__?.executeConsoleCommand(command) ?? Promise.resolve({ schema_version: 'qcg-console-command-result.v1', accepted: false, status: 'rejected', message: 'The bounded bridge is not ready.' })), [debugLedger.storageMode, debugSessionId, toolNames])
   void webTransport
-  return <ConsoleShell theme={theme} onThemeChange={setTheme} view={view} onViewChange={setView} supported={supported} toolCount={toolNames.length} registrationStatus={registrationStatus} sessionId={debugSessionId} companionStatus={companionStatus} onOpenCompanion={openCompanion} inspector={(navigate) => <ConsoleInspector state={state} debugMessages={debugMessages} sessionId={debugSessionId} onViewChange={navigate} />}>
+  return <ConsoleShell theme={theme} onThemeChange={setTheme} view={view} onViewChange={setView} supported={supported} toolCount={toolNames.length} registrationStatus={registrationStatus} sessionId={debugSessionId} companionStatus={companionStatus} companionTriggerId={companionTriggerId} onOpenCompanion={openCompanion} inspector={(navigate) => <ConsoleInspector state={state} debugMessages={debugMessages} sessionId={debugSessionId} onViewChange={navigate} />}>
     <ConsoleViews view={view} state={state} selected={selected} select={setSelected} artifactProfileId={artifactProfileId} setArtifactProfileId={setArtifactProfileId} busy={busy} runDemo={() => void runDemo()} importArtifact={(file) => void importArtifact(file)} inspectImported={() => void inspectImported()} setView={setView} recordDecision={(choice, justification) => void recordDecision(choice, justification)} runSimulation={() => void runSimulation()} revokeConsent={revokeConsent} exportEvidence={(format) => void exportEvidence(format)} toolNames={toolNames} registrationStatus={registrationStatus} supported={supported} debugReady={debugReady} debugMessages={debugMessages} humanMessage={humanMessage} storedReceipts={storedReceipts} actorFilter={actorFilter} kindFilter={kindFilter} setFilters={(actor, kind) => { setActorFilter(actor); setKindFilter(kind) }} requestHandoff={requestHandoff} />
   </ConsoleShell>
 }
