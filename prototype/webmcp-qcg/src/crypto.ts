@@ -9,5 +9,10 @@ export async function digest(value: unknown): Promise<string> {
 }
 
 export function id(prefix: string, entropy: string): string {
-  return `${prefix}-${entropy.replace(/[^a-z0-9]/gi, '').toLowerCase().slice(0, 24)}`
+  const safePrefix = prefix.replace(/[^a-z0-9_-]/gi, '').toLowerCase().slice(0, 24) || 'id'
+  const cleanEntropy = entropy.replace(/[^a-z0-9]/gi, '').toLowerCase()
+  const entropyToken = cleanEntropy.length <= 32
+    ? cleanEntropy
+    : `${cleanEntropy.slice(0, 16)}${cleanEntropy.slice(-16)}`
+  return `${safePrefix}-${entropyToken || 'value'}`
 }

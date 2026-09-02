@@ -56,6 +56,14 @@ function estimateQubits(source: string): number | null {
   return Math.min(matches.length, 9)
 }
 
+function estimateOpenQasmQubits(source: string): number | null {
+  const declaration = source.match(/qubit(?:\s*\[\s*(\d+)\s*\])?/i)
+  if (!declaration) return null
+  if (!declaration[1]) return 1
+  const declared = Number(declaration[1])
+  return Number.isSafeInteger(declared) && declared >= 0 ? Math.min(declared, 9) : 9
+}
+
 function isBoundedEntrypoint(source: string, qubits: number | null): boolean {
   return /@EntryPoint\s*\(\s*\)/.test(source) &&
     /operation\s+Main\s*\([^)]*\)\s*:\s*Result\s*\[\s*\]/.test(source) &&
@@ -67,8 +75,34 @@ function isBoundedOpenQasmBell(source: string, qubits: number | null): boolean {
     /\bcx\s+q\[0\]\s*,\s*q\[1\]\s*;/i.test(source) && qubits === 2
 }
 
+function canonicalFixtureSource(source: string): string {
+  return source
+    .replace(/\r\n?/g, '\n')
+    .split('\n')
+    .map((line) => line.trimEnd())
+    .filter((line) => line.trim().length > 0)
+    .join('\n')
+    .trim()
+}
+
+function simulationIntegrityError(result: SimulatorResult, requestedShots: number): string | undefined {
+  if (!result.bellInvariant) return 'The bounded Bell invariant was not satisfied.'
+  if (result.shotsRequested !== requestedShots) return 'The simulator changed the approved shot request.'
+  if (result.shotsReturned !== requestedShots) return 'The simulator returned an incomplete shot set.'
+  const counts = Object.values(result.outcomeCounts)
+  if (counts.some((count) => !Number.isInteger(count) || count < 0)) {
+    return 'The simulator returned invalid outcome counts.'
+  }
+  if (counts.reduce((total, count) => total + count, 0) !== requestedShots) {
+    return 'The simulator outcome counts do not match the approved shot request.'
+  }
+  return undefined
+}
+
 export class QcgServices {
   private state: QcgState = initialState()
+  private stateRevision = 0
+  private mutationTail: Promise<void> = Promise.resolve()
   private readonly artifacts = new Map<string, ArtifactRecord>()
   private readonly reusableKeys = new Set<string>()
   private readonly localValidationDigests = new Set<string>()
@@ -90,7 +124,17 @@ export class QcgServices {
   }
 
   snapshot(): QcgState { return clone({ ...this.state, authority_state: this.authorityState() }) }
-  reset(): QcgState { this.state = initialState(); return this.snapshot() }
+  reset(): QcgState {
+    this.state = initialState()
+    this.stateRevision += 1
+    return this.snapshot()
+  }
+
+  private serializeMutation<T>(operation: () => Promise<T>): Promise<T> {
+    const run = this.mutationTail.then(operation)
+    this.mutationTail = run.then(() => undefined, () => undefined)
+    return run
+  }
 
   private invocation(
     tool: Invocation['tool'],
@@ -117,6 +161,7 @@ export class QcgServices {
       ...patch,
       invocations: [this.invocation(event.tool, event.status, event.summary, event.source), ...this.state.invocations].slice(0, 40)
     }
+    this.stateRevision += 1
   }
 
   private async registerArtifact(
@@ -152,7 +197,7 @@ export class QcgServices {
       } catch {
         analysis = { valid: false, diagnosticCount: 1, diagnostics: ['QDK compiler analysis could not complete within the local boundary.'] }
       }
-      const qubits = estimateQubits(source) ?? (adapter.format === 'openqasm3' ? (source.match(/qubit(?:\s*\[\s*(\d+)\s*\])?/i)?.[1] ? Number(source.match(/qubit(?:\s*\[\s*(\d+)\s*\])?/i)?.[1]) : null) : null)
+      const qubits = adapter.format === 'openqasm3' ? estimateOpenQasmQubits(source) : estimateQubits(source)
       compiler = {
         name: 'qsharp-lang', version: '1.31.0', status: analysis.valid ? 'compiled' : 'invalid',
         diagnostic_count: analysis.diagnosticCount, diagnostics: analysis.diagnostics.slice(0, 4),
@@ -179,7 +224,9 @@ export class QcgServices {
     this.artifacts.set(artifactId, {
       manifest,
       source,
-      bellFixture: source.trim() === (adapter.format === 'openqasm3' ? bellOpenQasmProgram : bellProgram).trim(),
+      bellFixture: canonicalFixtureSource(source) === canonicalFixtureSource(
+        adapter.format === 'openqasm3' ? bellOpenQasmProgram : bellProgram
+      ),
       adapter
     })
     this.commit(
@@ -312,6 +359,14 @@ export class QcgServices {
       confidence: 'high',
       safer_alternative: 'Refresh a sourced target-profile snapshot before any execution decision.'
     }
+    const requiredTarget = profile.execution_surface === 'local_wasm' ? 'local_simulator' : 'external_reference'
+    if (limits.target !== requiredTarget) return {
+      decision: 'reject',
+      reason_codes: ['TARGET_EXECUTION_SURFACE_MISMATCH'],
+      unknowns: [],
+      confidence: 'high',
+      safer_alternative: `Use requested_limits.target=${requiredTarget} for this frozen target profile.`
+    }
     if (manifest.capabilities.static_only) return {
       decision: 'reject',
       reason_codes: ['STATIC_INSPECTION_ONLY'],
@@ -397,7 +452,7 @@ export class QcgServices {
     }
     const recommendation: AgentRecommendation = {
       schema_version: 'webmcp-qcg.recommendation.v2',
-      recommendation_id: id('recommendation', `${manifest.artifact_digest}-${this.now()}`),
+      recommendation_id: id('recommendation', `${manifest.artifact_digest}-${this.now()}-${crypto.randomUUID()}`),
       manifest_id: manifest.manifest_id,
       target_profile_id: targetProfile.profile_id,
       scientific_intent: input.scientific_intent,
@@ -444,53 +499,70 @@ export class QcgServices {
   }
 
   async decide(raw: unknown): Promise<HumanDecision> {
-    const input = humanDecisionInput.parse(raw)
-    const recommendation = this.state.recommendation
-    if (!recommendation || input.recommendation_id !== recommendation.recommendation_id || !this.recommendationValid()) {
-      throw new Error('The recommendation is unknown or expired.')
-    }
-    if (input.choice === 'overridden' && input.justification.trim().length < 12) {
-      throw new Error('A human override requires a factual justification of at least 12 characters.')
-    }
-    const decidedAt = new Date(this.now()).toISOString()
-    const humanDecision: HumanDecision = {
-      schema_version: 'webmcp-qcg.human-decision.v2',
-      human_decision_id: id('human-decision', `${recommendation.recommendation_id}-${this.now()}`),
-      recommendation_id: recommendation.recommendation_id,
-      choice: input.choice,
-      justification: input.justification.trim() || (input.choice === 'accepted' ? 'Accepted after visible review.' : 'Deferred after visible review.'),
-      override: input.choice === 'overridden',
-      decided_at: decidedAt
-    }
-    const consent: ConsentToken | undefined =
-      input.choice === 'accepted' && recommendation.decision === 'simulate_first'
-        ? {
-            consent_id: id('consent', crypto.randomUUID()),
-            recommendation_id: recommendation.recommendation_id,
-            created_at: decidedAt,
-            expires_at: new Date(this.now() + CONSENT_TTL_MS).toISOString(),
-            used: false
-          }
-        : undefined
-    const receipt = await this.makeReceipt(
-      this.state.manifest!,
-      this.state.targetProfile!,
-      recommendation,
-      humanDecision,
-      this.state.receipt?.simulation ?? null,
-      this.state.effects,
-      this.state.receipt
-    )
-    this.commit(
-      { humanDecision, consent, receipt, phase: input.choice === 'deferred' ? 'partial' : 'active', error: undefined },
-      {
-        tool: 'human',
-        status: 'completed',
-        summary: `Human choice recorded: ${input.choice}.${consent ? ' One-time local consent created.' : ''}`,
-        source: 'human'
+    return this.serializeMutation(async () => {
+      const input = humanDecisionInput.parse(raw)
+      const recommendation = this.state.recommendation
+      if (!recommendation || input.recommendation_id !== recommendation.recommendation_id || !this.recommendationValid()) {
+        throw new Error('The recommendation is unknown or expired.')
       }
-    )
-    return clone(humanDecision)
+      if (this.state.humanDecision?.recommendation_id === recommendation.recommendation_id) {
+        throw new Error('The active recommendation already has a human decision. Re-evaluate before recording another decision.')
+      }
+      if (input.choice === 'overridden' && input.justification.trim().length < 12) {
+        throw new Error('A human override requires a factual justification of at least 12 characters.')
+      }
+      const revision = this.stateRevision
+      const manifest = this.state.manifest
+      const targetProfile = this.state.targetProfile
+      const previousReceipt = this.state.receipt
+      if (!manifest || !targetProfile) throw new Error('The recommendation evidence is unavailable.')
+      const decidedAt = new Date(this.now()).toISOString()
+      const humanDecision: HumanDecision = {
+        schema_version: 'webmcp-qcg.human-decision.v2',
+        human_decision_id: id('human-decision', `${recommendation.recommendation_id}-${this.now()}-${crypto.randomUUID()}`),
+        recommendation_id: recommendation.recommendation_id,
+        choice: input.choice,
+        justification: input.justification.trim() || (input.choice === 'accepted' ? 'Accepted after visible review.' : 'Deferred after visible review.'),
+        override: input.choice === 'overridden',
+        decided_at: decidedAt
+      }
+      const consent: ConsentToken | undefined =
+        input.choice === 'accepted' && recommendation.decision === 'simulate_first'
+          ? {
+              consent_id: id('consent', crypto.randomUUID()),
+              recommendation_id: recommendation.recommendation_id,
+              created_at: decidedAt,
+              expires_at: new Date(this.now() + CONSENT_TTL_MS).toISOString(),
+              used: false
+            }
+          : undefined
+      const receipt = await this.makeReceipt(
+        manifest,
+        targetProfile,
+        recommendation,
+        humanDecision,
+        previousReceipt?.simulation ?? null,
+        this.state.effects,
+        previousReceipt
+      )
+      if (
+        this.stateRevision !== revision ||
+        this.state.recommendation?.recommendation_id !== recommendation.recommendation_id ||
+        this.state.humanDecision
+      ) {
+        throw new Error('The recommendation changed before the human decision could be recorded.')
+      }
+      this.commit(
+        { humanDecision, consent, receipt, phase: input.choice === 'deferred' ? 'partial' : 'active', error: undefined },
+        {
+          tool: 'human',
+          status: 'completed',
+          summary: `Human choice recorded: ${input.choice}.${consent ? ' One-time local consent created.' : ''}`,
+          source: 'human'
+        }
+      )
+      return clone(humanDecision)
+    })
   }
 
   revokeConsent(): QcgState {
@@ -540,13 +612,16 @@ export class QcgServices {
 
     const effects = { ...this.state.effects, local_simulations: this.state.effects.local_simulations + 1 }
     this.state = { ...this.state, effects, consent: { ...this.state.consent!, used: true } }
+    this.stateRevision += 1
     try {
       if (!record.adapter.executable || (record.manifest.format !== 'qsharp' && record.manifest.format !== 'openqasm3')) {
         throw new Error('Only Q# and OpenQASM 3 QDK artifacts can enter bounded local simulation.')
       }
       const result = await this.simulator.run(signal, recommendation.requested_limits, record.source, record.manifest.format)
+      const integrityError = simulationIntegrityError(result, recommendation.requested_limits.shots)
+      if (integrityError) throw new Error(`Local QDK simulation evidence rejected: ${integrityError}`)
       const simulation: SimulationEvidence = {
-        run_id: id('run', `${recommendation.recommendation_id}-${this.now()}`),
+        run_id: id('run', `${recommendation.recommendation_id}-${this.now()}-${crypto.randomUUID()}`),
         bell_invariant: result.bellInvariant,
         shots_requested: result.shotsRequested,
         shots_returned: result.shotsReturned,
@@ -603,38 +678,44 @@ export class QcgServices {
     summary: string
     content: string
   }> {
-    const input = exportInput.parse(raw)
-    const receipt = this.state.receipt
-    if (!receipt || input.receipt_id !== receipt.receipt_id) throw new Error('receipt_id is unknown.')
-    const effects = { ...this.state.effects, evidence_exports: this.state.effects.evidence_exports + 1 }
-    const refreshed = await this.makeReceipt(
-      receipt.manifest,
-      receipt.target_profile,
-      receipt.recommendation,
-      receipt.human_decision,
-      receipt.simulation,
-      effects,
-      receipt
-    )
-    const content = input.format === 'json' ? JSON.stringify(refreshed, null, 2) : this.markdownReceipt(refreshed)
-    const result = {
-      export_id: id('export', `${receipt.receipt_id}-${input.format}-${this.now()}`),
-      receipt_id: receipt.receipt_id,
-      format: input.format,
-      digest: await digest(content),
-      summary: `Evidence ${input.format.toUpperCase()} prepared without raw Q#, credentials or provider data.`,
-      content
-    }
-    this.commit(
-      { receipt: refreshed, effects },
-      {
-        tool: 'export_quantum_evidence_report',
-        status: 'completed',
-        summary: `Evidence receipt exported as ${input.format}.`,
-        source
+    return this.serializeMutation(async () => {
+      const input = exportInput.parse(raw)
+      const receipt = this.state.receipt
+      if (!receipt || input.receipt_id !== receipt.receipt_id) throw new Error('receipt_id is unknown.')
+      const revision = this.stateRevision
+      const effects = { ...this.state.effects, evidence_exports: this.state.effects.evidence_exports + 1 }
+      const refreshed = await this.makeReceipt(
+        receipt.manifest,
+        receipt.target_profile,
+        receipt.recommendation,
+        receipt.human_decision,
+        receipt.simulation,
+        effects,
+        receipt
+      )
+      const content = input.format === 'json' ? JSON.stringify(refreshed, null, 2) : this.markdownReceipt(refreshed)
+      const result = {
+        export_id: id('export', `${receipt.receipt_id}-${input.format}-${this.now()}-${crypto.randomUUID()}`),
+        receipt_id: receipt.receipt_id,
+        format: input.format,
+        digest: await digest(content),
+        summary: `Evidence ${input.format.toUpperCase()} prepared without raw Q#, credentials or provider data.`,
+        content
       }
-    )
-    return result
+      if (this.stateRevision !== revision || this.state.receipt?.receipt_id !== receipt.receipt_id) {
+        throw new Error('The evidence receipt changed before export could be recorded.')
+      }
+      this.commit(
+        { receipt: refreshed, effects },
+        {
+          tool: 'export_quantum_evidence_report',
+          status: 'completed',
+          summary: `Evidence receipt exported as ${input.format}.`,
+          source
+        }
+      )
+      return result
+    })
   }
 
   private async makeReceipt(
@@ -678,6 +759,9 @@ export class QcgServices {
 - Agent recommendation: ${receipt.recommendation.decision}
 - Reason codes: ${receipt.recommendation.reason_codes.join(', ') || 'none'}
 - Human choice: ${receipt.human_decision?.choice ?? 'pending'}
+- Human decision ID: ${receipt.human_decision?.human_decision_id ?? 'pending'}
+- Human justification: ${receipt.human_decision?.justification ?? 'pending'}
+- Human decision timestamp: ${receipt.human_decision?.decided_at ?? 'pending'}
 - Local simulations: ${receipt.effects.local_simulations}
 - Metadata validations: ${receipt.effects.metadata_validations}
 - QPU submissions: ${receipt.effects.qpu_submissions}

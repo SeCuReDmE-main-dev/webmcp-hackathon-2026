@@ -86,4 +86,4 @@ export const demoCards: DemoCard[] = [
 ]
 
 export const findDemoCard = (artifactId: string): DemoCard | undefined =>
-  demoCards.find((card) => artifactId.startsWith(`${card.id}-`) || artifactId === card.id)
+  demoCards.find((card) => artifactId === card.id)

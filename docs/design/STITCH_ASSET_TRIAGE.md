@@ -139,6 +139,6 @@ Every screen was inspected by archive entry name and visual role; each appears e
 
 ## Reuse rules
 
-Adopted compositions must preserve exactly five tabs (`Experiment`, `Agent Review`, `Human Decision`, `Evidence Receipt`, `Activity`), exactly four tools, five deterministic hypotheses and the single canonical state. Use the four themes in `DESIGN.md` (Autumn, Winter, Spring, Summer); DevTools is a separate inspection/collaboration architecture, not a theme. Preserve desktop, tablet, mobile and full empty/partial/active/completed/cancelled/error/recovery states, keyboard navigation, focus visibility, reduced-motion behavior and text alternatives.
+Adopted compositions are historical references only. Any future redraw must preserve the seven current console views, four quantum tools, four collaboration tools, five deterministic recommendations and one canonical state. The product uses Dark and Light; Autumn, Winter, Spring and Summer remain editorial chapters only. Preserve desktop, tablet, mobile and full empty/partial/active/completed/cancelled/error/recovery states, keyboard navigation, focus visibility, reduced-motion behavior and text alternatives.
 
 Before any future asset copy, record source archive path, entry slug, source SHA-256, destination, decision and reviewer. Prefer redrawing in the application or article’s own asset pipeline. Covers and monograph outputs are reserved to Jean-Sébastien.

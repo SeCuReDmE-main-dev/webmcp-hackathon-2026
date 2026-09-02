@@ -1,0 +1,17 @@
+{
+  "manifest_version": 3,
+  "name": "QCG Console Companion (development)",
+  "version": "0.2.4",
+  "description": "Development companion for local WebMCP-QCG only.",
+  "minimum_chrome_version": "116",
+  "action": { "default_title": "Open QCG Companion" },
+  "background": { "service_worker": "background.js" },
+  "devtools_page": "devtools.html",
+  "side_panel": { "default_path": "panel.html" },
+  "permissions": ["clipboardWrite", "sidePanel"],
+  "host_permissions": ["https://qcg.securedme.ca/*", "http://localhost:5173/*", "http://127.0.0.1:5173/*"],
+  "content_scripts": [
+    { "matches": ["https://qcg.securedme.ca/*", "http://localhost:5173/*", "http://127.0.0.1:5173/*"], "js": ["pageBridge.js"], "run_at": "document_idle", "world": "MAIN" },
+    { "matches": ["https://qcg.securedme.ca/*", "http://localhost:5173/*", "http://127.0.0.1:5173/*"], "js": ["snapshotSanitizer.js", "contentBridge.js"], "run_at": "document_idle" }
+  ]
+}

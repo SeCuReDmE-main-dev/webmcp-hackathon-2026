@@ -1,7 +1,10 @@
 // @vitest-environment node
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import { bellOpenQasmProgram, findDemoCard } from './catalog'
+import { manifestOutput } from './contracts'
 import { convertV1Receipt, convertV2Receipt } from './migrations'
 import { QcgServices, type ArtifactAnalyzer, type Simulator } from './services'
+import { EXTERNAL_PROFILE_ID, LOCAL_PROFILE_ID, snapshotTargetProfile } from './targetProfiles'
 
 class FakeAnalyzer implements ArtifactAnalyzer {
   calls = 0
@@ -55,6 +58,12 @@ function services(now: () => number = Date.now) {
 }
 
 describe('QCG v2 service contract', () => {
+  it('keeps both frozen target profiles current through the announced judging window', async () => {
+    const afterJudging = Date.parse('2026-09-23T22:00:00Z')
+    await expect(snapshotTargetProfile(LOCAL_PROFILE_ID, afterJudging)).resolves.toMatchObject({ evidence_state: 'known', submission_enabled: false })
+    await expect(snapshotTargetProfile(EXTERNAL_PROFILE_ID, afterJudging)).resolves.toMatchObject({ evidence_state: 'known', submission_enabled: false })
+  })
+
   it('hashes exact file bytes and changes the manifest when one byte changes', async () => {
     const first = services()
     const source = new TextEncoder().encode('namespace Qcg { @EntryPoint() operation Main() : Result[] { use q = Qubit(); Reset(q); return []; } }')
@@ -100,6 +109,43 @@ describe('QCG v2 service contract', () => {
     }
   })
 
+  it('returns static inspection evidence through the strict WebMCP manifest output contract', async () => {
+    const qcg = services()
+    const manifest = await qcg.importQuantumFile(
+      'circuit.py',
+      new TextEncoder().encode('from qiskit import QuantumCircuit\ncircuit = QuantumCircuit(2)'),
+      'qiskit-python'
+    )
+    const inspected = await qcg.inspect({ artifact_id: manifest.artifact_id }, 'webmcp')
+    expect(manifestOutput.parse(inspected)).toMatchObject({
+      artifact_profile: 'qiskit-python',
+      compiler: { name: 'qcg-static-inspector', version: '1.0.0', status: 'unverified' }
+    })
+    expect(() => manifestOutput.parse({
+      ...inspected,
+      compiler: { ...inspected.compiler, version: '1.31.0' }
+    })).toThrow()
+  })
+
+  it('keeps a nine-or-more-qubit artifact inspectable before deterministic rejection', async () => {
+    const qcg = services()
+    const allocations = Array.from({ length: 9 }, (_, index) => `    use q${index} = Qubit();`).join('\n')
+    const qubits = Array.from({ length: 9 }, (_, index) => `q${index}`).join(', ')
+    const source = `namespace Qcg.Bounds {\n  open Microsoft.Quantum.Intrinsic;\n  @EntryPoint()\n  operation Main() : Result[] {\n${allocations}\n    ResetAll([${qubits}]);\n    return [];\n  }\n}`
+    const manifest = await qcg.importQuantumFile('over-bound.qs', new TextEncoder().encode(source), 'qsharp-qdk')
+    const inspected = await qcg.inspect({ artifact_id: manifest.artifact_id }, 'webmcp')
+    expect(manifestOutput.parse(inspected).compiler.estimated_qubits).toBe(9)
+    const recommendation = await qcg.evaluate({
+      manifest_id: inspected.manifest_id,
+      target_profile_id: 'qsharp-local-wasm-1310',
+      scientific_intent: 'Inspect an intentionally over-bound Q# artifact without executing it.',
+      observable: 'resource_bound',
+      parameters: {},
+      requested_limits: { shots: 16, timeout_ms: 2000, max_qubits: 8, target: 'local_simulator' }
+    })
+    expect(recommendation).toMatchObject({ decision: 'reject', reason_codes: ['QUBIT_BOUND_EXCEEDED'] })
+  })
+
   it('routes the published OpenQASM Bell fixture through the bounded local simulation contract', async () => {
     const simulator = new FakeSimulator()
     const qcg = new QcgServices(simulator, Date.now, new FakeAnalyzer())
@@ -116,6 +162,42 @@ describe('QCG v2 service contract', () => {
       schema_version: 'webmcp-qcg.evidence-receipt.v3', format: 'openqasm3'
     })
     expect(simulator.formats).toEqual(['openqasm3'])
+  })
+
+  it('recognizes the public OpenQASM fixture when blank lines and line endings differ', async () => {
+    const simulator = new FakeSimulator()
+    const qcg = new QcgServices(simulator, Date.now, new FakeAnalyzer())
+    const publicFixture = bellOpenQasmProgram
+      .replace(/\n/g, '\r\n')
+      .replace('include "stdgates.inc";\r\n', 'include "stdgates.inc";\r\n\r\n')
+    const manifest = await qcg.importOpenQasmFile(
+      'qcg-bell-sample.qasm',
+      new TextEncoder().encode(publicFixture)
+    )
+    await qcg.inspect({ artifact_id: manifest.artifact_id })
+    const recommendation = await qcg.evaluate({
+      manifest_id: manifest.manifest_id,
+      target_profile_id: 'qsharp-local-wasm-1310',
+      scientific_intent: 'Measure the public OpenQASM Bell fixture with bounded local evidence.',
+      observable: 'bell_correlation',
+      parameters: {},
+      requested_limits: { shots: 16, timeout_ms: 2000, max_qubits: 2, target: 'local_simulator' }
+    })
+    expect(recommendation.decision).toBe('simulate_first')
+  })
+
+  it('does not infer fixture provenance from a modified OpenQASM Bell-looking program', async () => {
+    const qcg = new QcgServices(new FakeSimulator(), Date.now, new FakeAnalyzer())
+    const modified = `${bellOpenQasmProgram}\nx q[0];`
+    const manifest = await qcg.importOpenQasmFile('modified-bell.qasm', new TextEncoder().encode(modified))
+    await qcg.inspect({ artifact_id: manifest.artifact_id })
+    const recommendation = await qcg.evaluate({
+      manifest_id: manifest.manifest_id, target_profile_id: 'qsharp-local-wasm-1310',
+      scientific_intent: 'Verify that a modified Bell-looking program remains inspection-only.', observable: 'bell_correlation', parameters: {},
+      requested_limits: { shots: 16, timeout_ms: 2000, max_qubits: 2, target: 'local_simulator' }
+    })
+    expect(recommendation).toMatchObject({ decision: 'recompile', reason_codes: ['BOUNDED_BELL_FIXTURE_REQUIRED'] })
+    expect(findDemoCard('simulate-first-untrusted-suffix')).toBeUndefined()
   })
 
   it('rejects unknown properties at every public input boundary', async () => {
@@ -150,6 +232,59 @@ describe('QCG v2 service contract', () => {
     }
   })
 
+  it('generates distinct recommendation identifiers for repeated evaluations in the same millisecond', async () => {
+    const fixedNow = () => Date.parse('2026-08-29T12:00:00-04:00')
+    const qcg = services(fixedNow)
+    const first = await evaluated(qcg)
+    const second = await qcg.evaluate({
+      manifest_id: first.manifest.manifest_id,
+      target_profile_id: first.card.profileId,
+      scientific_intent: first.card.scientificIntent,
+      observable: first.card.observable,
+      parameters: {},
+      requested_limits: first.card.requestedLimits
+    })
+    expect(first.recommendation.recommendation_id).not.toBe(second.recommendation_id)
+    expect(first.recommendation.recommendation_id).toMatch(/^recommendation-[a-z0-9]{3,49}$/)
+    expect(second.recommendation_id).toMatch(/^recommendation-[a-z0-9]{3,49}$/)
+  })
+
+  it('rejects a requested target that disagrees with the frozen profile execution surface', async () => {
+    const local = services()
+    const localCard = await local.loadDemoArtifact('simulate-first')
+    await local.inspect({ artifact_id: localCard.manifest.artifact_id })
+    const localMismatch = await local.evaluate({
+      manifest_id: localCard.manifest.manifest_id,
+      target_profile_id: localCard.card.profileId,
+      scientific_intent: localCard.card.scientificIntent,
+      observable: localCard.card.observable,
+      parameters: {},
+      requested_limits: { ...localCard.card.requestedLimits, target: 'external_reference' }
+    })
+    expect(localMismatch).toMatchObject({
+      decision: 'reject',
+      reason_codes: ['TARGET_EXECUTION_SURFACE_MISMATCH'],
+      unknowns: []
+    })
+
+    const external = services()
+    const externalCard = await external.loadDemoArtifact('external-ready')
+    await external.inspect({ artifact_id: externalCard.manifest.artifact_id })
+    const externalMismatch = await external.evaluate({
+      manifest_id: externalCard.manifest.manifest_id,
+      target_profile_id: externalCard.card.profileId,
+      scientific_intent: externalCard.card.scientificIntent,
+      observable: externalCard.card.observable,
+      parameters: {},
+      requested_limits: { ...externalCard.card.requestedLimits, target: 'local_simulator' }
+    })
+    expect(externalMismatch).toMatchObject({
+      decision: 'reject',
+      reason_codes: ['TARGET_EXECUTION_SURFACE_MISMATCH'],
+      unknowns: []
+    })
+  })
+
   it('reuses only an exact evidence key and simulates a near match first', async () => {
     const qcg = services()
     const { manifest, card, recommendation } = await evaluated(qcg, 'reuse-evidence')
@@ -181,7 +316,7 @@ describe('QCG v2 service contract', () => {
     expect(unknownTarget.decision).toBe('reject')
     expect(unknownTarget.reason_codes).toContain('TARGET_PROFILE_UNKNOWN')
 
-    const stale = services(() => Date.parse('2026-09-04T20:00:00Z'))
+    const stale = services(() => Date.parse('2026-10-01T20:00:00Z'))
     const staleResult = await evaluated(stale, 'external-ready')
     expect(staleResult.recommendation.decision).toBe('reject')
     expect(staleResult.recommendation.reason_codes).toContain('TARGET_PROFILE_STALE')
@@ -231,6 +366,58 @@ describe('QCG v2 service contract', () => {
     })).override).toBe(true)
   })
 
+  it('commits exactly one decision when two surfaces decide concurrently', async () => {
+    const qcg = services()
+    const { recommendation } = await evaluated(qcg)
+    const input = {
+      recommendation_id: recommendation.recommendation_id,
+      choice: 'accepted' as const,
+      justification: 'I approve one bounded local simulation.'
+    }
+    const outcomes = await Promise.allSettled([qcg.decide(input), qcg.decide(input)])
+    expect(outcomes.filter((outcome) => outcome.status === 'fulfilled')).toHaveLength(1)
+    expect(outcomes.filter((outcome) => outcome.status === 'rejected')).toHaveLength(1)
+    expect(qcg.snapshot().humanDecision?.recommendation_id).toBe(recommendation.recommendation_id)
+    expect(qcg.snapshot().consent).toMatchObject({
+      recommendation_id: recommendation.recommendation_id,
+      used: false
+    })
+    expect(qcg.snapshot().invocations.filter((event) => event.summary.startsWith('Human choice recorded:'))).toHaveLength(1)
+  })
+
+  it('does not attach an old decision or consent when state changes during receipt generation', async () => {
+    const qcg = services()
+    const { recommendation } = await evaluated(qcg)
+    const originalDigest = crypto.subtle.digest.bind(crypto.subtle)
+    let releaseDigest: () => void = () => {}
+    let markStarted: () => void = () => {}
+    const digestBlocked = new Promise<void>((resolve) => { releaseDigest = resolve })
+    const digestStarted = new Promise<void>((resolve) => { markStarted = resolve })
+    const digestSpy = vi.spyOn(crypto.subtle, 'digest').mockImplementationOnce(async (algorithm, data) => {
+      markStarted()
+      await digestBlocked
+      return originalDigest(algorithm, data)
+    })
+    try {
+      const pending = qcg.decide({
+        recommendation_id: recommendation.recommendation_id,
+        choice: 'accepted',
+        justification: 'I approve one bounded local simulation.'
+      })
+      await digestStarted
+      qcg.reset()
+      releaseDigest()
+      await expect(pending).rejects.toThrow('changed before the human decision')
+      expect(qcg.snapshot()).toMatchObject({ phase: 'empty', authority_state: 'ready' })
+      expect(qcg.snapshot().humanDecision).toBeUndefined()
+      expect(qcg.snapshot().consent).toBeUndefined()
+      expect(qcg.snapshot().receipt).toBeUndefined()
+    } finally {
+      releaseDigest()
+      digestSpy.mockRestore()
+    }
+  })
+
   it('consumes one-time consent and refuses replay', async () => {
     const simulator = new FakeSimulator()
     const qcg = new QcgServices(simulator, Date.now, new FakeAnalyzer())
@@ -248,8 +435,74 @@ describe('QCG v2 service contract', () => {
     await expect(qcg.simulate({
       recommendation_id: recommendation.recommendation_id
     }, new AbortController().signal)).rejects.toThrow('unused human consent')
+    await expect(qcg.decide({
+      recommendation_id: recommendation.recommendation_id,
+      choice: 'accepted',
+      justification: 'I am attempting to create a second consent.'
+    })).rejects.toThrow('already has a human decision')
     expect(simulator.calls).toBe(1)
     expect(qcg.snapshot().authority_state).toBe('consumed')
+  })
+
+  it('consumes consent synchronously when simulate calls race without serializing the Worker runtime', async () => {
+    let releaseRun: (() => void) | undefined
+    const workerStarted = new Promise<void>((resolve) => { releaseRun = resolve })
+    let completeWorker: (() => void) | undefined
+    const workerCompletes = new Promise<void>((resolve) => { completeWorker = resolve })
+    const simulator: Simulator = {
+      run: async (_signal, limits) => {
+        releaseRun!()
+        await workerCompletes
+        return { bellInvariant: true, shotsRequested: limits.shots, shotsReturned: limits.shots, outcomeCounts: { '[Zero, Zero]': limits.shots } }
+      }
+    }
+    const qcg = new QcgServices(simulator, Date.now, new FakeAnalyzer())
+    const { recommendation } = await evaluated(qcg)
+    await qcg.decide({ recommendation_id: recommendation.recommendation_id, choice: 'accepted', justification: 'I approve one bounded local simulation.' })
+    const first = qcg.simulate({ recommendation_id: recommendation.recommendation_id }, new AbortController().signal)
+    await workerStarted
+    const second = qcg.simulate({ recommendation_id: recommendation.recommendation_id }, new AbortController().signal)
+    await expect(second).rejects.toThrow('unused human consent')
+    completeWorker!()
+    await expect(first).resolves.toMatchObject({ simulation: { bell_invariant: true } })
+    expect(qcg.snapshot().effects.local_simulations).toBe(1)
+  })
+
+  it.each([
+    ['a false Bell invariant', { bellInvariant: false, shotsRequested: 64, shotsReturned: 64, outcomeCounts: { '[Zero, Zero]': 64 } }],
+    ['an incomplete shot set', { bellInvariant: true, shotsRequested: 64, shotsReturned: 63, outcomeCounts: { '[Zero, Zero]': 63 } }],
+    ['inconsistent outcome counts', { bellInvariant: true, shotsRequested: 64, shotsReturned: 64, outcomeCounts: { '[Zero, Zero]': 63 } }]
+  ])('rejects %s without recording simulation or reusable evidence', async (_label, malformedResult) => {
+    const simulator: Simulator = { run: async () => malformedResult }
+    const qcg = new QcgServices(simulator, Date.now, new FakeAnalyzer())
+    const { manifest, card, recommendation } = await evaluated(qcg)
+    await qcg.decide({
+      recommendation_id: recommendation.recommendation_id,
+      choice: 'accepted',
+      justification: 'I approve one bounded local simulation.'
+    })
+    await expect(qcg.simulate({
+      recommendation_id: recommendation.recommendation_id
+    }, new AbortController().signal)).rejects.toThrow('simulation evidence rejected')
+    expect(qcg.snapshot()).toMatchObject({
+      phase: 'error',
+      authority_state: 'consumed',
+      receipt: { simulation: null },
+      effects: { local_simulations: 1 }
+    })
+    expect(qcg.snapshot().invocations[0]).toMatchObject({
+      tool: 'run_bounded_local_simulation', status: 'error'
+    })
+
+    const followUp = await qcg.evaluate({
+      manifest_id: manifest.manifest_id,
+      target_profile_id: card.profileId,
+      scientific_intent: card.scientificIntent,
+      observable: card.observable,
+      parameters: {},
+      requested_limits: card.requestedLimits
+    })
+    expect(followUp.decision).toBe('simulate_first')
   })
 
   it('models consent-required, authorized and revoked as separate authority states', async () => {
@@ -318,6 +571,34 @@ describe('QCG v2 service contract', () => {
     expect(json.content).toContain('webmcp-qcg.evidence-receipt.v3')
     expect(json.content).not.toContain('operation Main')
     expect(json.content).not.toMatch(/[A-Z]:\\/)
+  })
+
+  it.each([
+    ['accepted', 'Accepted after visible review.'],
+    ['deferred', 'Deferred after visible review.'],
+    ['overridden', 'I override after reviewing the bounded evidence.']
+  ] as const)('exports complete Markdown human-decision provenance for %s choices', async (choice, justification) => {
+    const qcg = services()
+    const { recommendation } = await evaluated(qcg)
+    const decision = await qcg.decide({ recommendation_id: recommendation.recommendation_id, choice, justification })
+    const markdown = await qcg.exportPacket({ receipt_id: qcg.snapshot().receipt!.receipt_id, format: 'markdown' })
+    expect(markdown.content).toContain(`Human choice: ${choice}`)
+    expect(markdown.content).toContain(`Human decision ID: ${decision.human_decision_id}`)
+    expect(markdown.content).toContain(`Human justification: ${decision.justification}`)
+    expect(markdown.content).toContain(`Human decision timestamp: ${decision.decided_at}`)
+  })
+
+  it('serializes concurrent exports without losing effect-counter increments', async () => {
+    const qcg = services()
+    await evaluated(qcg, 'reuse-evidence')
+    const receiptId = qcg.snapshot().receipt!.receipt_id
+    const [json, markdown] = await Promise.all([
+      qcg.exportPacket({ receipt_id: receiptId, format: 'json' }),
+      qcg.exportPacket({ receipt_id: receiptId, format: 'markdown' })
+    ])
+    expect(json.export_id).not.toBe(markdown.export_id)
+    expect(qcg.snapshot().effects.evidence_exports).toBe(2)
+    expect(qcg.snapshot().invocations.filter((event) => event.tool === 'export_quantum_evidence_report')).toHaveLength(2)
   })
 
   it('converts v1 evidence without modifying or overstating historical facts', async () => {

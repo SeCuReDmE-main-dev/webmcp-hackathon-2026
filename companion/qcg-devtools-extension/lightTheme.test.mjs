@@ -2,6 +2,7 @@ import assert from 'node:assert/strict'
 import { readFileSync } from 'node:fs'
 
 const css = readFileSync(new URL('./panel.css', import.meta.url), 'utf8')
+assert(/\.console\s*\{[^}]*color:\s*var\(--fg\)/.test(css), 'the console root must apply its foreground token instead of inheriting browser chrome color')
 const lightBlock = css.match(/\.console\[data-theme="light"\]\s*\{([^}]+)\}/)?.[1]
 assert(lightBlock, 'light-theme token block must exist')
 
@@ -35,3 +36,5 @@ for (const name of ['muted', 'emerald', 'cyan', 'gold', 'red']) {
 assert(contrast(tokens.line, tokens.bg) >= 3 && contrast(tokens.line, tokens.surface) >= 3, 'component boundaries require 3:1 contrast')
 
 console.log('QCG Companion low-glare light theme passed luminance and contrast gates.')
+assert(css.includes('.console[data-theme="dark"] .access-panel { background: var(--surface); }'), 'Dark Access must use the normal Companion surface rather than a bluer overlay')
+assert(css.includes('border-top: 3px solid var(--gold)'), 'Access must retain the restrained orange attention border')

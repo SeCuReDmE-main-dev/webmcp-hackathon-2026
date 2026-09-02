@@ -1,0 +1,124 @@
+{
+  "schema_version": "webmcp-qcg.evidence-receipt.v3",
+  "receipt_id": "receipt-recommendation4fb998d297aab6b6f7",
+  "manifest": {
+    "schema_version": "webmcp-qcg.artifact-manifest.v2",
+    "manifest_id": "manifest-4fa14fe18813b8647adb16dd58487fc6",
+    "artifact_id": "artifact-4fa14fe18813b8647adb16dd58487fc6",
+    "file_name": "qcg-bell-sample.qasm",
+    "artifact_digest": "4fa14fe18813b8643eed4d545fb123beb4933fb34fd993e17adb16dd58487fc6",
+    "byte_size": 126,
+    "format": "openqasm3",
+    "artifact_profile": "openqasm3-qdk",
+    "capabilities": {
+      "inspect": true,
+      "compile": true,
+      "simulate": true,
+      "static_only": false
+    },
+    "provenance": "human_import",
+    "compiler": {
+      "name": "qsharp-lang",
+      "version": "1.31.0",
+      "status": "compiled",
+      "diagnostic_count": 0,
+      "diagnostics": [],
+      "profile_digest": "qsharp-lang-1-31-0-local-wasm",
+      "bounded_entrypoint": true,
+      "estimated_qubits": 2
+    },
+    "created_at": "2026-09-02T02:21:44.040Z"
+  },
+  "target_profile": {
+    "schema_version": "webmcp-qcg.target-profile.v2",
+    "profile_id": "qsharp-local-wasm-1310",
+    "label": "Q# 1.31 local WebAssembly simulator",
+    "source": "https://www.npmjs.com/package/qsharp-lang/v/1.31.0",
+    "captured_at": "2026-09-01T21:45:37-04:00",
+    "expires_at": "2026-09-24T23:59:59-04:00",
+    "execution_surface": "local_wasm",
+    "max_qubits": 8,
+    "compiler_profile_digest": "qsharp-lang-1-31-0-local-wasm",
+    "source_digest": "25561eb5cafbc02c28cdb5f94ef09cc87b9b17d84b602ea82d77380d75fb129d",
+    "evidence_state": "known",
+    "submission_enabled": false
+  },
+  "recommendation": {
+    "schema_version": "webmcp-qcg.recommendation.v2",
+    "recommendation_id": "recommendation-4fa14fe18813b864b998d297aab6b6f7",
+    "manifest_id": "manifest-4fa14fe18813b8647adb16dd58487fc6",
+    "target_profile_id": "qsharp-local-wasm-1310",
+    "scientific_intent": "Review this imported artifact before any quantum execution.",
+    "observable": "artifact_preflight",
+    "parameters_digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "requested_limits": {
+      "shots": 64,
+      "timeout_ms": 10000,
+      "max_qubits": 2,
+      "target": "local_simulator"
+    },
+    "reuse_key": "a85ad83a2343104fe0283517957a8614dfd35a54b949a97bfb2a2bf9ffd92de5",
+    "expires_at": "2026-09-02T02:26:59.815Z",
+    "valid": true,
+    "decision": "simulate_first",
+    "reason_codes": [
+      "BOUNDED_LOCAL_EVIDENCE_REQUIRED"
+    ],
+    "unknowns": [],
+    "confidence": "high",
+    "safer_alternative": "Request one-time human consent for a bounded local Q# simulation."
+  },
+  "human_decision": {
+    "schema_version": "webmcp-qcg.human-decision.v2",
+    "human_decision_id": "human-decision-recommendation4f86bb20f21333fa39",
+    "recommendation_id": "recommendation-4fa14fe18813b864b998d297aab6b6f7",
+    "choice": "accepted",
+    "justification": "Accepted after visible review.",
+    "override": false,
+    "decided_at": "2026-09-02T02:22:15.384Z"
+  },
+  "simulation": {
+    "run_id": "run-recommendation4f8f751c18ec9b3e59",
+    "bell_invariant": true,
+    "shots_requested": 64,
+    "shots_returned": 64,
+    "outcome_counts": {
+      "[Zero, Zero]": 36,
+      "[One, One]": 28
+    },
+    "completed_at": "2026-09-02T02:22:17.914Z"
+  },
+  "effects": {
+    "inspections": 1,
+    "evaluations": 1,
+    "local_simulations": 1,
+    "metadata_validations": 1,
+    "qpu_submissions": 0,
+    "evidence_exports": 1
+  },
+  "format": "openqasm3",
+  "artifact_profile": {
+    "id": "openqasm3-qdk",
+    "label": "OpenQASM 3 / QDK WASM",
+    "format": "openqasm3",
+    "capabilities": {
+      "inspect": true,
+      "compile": true,
+      "simulate": true,
+      "static_only": false
+    }
+  },
+  "compiler_facts": {
+    "name": "qsharp-lang",
+    "version": "1.31.0",
+    "status": "compiled",
+    "diagnostic_count": 0,
+    "diagnostics": [],
+    "profile_digest": "qsharp-lang-1-31-0-local-wasm",
+    "bounded_entrypoint": true,
+    "estimated_qubits": 2
+  },
+  "digest": "9681e02c8a00835dddd5c21cee96513431099a97eedcc007b5ed08476584ab6e",
+  "created_at": "2026-09-02T02:21:59.815Z",
+  "updated_at": "2026-09-02T02:22:35.560Z"
+}

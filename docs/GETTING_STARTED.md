@@ -42,9 +42,10 @@ npm test
 npm run build
 ```
 
-`npm test` runs the service, WebMCP lifecycle, seasonal selector, strict debug
-contract, bridge-authority, adapter and third-party tool suites. The current
-verification result is 41 tests passing.
+`npm test` runs the service, WebMCP lifecycle, imported-artifact flow, strict
+debug contract, bridge-authority, adapter, console and third-party tool suites.
+The current automated verification result is 61 tests passing across 10 test
+files.
 
 `npm run build` runs `tsc --noEmit` before Vite and writes the production bundle
 to `prototype/webmcp-qcg/dist/`. The build includes the bounded QDK Worker, the
@@ -100,17 +101,21 @@ failure; QCG keeps the full human workflow available.
 
 ## 6. Run the bounded sample path
 
-1. In **Experiment**, either choose **Simulate Before Spending** and run its
-   preflight, or import `qcg-bell-sample.qs` and inspect it.
-2. Review the exact-byte digest, compiler status, target-profile evidence, and
+1. In **Inspector**, import `qcg-bell-sample.qs` or
+   `qcg-bell-sample.qasm`, select its matching profile, and inspect it.
+2. For an imported artifact, return to **Inspector** and complete the visible
+   evaluation form: target, scientific intent, observable, shots, timeout and
+   maximum qubits. QCG evaluates the active imported manifest; it does not
+   replace it with a demonstration fixture.
+3. Review the exact-byte digest, compiler status, target-profile evidence, and
    requested bounds.
-3. In **Agent Review**, confirm that the recommendation is `simulate_first`.
-4. In **Human Decision**, record an accepted decision. This creates private,
+4. In **Decisions**, confirm that the recommendation is `simulate_first`.
+5. In **Decisions**, record an accepted decision. This creates private,
    short-lived, one-use consent inside QCG.
-5. Run the bounded local simulation. The consent is consumed even if the run
+6. Run the bounded local simulation. The consent is consumed even if the run
    is cancelled or fails.
-6. Inspect **Evidence Receipt** and export JSON or Markdown if needed.
-7. Confirm in **Activity** that QPU submissions remain `0`.
+7. Inspect **Receipts** and export JSON or Markdown if needed.
+8. Confirm in **Activity** that QPU submissions remain `0`.
 
 At page load, no artifact tool is exposed. After a human loads a valid artifact,
 native WebMCP exposes:
@@ -123,15 +128,14 @@ v3 receipt exists. `run_bounded_local_simulation` appears only during the valid
 accepted-consent window for an executable `simulate_first` profile and is
 removed after consent use.
 
-## 7. Use the seasonal selector
+## 7. Choose Dark or Light
 
-The header contains one radio group with exactly four options: Autumn, Winter,
-Spring and Summer. Arrow keys move between adjacent seasons; Home selects
-Autumn and End selects Summer. A reload preserves the selected season. The
-workflow, five tabs, three security cards, tools and decision state stay the
-same in all four presentations.
+The product has exactly two presentation themes: **Dark** and **Light**. The
+selection is retained locally without changing the DOM, tool contracts,
+decision state or evidence. Autumn, Winter, Spring and Summer describe the
+editorial history in the README and article series; they are not runtime themes.
 
-## 8. Load the optional QCG DevTools panel
+## 8. Load the optional QCG Console Companion 0.2.4
 
 This is a manual local-development step:
 
@@ -140,12 +144,27 @@ This is a manual local-development step:
 3. Choose **Load unpacked** and select
    `companion/qcg-devtools-extension/`.
 4. Open QCG, open F12, then select the **QCG** panel.
+5. Click **Open Companion** on the QCG page to open the side panel through a
+   trusted human click.
 
-The panel reads a structurally reduced bridge with `chrome.devtools.inspectedWindow.eval`.
-It can filter declared messages, append a bounded human observation, acknowledge
-a review request and copy bounded context for a manual assistant. Review copied
-text before sharing it, and never paste secrets or source code. The panel exposes
-no consent, simulation or external-execution command.
+The F12 panel and side panel use the same content-script/background broker and
+the same strict snapshot sanitizer. Neither surface uses
+`chrome.devtools.inspectedWindow.eval`. Snapshot and command results are
+allowlisted, correlated to their originating request and bound to the current
+tab/session. Disconnecting, navigating away or closing the tab clears stale
+context from the broker.
+
+Both surfaces can filter declared messages, append a bounded human observation,
+acknowledge a review request and prepare bounded context for a manual assistant.
+Native Gemini in DevTools has no documented direct conversation API used by
+QCG. The supported path is an explicit, sanitized copy/preview/import relay;
+the imported reply remains untrusted data. Review copied text before sharing
+it, and never paste secrets or source code. The extension exposes no consent,
+simulation, provider or external-execution command.
+
+Decision controls record a declared human interaction. They are deliberately
+visible and session-bound, but they do not claim cryptographic identity or
+personhood attestation.
 
 For Chrome DevTools MCP, use the exact flags and shared-page routing in
 [`docs/DEVTOOLS_MULTI_AGENT_RUNBOOK.md`](DEVTOOLS_MULTI_AGENT_RUNBOOK.md).
@@ -156,7 +175,10 @@ fallback. QCG itself does not require the extension or a Gemini client.
 
 QCG accepts a non-empty UTF-8 artifact no larger than 128 KiB after explicit
 profile selection. The filename is reduced to its leaf component, and SHA-256
-is computed over the exact bytes.
+is computed over the exact bytes. After inspection, the active imported
+manifest remains selected while the visible evaluation form captures target,
+intent, observable and bounded resource inputs. Both the form and the safe
+console `evaluate` command operate on that same manifest.
 
 Q# (`.qs`) and OpenQASM 3 (`.qasm`) use the bounded QDK runtime. Their approved
 Bell fixtures can execute locally. Qiskit, Cirq/TFQ, TorchQuantum, PennyLane,
@@ -209,3 +231,7 @@ replay expired authority.
 - Collaboration messages use `identity_assurance: declared`, reject unknown
   fields and prohibited sensitive material, and remain isolated from quantum
   consent and simulation services.
+- Human decisions represent explicit, session-bound interface interactions;
+  QCG does not present them as cryptographic identity proof.
+- Gemini handoff is manual and sanitized. QCG does not claim direct access to
+  Gemini's native DevTools conversation.

@@ -145,12 +145,12 @@ Target the supplied QCG pageId. Read the current ledger and analyze browser-visi
 ### Human
 
 ```text
-Compare the evidence behind each agent entry and acknowledge an active collaboration request in the QCG panel. Record a separate human observation when a challenge is needed. Use the main QCG Human Decision tab for accepted, deferred or overridden quantum recommendations. The debug panel records discussion; the main product records authority.
+Compare the evidence behind each agent entry and acknowledge an active collaboration request in the QCG panel. Record a separate human observation when a challenge is needed. Use the visible Human Decision buttons on the Web, F12 or Companion surface for accepted, deferred or overridden quantum recommendations. These controls record one session-bound human decision; consent and simulation remain Web-page-only.
 ```
 
 ## Fallback
 
-If experimental third-party discovery fails once, refresh the QCG page and call `list_3p_developer_tools` again. A persistent failure uses Chrome DevTools MCP `evaluate_script` to read the narrow `window.__QCG_DEVTOOLS_V1__.getCachedPanelSnapshot()` context, then invokes the page-defined `post_debug_observation` tool through the documented `window.__dtmcp.executeTool()` shim with the actual declared agent actor and active session ID. It never calls the panel-only `queueHumanMessage()` method. Record the fallback in the receipt. This path preserves provenance, the active-page session and the authority boundary.
+If experimental third-party discovery fails once, refresh the QCG page and call `list_3p_developer_tools` again. A persistent failure uses Chrome DevTools MCP `evaluate_script` to read the narrow `window.__QCG_CONSOLE_V2__.getSnapshot()` context, then invokes the page-defined `post_debug_message` tool through the documented `window.__dtmcp.executeTool()` shim with the actual declared agent actor and active session ID. It never invokes `human_decision`, consent or simulation. Record the fallback in the receipt. This path preserves provenance, the active-page session and the authority boundary.
 
 ## Evidence required for completion
 

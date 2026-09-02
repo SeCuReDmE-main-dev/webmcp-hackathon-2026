@@ -15,12 +15,12 @@
 
 WebMCP-QCG is a browser-native, human-in-the-loop quantum preflight workbench.
 It inspects bounded evidence, recommends one of five outcomes, records an
-explicit human decision, can simulate only the checked-in Q# and OpenQASM Bell
-fixtures locally, and exports a reproducible evidence receipt. It never submits
+explicit human decision, can simulate only the canonical Q# and OpenQASM Bell
+programs locally, and exports a reproducible evidence receipt. It never submits
 a QPU or provider job.
 
 [Live application](https://qcg.securedme.ca/) ·
-[Vercel validation](https://webmcp-qcg.vercel.app/) ·
+[Vercel design preview — older build](https://webmcp-qcg.vercel.app/) ·
 [Devpost project](https://devpost.com/software/webmcp-qcg-quantum-call-gate) ·
 [MIT license](LICENSE)
 
@@ -122,12 +122,14 @@ external effect.
 | **Bounded local fixture execution** | Q# through QDK; OpenQASM through the same pinned QDK WebAssembly runtime. |
 | **Static inspection only** | Qiskit Python, Cirq/TFQ Python, TorchQuantum Python, PennyLane Python, CUDA-Q Python, CUDA-Q C++, Braket Python and QIR text. |
 
-Only the exact checked-in
+Only the canonical programs represented by the checked-in
 [`qcg-bell-sample.qs`](prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qs)
 and
 [`qcg-bell-sample.qasm`](prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qasm)
-fixtures can reach local simulation. Arbitrary imports receive inspection and
-bounded compiler evidence; they do not become executable through QCG.
+fixtures can reach local simulation. QCG normalizes line endings, trailing
+spaces and empty lines for this fixture identity check while preserving the
+exact imported-byte digest in evidence. Arbitrary programs receive inspection
+and bounded compiler evidence; they do not become executable through QCG.
 
 ## Quick start
 
@@ -170,24 +172,28 @@ The extension has no dependency installation or build step.
 
 ## Verification snapshot
 
-Current first-draft verification on 2026-09-01:
+Current final-pass verification on 2026-09-01:
 
-- canonical cPanel and Vercel validation URLs return HTTP 200 and served the
-  same application bundle at audit time;
+- the canonical cPanel URL returns HTTP 200 and serves the byte-verified final
+  bundle; the Vercel design preview also returns HTTP 200 but remains on an
+  earlier bundle and is not the release authority;
 - TypeScript and Vite production build pass;
-- current application bundle: 132 modules, 371.16 kB JavaScript and 14.11 kB CSS;
-- 52 Vitest cases are declared; the final clean-suite run will establish the
-  published pass count after the last coding pass;
-- QCG Companion v0.2.2 validation, trusted-click opening and low-glare theme
-  tests pass;
-- canonical-origin Companion side-panel opening is observed;
-- F12 evidence exists for the local build; the retained-tab current-version
-  proof remains a final release gate;
+- current application bundle: 131 modules, 378.53 kB JavaScript and 14.38 kB
+  CSS, with QDK WebAssembly tracked separately;
+- 61 Vitest cases pass across 10 test files;
+- QCG Companion v0.2.4 manifest, trusted-click, strict snapshot lifecycle and
+  low-glare Light-theme tests pass;
+- real Chrome browser routes for imported Q# and OpenQASM both reached
+  `simulate_first`, a declared human acceptance, a 64-shot local Bell result,
+  evidence export and zero QPU submissions;
+- the retained-tab Companion/F12 proof remains a final release gate after the
+  unpacked extension is reloaded to v0.2.4;
 - the public repository is licensed under MIT.
 
-The repository records prior deterministic benchmark evidence separately from
-HTTP delivery evidence. The final release will refresh both the verification
-snapshot and deployment receipt rather than reusing an older bundle hash.
+The repository records deterministic benchmark evidence separately from HTTP
+delivery evidence. The final cPanel package, public hashes, security headers
+and rollback boundary are captured in the
+[deployment receipt](docs/evidence/QCG_FINAL_CPANEL_DEPLOYMENT_RECEIPT_2026-09-01.md).
 
 ## Security and deliberate limits
 

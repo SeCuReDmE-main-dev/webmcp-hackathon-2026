@@ -2,8 +2,8 @@
   "profile_id": "qsharp-local-wasm-1310",
   "label": "Q# 1.31 local WebAssembly simulator",
   "source": "https://www.npmjs.com/package/qsharp-lang/v/1.31.0",
-  "captured_at": "2026-08-29T12:00:00-04:00",
-  "expires_at": "2026-09-05T23:59:59-04:00",
+  "captured_at": "2026-09-01T21:45:37-04:00",
+  "expires_at": "2026-09-24T23:59:59-04:00",
   "execution_surface": "local_wasm",
   "max_qubits": 8,
   "compiler_profile_digest": "qsharp-lang-1-31-0-local-wasm"

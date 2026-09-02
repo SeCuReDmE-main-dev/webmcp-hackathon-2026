@@ -75,7 +75,7 @@ describe('QCG DevTools bridge authority boundary', () => {
   it('requires an active matching recommendation and a justified v2 override', async () => {
     Object.defineProperty(globalThis, 'window', { configurable: true, value: {} })
     const sessionId = '11111111-1111-4111-8111-111111111111'
-    const recommendationId = '22222222-2222-4222-8222-222222222222'
+    const recommendationId = 'recommendation-2f94c8d4a517e0b79a51cd93'
     const state = initialState()
     state.recommendation = {
       schema_version: 'webmcp-qcg.recommendation.v2', recommendation_id: recommendationId, manifest_id: 'manifest', target_profile_id: 'qsharp-local-wasm', decision: 'recompile', reason_codes: [], unknowns: [], confidence: 'medium', safer_alternative: 'inspect', scientific_intent: 'test', observable: 'validity', parameters_digest: 'digest', requested_limits: { shots: 1, timeout_ms: 500, max_qubits: 1, target: 'local_simulator' }, reuse_key: 'key', expires_at: '2026-08-30T12:00:00.000Z', valid: true

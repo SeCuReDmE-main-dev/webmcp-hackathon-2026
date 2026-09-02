@@ -54,8 +54,9 @@ export const safeConsoleCommandKinds = [
 export type SafeConsoleCommandKind = typeof safeConsoleCommandKinds[number]
 
 const base = z.object({ schema_version: z.literal('qcg-console-command.v1'), session_id: z.string().uuid() }).strict()
+const consoleIdentifier = z.string().regex(/^[a-z0-9][a-z0-9_-]{2,63}$/)
 export const safeConsoleCommand = z.discriminatedUnion('kind', [
-  base.extend({ kind: z.literal('human_decision'), recommendation_id: z.string().uuid(), choice: z.enum(['accepted', 'deferred', 'overridden']), justification: z.string().max(500).optional() }).strict(),
+  base.extend({ kind: z.literal('human_decision'), recommendation_id: consoleIdentifier, choice: z.enum(['accepted', 'deferred', 'overridden']), justification: z.string().max(500).optional() }).strict(),
   base.extend({ kind: z.literal('human_review_disposition'), event_id: z.string().uuid(), disposition: z.enum(['approve', 'deny', 'reject', 'defer']) }).strict(),
   base.extend({ kind: z.literal('human_memory_disposition'), event_id: z.string().uuid(), disposition: z.enum(['remember', 'forget']), content: z.string().max(400).optional() }).strict(),
   base.extend({ kind: z.literal('human_message'), summary: z.string().min(1).max(500) }).strict(),
@@ -122,7 +123,11 @@ export function sanitizedConsoleSnapshot(state: QcgState, sessionId: string, sto
     effects: { ...state.effects },
     receipt: state.receipt ? { id: state.receipt.receipt_id, digest: state.receipt.digest, schema_version: state.receipt.schema_version } : undefined,
     storage_mode: storageMode,
-    available_commands: safeConsoleCommandKinds.filter((kind) => kind !== 'human_decision' || Boolean(state.recommendation)),
+    available_commands: safeConsoleCommandKinds.filter((kind) => kind !== 'human_decision' || Boolean(
+      state.recommendation?.valid &&
+      !state.humanDecision &&
+      new Date(state.recommendation.expires_at).getTime() > Date.now()
+    )),
     invocations,
     collaboration: {
       participants: collaboration.participants ?? [],

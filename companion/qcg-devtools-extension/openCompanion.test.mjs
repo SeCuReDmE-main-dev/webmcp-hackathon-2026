@@ -6,11 +6,16 @@ const source = readFileSync(new URL('./contentBridge.js', import.meta.url), 'utf
 const listeners = new Map()
 const posted = []
 const sent = []
+let sendCount = 0
 
 class FakeElement {
-  constructor(requestId) { this.requestId = requestId }
+  constructor(requestId, action = 'open') { this.requestId = requestId; this.action = action }
   closest(selector) { return selector === '[data-qcg-open-companion]' ? this : null }
-  getAttribute(name) { return name === 'data-qcg-open-companion' ? this.requestId : null }
+  getAttribute(name) {
+    if (name === 'data-qcg-open-companion') return this.requestId
+    if (name === 'data-qcg-companion-action') return this.action
+    return null
+  }
 }
 
 const port = {
@@ -32,7 +37,7 @@ const context = {
   chrome: {
     runtime: {
       connect() { return port },
-      async sendMessage(message) { sent.push(message); return { opened: 'side_panel', reason: 'opened' } }
+      async sendMessage(message) { sent.push(message); sendCount += 1; return sendCount === 1 ? { opened: 'side_panel', reason: 'opened' } : { opened: 'side_panel_closed', reason: 'closed' } }
     }
   }
 }
@@ -49,7 +54,7 @@ assert.equal(sent.length, 0, 'untrusted synthetic clicks must be ignored')
 click.listener({ isTrusted: true, target: new FakeElement(requestId) })
 await new Promise((resolve) => setImmediate(resolve))
 
-assert.equal(JSON.stringify(sent), JSON.stringify([{ type: 'qcg-console-open-side-panel', request_id: requestId }]))
+assert.equal(JSON.stringify(sent), JSON.stringify([{ type: 'qcg-console-open-side-panel', request_id: requestId, action: 'open' }]))
 assert.equal(posted.at(-1).origin, 'https://qcg.securedme.ca')
 assert.equal(JSON.stringify(posted.at(-1).message), JSON.stringify({
   channel: 'qcg-console-extension-control.v1',
@@ -59,4 +64,16 @@ assert.equal(JSON.stringify(posted.at(-1).message), JSON.stringify({
   reason: 'opened'
 }))
 
-console.log('QCG Companion trusted-click handshake passed.')
+const closeRequestId = '8310b1d5-2f9f-45a9-9f77-55f73d1f5190'
+click.listener({ isTrusted: true, target: new FakeElement(closeRequestId, 'close') })
+await new Promise((resolve) => setImmediate(resolve))
+assert.equal(JSON.stringify(posted.at(-1).message), JSON.stringify({
+  channel: 'qcg-console-extension-control.v1',
+  type: 'open_companion_result',
+  request_id: closeRequestId,
+  status: 'side_panel_closed',
+  reason: 'closed'
+}))
+assert.equal(sent.at(-1).action, 'close', 'the second trusted click must request an explicit close even after worker restart')
+
+console.log('QCG Companion trusted-click open/close handshake passed.')

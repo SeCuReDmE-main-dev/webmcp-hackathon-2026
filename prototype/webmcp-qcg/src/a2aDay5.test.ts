@@ -1,5 +1,5 @@
 // @vitest-environment node
-import { afterEach, describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { createInMemoryDebugLedger } from './debugLedger'
 import { installQcgDevtoolsBridge } from './devtoolsBridge'
 import { HandoffCoordinator } from './handoffCoordinator'
@@ -48,11 +48,49 @@ describe('Day 5 A2A boundary', () => {
     expect(packet.transport).toBe('native_gemini_manual')
     const raw = JSON.stringify({ schema_version: 'qcg-gemini-manual-reply.v1', handoff_id: packet.handoff_id, intent: 'find', summary: 'A public reference was identified.', evidence_refs: ['source:challenge-email'], confidence: 'medium' })
     expect(bridge.previewGeminiManualReply(raw).accepted).toBe(true)
+    expect(bridge.previewGeminiManualReply(raw).accepted).toBe(true)
     expect(bridge.queueGeminiManualReply(raw).accepted).toBe(true)
+    expect(bridge.queueGeminiManualReply(raw)).toMatchObject({ accepted: false, error: expect.stringContaining('already in progress') })
     await new Promise((resolve) => setTimeout(resolve, 0))
     const snapshot = await bridge.getPanelSnapshot()
     expect(snapshot.messages[0]).toMatchObject({ actor: 'gemini', transport: 'native_gemini_manual', intent: 'find' })
     expect(snapshot).not.toHaveProperty('consent')
+    expect(bridge.queueGeminiManualReply(raw)).toMatchObject({ accepted: false, error: expect.stringContaining('outstanding handoff') })
+    cleanup()
+  })
+
+  it('rejects unknown handoffs, mismatched intents and expired manual replies', () => {
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: {} })
+    let now = new Date('2026-08-29T12:00:00.000Z')
+    const cleanup = installQcgDevtoolsBridge(initialState, createInMemoryDebugLedger(), sessionId, { now: () => now })
+    const bridge = globalThis.window.__QCG_DEVTOOLS_V1__!
+    const packet = bridge.createGeminiManualHandoff({ intent: 'find', prompt: 'Find one bounded public reference.' })
+    const reply = { schema_version: 'qcg-gemini-manual-reply.v1', handoff_id: packet.handoff_id, intent: 'find', summary: 'One bounded public reference was identified.', evidence_refs: [], confidence: 'medium' }
+
+    expect(bridge.previewGeminiManualReply(JSON.stringify({ ...reply, handoff_id: crypto.randomUUID() }))).toMatchObject({ accepted: false, error: expect.stringContaining('outstanding handoff') })
+    expect(bridge.previewGeminiManualReply(JSON.stringify({ ...reply, intent: 'debug' }))).toMatchObject({ accepted: false, error: expect.stringContaining('intent') })
+    now = new Date(packet.expires_at)
+    expect(bridge.queueGeminiManualReply(JSON.stringify(reply))).toMatchObject({ accepted: false, error: expect.stringContaining('expired') })
+    cleanup()
+  })
+
+  it('retains an issued handoff when ledger import fails and consumes it only after success', async () => {
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: {} })
+    const ledger = createInMemoryDebugLedger()
+    await ledger.openSession(sessionId)
+    vi.spyOn(ledger, 'append').mockRejectedValueOnce(new Error('Simulated ledger failure'))
+    const cleanup = installQcgDevtoolsBridge(initialState, ledger, sessionId)
+    const bridge = globalThis.window.__QCG_DEVTOOLS_V1__!
+    const packet = bridge.createGeminiManualHandoff({ intent: 'debug', prompt: 'Review one bounded diagnostic.' })
+    const raw = JSON.stringify({ schema_version: 'qcg-gemini-manual-reply.v1', handoff_id: packet.handoff_id, intent: 'debug', summary: 'The bounded diagnostic was reviewed.', evidence_refs: [], confidence: 'medium' })
+
+    expect(bridge.queueGeminiManualReply(raw).accepted).toBe(true)
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect((await bridge.getPanelSnapshot()).last_command?.status).toBe('failed')
+    expect(bridge.queueGeminiManualReply(raw).accepted).toBe(true)
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    expect(await ledger.messages(sessionId)).toHaveLength(1)
+    expect(bridge.queueGeminiManualReply(raw).accepted).toBe(false)
     cleanup()
   })
 })

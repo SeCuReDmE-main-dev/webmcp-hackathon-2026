@@ -1,14 +1,15 @@
 {
   "manifest_version": 3,
   "name": "QCG Console Companion",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "description": "A local bounded DevTools and side-panel companion for WebMCP-QCG.",
-  "minimum_chrome_version": "116",
-  "action": { "default_title": "Open QCG Companion" },
-  "background": { "service_worker": "background.js", "type": "module" },
+  "minimum_chrome_version": "142",
+  "icons": { "16": "icons/qcg-16.png", "32": "icons/qcg-32.png", "48": "icons/qcg-48.png", "128": "icons/qcg-128.png" },
+  "action": { "default_title": "Open QCG Companion", "default_icon": { "16": "icons/qcg-16.png", "32": "icons/qcg-32.png" } },
+  "background": { "service_worker": "background.js" },
   "devtools_page": "devtools.html",
   "side_panel": { "default_path": "panel.html" },
-  "permissions": ["clipboardWrite", "sidePanel"],
+  "permissions": ["clipboardWrite", "sidePanel", "storage"],
   "host_permissions": ["https://qcg.securedme.ca/*"],
   "content_scripts": [
     {
@@ -19,7 +20,7 @@
     },
     {
       "matches": ["https://qcg.securedme.ca/*"],
-      "js": ["contentBridge.js"],
+      "js": ["snapshotSanitizer.js", "contentBridge.js"],
       "run_at": "document_idle"
     }
   ]

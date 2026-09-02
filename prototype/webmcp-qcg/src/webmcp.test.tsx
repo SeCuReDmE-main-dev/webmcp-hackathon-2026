@@ -28,6 +28,12 @@ function Harness({ services }: { services: QcgServices }) {
   return <output data-testid="registration-status">{registrationStatus}</output>
 }
 
+function SnapshotHarness({ services, state }: { services: QcgServices; state: QcgState }) {
+  const refresh = useCallback(() => undefined, [])
+  const { registrationStatus } = useQcgWebMcp(services, state, refresh)
+  return <output data-testid="registration-status">{registrationStatus}</output>
+}
+
 interface RegisteredTool {
   name: ToolName
   execute: (input: object, options: { signal: AbortSignal }) => Promise<unknown>
@@ -81,6 +87,77 @@ describe('WebMCP v2 lifecycle', () => {
     delete (document as Document & { modelContext?: unknown }).modelContext
   })
 
+  it('keeps base tool identity and controllers stable while diffing conditional lifecycle changes', async () => {
+    const registrations: Array<{ tool: RegisteredTool; signal: AbortSignal }> = []
+    Object.defineProperty(document, 'modelContext', {
+      configurable: true,
+      value: { registerTool: vi.fn(async (tool: RegisteredTool, options: { signal: AbortSignal }) => { registrations.push({ tool, signal: options.signal }) }) }
+    })
+    const services = new QcgServices(simulator, Date.now, analyzer)
+    const { manifest, card } = await services.loadDemoArtifact('simulate-first')
+    const view = render(<SnapshotHarness services={services} state={services.snapshot()} />)
+    await waitFor(() => expect(registrations.map(({ tool }) => tool.name)).toEqual(['inspect_quantum_experiment', 'evaluate_quantum_call']))
+    const [inspect, evaluate] = registrations
+
+    const inspected = await services.inspect({ artifact_id: manifest.artifact_id })
+    const recommendation = await services.evaluate({
+      manifest_id: inspected.manifest_id, target_profile_id: card.profileId, scientific_intent: card.scientificIntent,
+      observable: card.observable, parameters: {}, requested_limits: card.requestedLimits
+    })
+    view.rerender(<SnapshotHarness services={services} state={services.snapshot()} />)
+    await waitFor(() => expect(registrations.map(({ tool }) => tool.name)).toEqual([
+      'inspect_quantum_experiment', 'evaluate_quantum_call', 'export_quantum_evidence_report'
+    ]))
+    expect(registrations[0].tool).toBe(inspect.tool)
+    expect(registrations[1].tool).toBe(evaluate.tool)
+    expect(inspect.signal.aborted).toBe(false)
+    expect(evaluate.signal.aborted).toBe(false)
+
+    await services.decide({ recommendation_id: recommendation.recommendation_id, choice: 'accepted', justification: 'I approve one bounded local simulation.' })
+    view.rerender(<SnapshotHarness services={services} state={services.snapshot()} />)
+    await waitFor(() => expect(registrations.map(({ tool }) => tool.name)).toEqual([
+      'inspect_quantum_experiment', 'evaluate_quantum_call', 'export_quantum_evidence_report', 'run_bounded_local_simulation'
+    ]))
+    const simulation = registrations.at(-1)!
+    services.revokeConsent()
+    view.rerender(<SnapshotHarness services={services} state={services.snapshot()} />)
+    await waitFor(() => expect(simulation.signal.aborted).toBe(true))
+    expect(inspect.signal.aborted).toBe(false)
+    expect(evaluate.signal.aborted).toBe(false)
+    view.unmount()
+    expect(inspect.signal.aborted).toBe(true)
+    expect(evaluate.signal.aborted).toBe(true)
+    delete (document as Document & { modelContext?: unknown }).modelContext
+  })
+
+  it('does not claim registration early or let an aborted conditional registration overwrite a newer lifecycle status', async () => {
+    let releaseSimulation: (() => void) | undefined
+    const simulationRegistration = new Promise<void>((resolve) => { releaseSimulation = resolve })
+    const registerTool = vi.fn(async (tool: RegisteredTool) => {
+      if (tool.name === 'run_bounded_local_simulation') await simulationRegistration
+    })
+    Object.defineProperty(document, 'modelContext', { configurable: true, value: { registerTool } })
+    const services = new QcgServices(simulator, Date.now, analyzer)
+    const { manifest, card } = await services.loadDemoArtifact('simulate-first')
+    const view = render(<SnapshotHarness services={services} state={services.snapshot()} />)
+    await waitFor(() => expect(screen.getByTestId('registration-status').textContent).toBe('registered'))
+    const inspected = await services.inspect({ artifact_id: manifest.artifact_id })
+    const recommendation = await services.evaluate({
+      manifest_id: inspected.manifest_id, target_profile_id: card.profileId, scientific_intent: card.scientificIntent,
+      observable: card.observable, parameters: {}, requested_limits: card.requestedLimits
+    })
+    await services.decide({ recommendation_id: recommendation.recommendation_id, choice: 'accepted', justification: 'I approve one bounded local simulation.' })
+    view.rerender(<SnapshotHarness services={services} state={services.snapshot()} />)
+    await waitFor(() => expect(registerTool.mock.calls.map(([tool]) => tool.name)).toContain('run_bounded_local_simulation'))
+    expect(screen.getByTestId('registration-status').textContent).toBe('registering')
+    services.revokeConsent()
+    view.rerender(<SnapshotHarness services={services} state={services.snapshot()} />)
+    releaseSimulation!()
+    await waitFor(() => expect(screen.getByTestId('registration-status').textContent).toBe('registered'))
+    view.unmount()
+    delete (document as Document & { modelContext?: unknown }).modelContext
+  })
+
   it('adds simulation only after accepted consent and consumes it through the shared service', async () => {
     const registrations: RegisteredTool[] = []
     Object.defineProperty(document, 'modelContext', {
@@ -123,6 +200,29 @@ describe('WebMCP v2 lifecycle', () => {
     await services.loadDemoArtifact('simulate-first')
     const view = render(<Harness services={services} />)
     await waitFor(() => expect(screen.getByTestId('registration-status').textContent).toBe('error'))
+    view.unmount()
+    delete (document as Document & { modelContext?: unknown }).modelContext
+  })
+
+  it('does not let a later successful registration hide a sibling failure', async () => {
+    let releaseEvaluate: (() => void) | undefined
+    const evaluatePending = new Promise<void>((resolve) => { releaseEvaluate = resolve })
+    Object.defineProperty(document, 'modelContext', {
+      configurable: true,
+      value: {
+        registerTool: vi.fn(async (tool: { name: ToolName }) => {
+          if (tool.name === 'inspect_quantum_experiment') throw new Error('registration denied')
+          await evaluatePending
+        })
+      }
+    })
+    const services = new QcgServices(simulator, Date.now, analyzer)
+    await services.loadDemoArtifact('simulate-first')
+    const view = render(<Harness services={services} />)
+    await waitFor(() => expect(screen.getByTestId('registration-status').textContent).toBe('error'))
+    releaseEvaluate!()
+    await act(async () => { await evaluatePending })
+    expect(screen.getByTestId('registration-status').textContent).toBe('error')
     view.unmount()
     delete (document as Document & { modelContext?: unknown }).modelContext
   })

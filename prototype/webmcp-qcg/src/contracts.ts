@@ -35,16 +35,29 @@ export const exportInput = z.object({
   format: z.enum(['json', 'markdown'])
 }).strict()
 
-const compilerEvidence = z.object({
-  name: z.literal('qsharp-lang'),
-  version: z.literal('1.31.0'),
+const compilerEvidenceFields = {
   status: z.enum(['compiled', 'invalid', 'unverified']),
   diagnostic_count: z.number().int().nonnegative().max(1000),
   diagnostics: z.array(z.string().max(160)).max(4),
   profile_digest: z.string().max(80),
   bounded_entrypoint: z.boolean(),
-  estimated_qubits: z.number().int().min(0).max(8).nullable()
-}).strict()
+  // 9 is the bounded public sentinel for "nine or more", which lets the
+  // manifest remain inspectable before policy rejects work above the MVP cap.
+  estimated_qubits: z.number().int().min(0).max(9).nullable()
+}
+
+const compilerEvidence = z.discriminatedUnion('name', [
+  z.object({
+    name: z.literal('qsharp-lang'),
+    version: z.literal('1.31.0'),
+    ...compilerEvidenceFields
+  }).strict(),
+  z.object({
+    name: z.literal('qcg-static-inspector'),
+    version: z.literal('1.0.0'),
+    ...compilerEvidenceFields
+  }).strict()
+])
 
 const profileCapabilities = z.object({
   inspect: z.literal(true),

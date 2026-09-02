@@ -1,5 +1,7 @@
 # QCG Console Companion
 
+Current package: **0.2.4**
+
 This Manifest V3 extension provides two views of the same bounded QCG console:
 
 - **QCG DevTools panel** for the inspected QCG tab;
@@ -18,19 +20,27 @@ not replace the production manifest in a release package.
 `window.__QCG_CONSOLE_V2__` (`getSnapshot()` and
 `executeConsoleCommand(unknown)`). It falls back to the older
 `__QCG_DEVTOOLS_V1__` only for collaboration actions during transition.
-`contentBridge.js` relays a bounded snapshot and strict command
-envelopes through a long-lived `runtime.Port`. `background.js` brokers ports by
-`tabId`; panels never receive another tab's snapshot. Both the DevTools panel
-and side panel load `panel.html`, `panel.js`, and `panel.css`.
+`snapshotSanitizer.js` projects page state through a strict allowlist before
+`contentBridge.js` relays it with strict command envelopes over a long-lived
+`runtime.Port`. `background.js` brokers ports by `tabId`; panels never receive
+another tab's snapshot. Command results are correlated to their pending request
+and returned only to the originating surface. Disconnecting the content bridge,
+navigating away or closing a tab clears its cached snapshot. A newly attached
+panel therefore cannot inherit stale page state.
+
+Both the DevTools panel and side panel load `panel.html`, `panel.js`, and
+`panel.css`, and both consume that same sanitized broker. The DevTools panel
+does not use `chrome.devtools.inspectedWindow.eval`.
 
 Every command carries `schema_version: 'qcg-console-command.v1'` and the active
 session identifier. A v2 recommendation exposes human decision controls only
 when `available_commands` includes `human_decision`: Accept, Defer, or Override
 with a justification of at least 12 characters. The decision command carries
 the active recommendation identifier and is generated only by those buttons;
-it is not an MCP tool or a free-text command. Commands are allowlisted end to
-end and cannot invoke a simulator, create consent, reach a provider, or send
-raw source.
+it is not an MCP tool or a free-text command. This is a declared, session-bound
+human interaction boundary rather than cryptographic identity attestation.
+Commands are allowlisted end to end and cannot invoke a simulator, create
+consent, reach a provider, or send raw source.
 
 ## Page open-companion handshake
 
@@ -63,7 +73,14 @@ gold human authority/evidence, and red rejection/error.
 
 Native Gemini remains a manual relay: create/copy a sanitized packet, paste it
 into Gemini DevTools yourself, preview the reply, then explicitly import it as
-untrusted data.
+untrusted data. QCG uses no documented direct API to Gemini's native DevTools
+conversation and makes no claim that such an integration exists.
+
+Artifact import and the visible evaluation form remain on the Web application.
+The extension surfaces observe only the sanitized manifest, capability,
+recommendation and evidence state and provide a direct route back to the site
+when source interaction is required. Dark and Light are the only product
+themes; the four seasons belong to the editorial history only.
 
 ## Validate
 
@@ -78,13 +95,13 @@ Manual smoke matrix:
    Select this `qcg-devtools-extension` directory. After any source update,
    press the extension card's Reload control and reload the QCG page.
 2. Open the QCG DevTools panel on the public QCG tab; verify its snapshot is
-   bounded.
+   bounded and displays the current shortened session identifier.
 3. Click the page's `Open Companion` button; verify the side panel opens and the
    page reports `Companion side panel opened`. If Chrome declines the side
    panel, verify the explicit companion-tab fallback and status instead.
 4. Click the extension action; verify it opens the same side-panel surface.
-5. Navigate away and switch tabs; verify the companion shows no other tab's
-   context.
+5. Navigate away and switch tabs; verify the companion clears stale state and
+   shows no other tab's context.
 6. Use decision, review, memory, observation, and Gemini relay buttons;
    verify QCG records only explicit human actions.
 7. Confirm no UI offers consent, simulation, provider, or QPU execution.

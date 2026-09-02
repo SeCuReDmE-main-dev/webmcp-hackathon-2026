@@ -13,6 +13,12 @@ dist/
 build/
 coverage/
 runtime/
+# Publish only the final sanitized browser receipts. Other runtime material
+# remains local and ignored.
+!evidence/runtime/
+!evidence/runtime/browser-proof/
+!evidence/runtime/browser-proof/2026-09-01/
+!evidence/runtime/browser-proof/2026-09-01/**
 artifacts/private/
 *.log
 *.pem

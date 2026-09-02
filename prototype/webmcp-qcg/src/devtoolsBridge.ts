@@ -1,6 +1,6 @@
 import type { QcgState } from './types'
 import { DebugLedger } from './debugLedger'
-import { createGeminiManualHandoff, debugMessageDraft, geminiManualReply, safeDebugText, type CollaborationIntent, type GeminiManualHandoff, type HumanMemoryDisposition, type HumanReviewDisposition, type QcgDebugMessage } from './debugContracts'
+import { createGeminiManualHandoff, debugMessageDraft, geminiManualReply, safeDebugText, validateGeminiManualReplyBinding, type CollaborationIntent, type GeminiManualHandoff, type GeminiManualReply, type HumanMemoryDisposition, type HumanReviewDisposition, type QcgDebugMessage } from './debugContracts'
 import { safeConsoleCommand, sanitizedConsoleSnapshot, type ConsoleCommandResultV1, type ConsoleSnapshotContext, type ConsoleTransport, type SanitizedConsoleSnapshotV2 } from './console/contracts'
 
 export interface QcgDevtoolsCommandStatus {
@@ -61,6 +61,7 @@ export interface QcgConsoleDecisionExecutor {
 export interface QcgConsoleBridgeOptions {
   executeHumanDecision?: QcgConsoleDecisionExecutor
   getConsoleContext?: () => Pick<ConsoleSnapshotContext, 'toolNames'>
+  now?: () => Date
 }
 
 declare global { interface Window { __QCG_DEVTOOLS_V1__?: QcgDevtoolsBridge; __QCG_CONSOLE_V2__?: QcgConsoleBridgeV2 } }
@@ -82,6 +83,10 @@ export function installQcgDevtoolsBridge(
 ): () => void {
   let lastCommand: QcgDevtoolsCommandStatus | undefined
   const queuedReviewIds = new Set<string>()
+  const outstandingGeminiHandoffs = new Map<string, GeminiManualHandoff>()
+  const importingGeminiReplies = new Set<string>()
+  const activePageId = pageId(sessionId)
+  const currentTime = (): Date => options.now?.() ?? new Date()
   let cached: QcgDevtoolsPanelSnapshot = {
     ...makeSanitizedSnapshot(getState(), ledger.storageMode),
     session_id: sessionId,
@@ -163,23 +168,56 @@ export function installQcgDevtoolsBridge(
         return queueCommand(() => ledger.applyHumanMemory(sessionId, eventId, disposition, content), `Human memory disposition (${disposition})`)
       } catch { return { accepted: false, error: 'The memory summary violates the bounded collaboration contract.' } }
     },
-    createGeminiManualHandoff: ({ intent, prompt, evidence_refs = [] }) => createGeminiManualHandoff({ session_id: sessionId, page_id: pageId(sessionId), intent, prompt, evidence_refs }),
+    createGeminiManualHandoff: ({ intent, prompt, evidence_refs = [] }) => {
+      const issued = createGeminiManualHandoff({ session_id: sessionId, page_id: activePageId, intent, prompt, evidence_refs }, currentTime())
+      outstandingGeminiHandoffs.set(issued.handoff_id, issued)
+      return issued
+    },
     previewGeminiManualReply: (raw) => {
-      try {
-        const reply = geminiManualReply.parse(JSON.parse(raw))
-        return { accepted: true, summary: `Untrusted ${reply.intent} reply preview: ${reply.summary}` }
-      } catch { return { accepted: false, error: 'The Gemini reply is not a valid bounded handoff response.' } }
+      const bound = parseBoundGeminiReply(raw)
+      return bound.accepted
+        ? { accepted: true, summary: `Untrusted ${bound.reply.intent} reply preview: ${bound.reply.summary}` }
+        : { accepted: false, error: bound.error }
     },
     queueGeminiManualReply: (raw) => {
-      try {
-        const reply = geminiManualReply.parse(JSON.parse(raw))
-        return queueCommand(() => ledger.append({
-          schema_version: 'qcg-debug-message.v2', session_id: sessionId, page_id: pageId(sessionId), actor: 'gemini', role: 'native-manual-relay',
-          intent: reply.intent, transport: 'native_gemini_manual', kind: 'observation', summary: reply.summary,
-          evidence_refs: reply.evidence_refs, confidence: reply.confidence, status: 'open', identity_assurance: 'declared'
-        }), 'Untrusted Gemini manual reply')
-      } catch { return { accepted: false, error: 'The Gemini reply is not a valid bounded handoff response.' } }
+      const bound = parseBoundGeminiReply(raw)
+      if (!bound.accepted) return { accepted: false, error: bound.error }
+      if (importingGeminiReplies.has(bound.reply.handoff_id)) {
+        return { accepted: false, error: 'The untrusted Gemini reply import is already in progress.' }
+      }
+      importingGeminiReplies.add(bound.reply.handoff_id)
+      return queueCommand(async () => {
+        await ledger.append({
+          schema_version: 'qcg-debug-message.v2', session_id: sessionId, page_id: activePageId, actor: 'gemini', role: 'native-manual-relay',
+          intent: bound.reply.intent, transport: 'native_gemini_manual', kind: 'observation', summary: bound.reply.summary,
+          evidence_refs: bound.reply.evidence_refs, confidence: bound.reply.confidence, status: 'open', identity_assurance: 'declared'
+        })
+        outstandingGeminiHandoffs.delete(bound.reply.handoff_id)
+      }, 'Untrusted Gemini manual reply', () => importingGeminiReplies.delete(bound.reply.handoff_id))
     }
+  }
+
+  type BoundGeminiReply =
+    | { accepted: true; reply: GeminiManualReply; issued: GeminiManualHandoff }
+    | { accepted: false; error: string }
+
+  function parseBoundGeminiReply(raw: string): BoundGeminiReply {
+    let reply: GeminiManualReply
+    try {
+      reply = geminiManualReply.parse(JSON.parse(raw))
+    } catch {
+      return { accepted: false, error: 'The Gemini reply is not a valid bounded handoff response.' }
+    }
+    const issued = outstandingGeminiHandoffs.get(reply.handoff_id)
+    if (!issued) {
+      return { accepted: false, error: 'The untrusted Gemini reply does not reference an outstanding handoff.' }
+    }
+    const binding = validateGeminiManualReplyBinding(reply, issued, { session_id: sessionId, page_id: activePageId }, currentTime())
+    if (!binding.accepted) {
+      if (binding.reason === 'expired') outstandingGeminiHandoffs.delete(reply.handoff_id)
+      return { accepted: false, error: binding.error }
+    }
+    return { accepted: true, reply, issued }
   }
 
   const reject = (message: string): ConsoleCommandResultV1 => ({ schema_version: 'qcg-console-command-result.v1', accepted: false, status: 'rejected', message })
@@ -210,8 +248,10 @@ export function installQcgDevtoolsBridge(
       try {
         switch (command.kind) {
           case 'human_decision': {
-            const recommendation = getState().recommendation
+            const current = getState()
+            const recommendation = current.recommendation
             if (!recommendation || recommendation.recommendation_id !== command.recommendation_id) return reject('The recommendation is not active in this session.')
+            if (current.humanDecision?.recommendation_id === command.recommendation_id) return reject('The active recommendation already has a human decision. Re-evaluate before recording another decision.')
             if (command.choice === 'overridden' && (!command.justification || command.justification.trim().length < 12)) return reject('An override requires at least 12 characters of justification.')
             if (!options.executeHumanDecision) return reject('This surface cannot apply a human decision.')
             await options.executeHumanDecision({ recommendation_id: command.recommendation_id, choice: command.choice, justification: command.justification?.trim() })
@@ -268,6 +308,8 @@ export function installQcgDevtoolsBridge(
   window.__QCG_CONSOLE_V2__ = Object.freeze(consoleBridge)
   return () => {
     unsubscribe()
+    outstandingGeminiHandoffs.clear()
+    importingGeminiReplies.clear()
     if (window.__QCG_DEVTOOLS_V1__ === bridge) delete window.__QCG_DEVTOOLS_V1__
     if (window.__QCG_CONSOLE_V2__ === consoleBridge) delete window.__QCG_CONSOLE_V2__
   }

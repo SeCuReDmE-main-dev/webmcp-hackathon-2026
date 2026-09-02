@@ -9,14 +9,38 @@ function openDatabase(): Promise<IDBDatabase | null> {
   if (!('indexedDB' in globalThis)) return Promise.resolve(null)
   return new Promise((resolve, reject) => {
     const request = indexedDB.open(DB_NAME, DB_VERSION)
+    let database: IDBDatabase | undefined
+    let settled = false
+    const close = (): void => {
+      try { database?.close() } catch { /* closing an incomplete connection is best-effort */ }
+    }
+    const captureResult = (): IDBDatabase | undefined => {
+      try { return request.result } catch { return undefined }
+    }
+    const fail = (message: string): void => {
+      if (settled) return
+      settled = true
+      database ??= captureResult()
+      close()
+      reject(new Error(message))
+    }
     request.onupgradeneeded = () => {
-      const database = request.result
+      database = captureResult()
+      if (!database) { fail('The local evidence database could not be opened.'); return }
       if (!database.objectStoreNames.contains(STORE_NAME)) {
         database.createObjectStore(STORE_NAME, { keyPath: 'receipt_id' })
       }
     }
-    request.onsuccess = () => resolve(request.result)
-    request.onerror = () => reject(new Error('The local evidence database could not be opened.'))
+    request.onsuccess = () => {
+      database = captureResult()
+      if (!database) { fail('The local evidence database could not be opened.'); return }
+      if (settled) { close(); return }
+      settled = true
+      database.onversionchange = () => close()
+      resolve(database)
+    }
+    request.onblocked = () => fail('The local evidence database is blocked by another open tab. Close or reload that tab, then retry.')
+    request.onerror = () => fail('The local evidence database could not be opened.')
   })
 }
 

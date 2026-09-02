@@ -1,3 +1,7 @@
 import { afterEach } from 'vitest'
-import { cleanup } from '@testing-library/react'
-afterEach(() => cleanup())
+
+afterEach(async () => {
+  if (typeof document === 'undefined') return
+  const { cleanup } = await import('@testing-library/react')
+  cleanup()
+})

@@ -117,6 +117,41 @@ export const geminiManualReply = z.object({
 }).strict()
 export type GeminiManualReply = z.infer<typeof geminiManualReply>
 
+export type GeminiManualReplyBindingFailure =
+  | 'handoff_mismatch'
+  | 'intent_mismatch'
+  | 'active_context_mismatch'
+  | 'expired'
+
+export type GeminiManualReplyBindingResult =
+  | { accepted: true }
+  | { accepted: false; reason: GeminiManualReplyBindingFailure; error: string }
+
+/**
+ * Bind an untrusted manual reply to the exact handoff issued by the active page.
+ * This function grants no authority; it only validates manual-relay provenance.
+ */
+export function validateGeminiManualReplyBinding(
+  reply: GeminiManualReply,
+  issued: GeminiManualHandoff,
+  active: { session_id: string; page_id: string },
+  now = new Date()
+): GeminiManualReplyBindingResult {
+  if (reply.handoff_id !== issued.handoff_id) {
+    return { accepted: false, reason: 'handoff_mismatch', error: 'The untrusted Gemini reply does not match the issued handoff.' }
+  }
+  if (issued.session_id !== active.session_id || issued.page_id !== active.page_id) {
+    return { accepted: false, reason: 'active_context_mismatch', error: 'The untrusted Gemini reply is not bound to the active page session.' }
+  }
+  if (reply.intent !== issued.intent) {
+    return { accepted: false, reason: 'intent_mismatch', error: 'The untrusted Gemini reply intent does not match the issued handoff.' }
+  }
+  if (now.getTime() >= Date.parse(issued.expires_at)) {
+    return { accepted: false, reason: 'expired', error: 'The issued Gemini manual handoff has expired.' }
+  }
+  return { accepted: true }
+}
+
 export function createGeminiManualHandoff(input: Omit<GeminiManualHandoff, 'schema_version' | 'handoff_id' | 'created_at' | 'expires_at' | 'transport' | 'boundary'>, now = new Date()): GeminiManualHandoff {
   return geminiManualHandoff.parse({
     ...input, schema_version: 'qcg-gemini-manual-handoff.v1', handoff_id: crypto.randomUUID(),

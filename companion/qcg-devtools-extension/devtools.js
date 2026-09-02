@@ -7,7 +7,7 @@ function signalVisibility(visible) {
   void chrome.runtime.sendMessage({ type: 'qcg-console-devtools-visibility', tab_id: chrome.devtools.inspectedWindow.tabId, visible }).catch(() => undefined)
 }
 
-chrome.devtools.panels.create('QCG', '', 'panel.html?surface=devtools', (panel) => {
+chrome.devtools.panels.create('QCG', 'icons/qcg-32.png', 'panel.html?surface=devtools', (panel) => {
   if (chrome.runtime.lastError) {
     root.dataset.qcgPanel = 'error'
     root.dataset.qcgPanelError = chrome.runtime.lastError.message

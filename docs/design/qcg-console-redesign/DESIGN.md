@@ -4,7 +4,7 @@
 - Date: 2026-08-30
 - Branch: `redesign/qcg-console`
 - Baseline: `50e7de43bfbf2d2d11397ffa9339273f0c486329`
-- Behavioral authority: [`../../DESIGN.md`](../../DESIGN.md)
+- Behavioral authority: [`../DESIGN.md`](../DESIGN.md)
 - Decision authority: [`../../decisions/2026-08-30-qcg-console-redesign-authority.md`](../../decisions/2026-08-30-qcg-console-redesign-authority.md)
 
 ## Purpose and boundary

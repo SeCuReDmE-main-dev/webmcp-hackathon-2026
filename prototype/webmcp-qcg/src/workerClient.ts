@@ -10,7 +10,19 @@ interface WorkerReply {
   shotsRequested?: number
   shotsReturned?: number
   outcomeCounts?: Record<string, number>
-  message?: string
+  errorCode?: 'analysis_failed' | 'compiler_unavailable' | 'execution_failed' | 'unsupported_format' | 'validation_failed'
+}
+
+const workerErrorMessages = {
+  analysis_failed: 'QCG worker analysis failed safely. Review the bounded artifact and retry.',
+  compiler_unavailable: 'QCG worker compiler is unavailable. Retry the bounded local operation.',
+  execution_failed: 'QCG worker execution failed safely. Review the bounded artifact and retry.',
+  unsupported_format: 'QCG worker rejected an unsupported bounded artifact format.',
+  validation_failed: 'QCG worker validation failed. Review the bounded artifact and retry.'
+} as const
+
+function workerErrorMessage(code: WorkerReply['errorCode']): string {
+  return code && code in workerErrorMessages ? workerErrorMessages[code] : 'QCG worker processing failed safely.'
 }
 
 function invokeWorker<T>(
@@ -40,12 +52,12 @@ function invokeWorker<T>(
     worker.onmessage = (event: MessageEvent<WorkerReply>) => {
       if (event.data.requestId !== requestId) return
       if (event.data.type === 'error') {
-        finish(() => reject(new Error(event.data.message ?? 'Local Q# operation failed')))
+        finish(() => reject(new Error(workerErrorMessage(event.data.errorCode))))
       } else {
         finish(() => resolve(select(event.data)))
       }
     }
-    worker.onerror = () => finish(() => reject(new Error('Local Q# operation failed')))
+    worker.onerror = () => finish(() => reject(new Error('QCG worker processing failed safely.')))
     if (signal.aborted) cancel()
     else worker.postMessage({ ...message, requestId })
   })

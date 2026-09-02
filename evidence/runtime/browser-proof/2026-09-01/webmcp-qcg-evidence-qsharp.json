@@ -1,0 +1,124 @@
+{
+  "schema_version": "webmcp-qcg.evidence-receipt.v3",
+  "receipt_id": "receipt-recommendation60a9010a8228ff28f2",
+  "manifest": {
+    "schema_version": "webmcp-qcg.artifact-manifest.v2",
+    "manifest_id": "manifest-602ec14b539c7ac05ed22ef0305e17df",
+    "artifact_id": "artifact-602ec14b539c7ac05ed22ef0305e17df",
+    "file_name": "qcg-bell-sample.qs",
+    "artifact_digest": "602ec14b539c7ac01513b043eedd01931894dc00b746f2c55ed22ef0305e17df",
+    "byte_size": 236,
+    "format": "qsharp",
+    "artifact_profile": "qsharp-qdk",
+    "capabilities": {
+      "inspect": true,
+      "compile": true,
+      "simulate": true,
+      "static_only": false
+    },
+    "provenance": "human_import",
+    "compiler": {
+      "name": "qsharp-lang",
+      "version": "1.31.0",
+      "status": "compiled",
+      "diagnostic_count": 0,
+      "diagnostics": [],
+      "profile_digest": "qsharp-lang-1-31-0-local-wasm",
+      "bounded_entrypoint": true,
+      "estimated_qubits": 2
+    },
+    "created_at": "2026-09-02T02:08:22.650Z"
+  },
+  "target_profile": {
+    "schema_version": "webmcp-qcg.target-profile.v2",
+    "profile_id": "qsharp-local-wasm-1310",
+    "label": "Q# 1.31 local WebAssembly simulator",
+    "source": "https://www.npmjs.com/package/qsharp-lang/v/1.31.0",
+    "captured_at": "2026-09-01T21:45:37-04:00",
+    "expires_at": "2026-09-24T23:59:59-04:00",
+    "execution_surface": "local_wasm",
+    "max_qubits": 8,
+    "compiler_profile_digest": "qsharp-lang-1-31-0-local-wasm",
+    "source_digest": "25561eb5cafbc02c28cdb5f94ef09cc87b9b17d84b602ea82d77380d75fb129d",
+    "evidence_state": "known",
+    "submission_enabled": false
+  },
+  "recommendation": {
+    "schema_version": "webmcp-qcg.recommendation.v2",
+    "recommendation_id": "recommendation-602ec14b539c7ac0a9010a8228ff28f2",
+    "manifest_id": "manifest-602ec14b539c7ac05ed22ef0305e17df",
+    "target_profile_id": "qsharp-local-wasm-1310",
+    "scientific_intent": "Review this imported artifact before any quantum execution.",
+    "observable": "artifact_preflight",
+    "parameters_digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "requested_limits": {
+      "shots": 64,
+      "timeout_ms": 10000,
+      "max_qubits": 2,
+      "target": "local_simulator"
+    },
+    "reuse_key": "287b9c8cd15538aa1ef8d5a2ba11c5c01c7e2879c144ea202876d4868730ee0d",
+    "expires_at": "2026-09-02T02:14:05.759Z",
+    "valid": true,
+    "decision": "simulate_first",
+    "reason_codes": [
+      "BOUNDED_LOCAL_EVIDENCE_REQUIRED"
+    ],
+    "unknowns": [],
+    "confidence": "high",
+    "safer_alternative": "Request one-time human consent for a bounded local Q# simulation."
+  },
+  "human_decision": {
+    "schema_version": "webmcp-qcg.human-decision.v2",
+    "human_decision_id": "human-decision-recommendation609cedc3f3249b9542",
+    "recommendation_id": "recommendation-602ec14b539c7ac0a9010a8228ff28f2",
+    "choice": "accepted",
+    "justification": "Accepted after visible review.",
+    "override": false,
+    "decided_at": "2026-09-02T02:09:42.788Z"
+  },
+  "simulation": {
+    "run_id": "run-recommendation608027154a1f4ff3d2",
+    "bell_invariant": true,
+    "shots_requested": 64,
+    "shots_returned": 64,
+    "outcome_counts": {
+      "[One, One]": 35,
+      "[Zero, Zero]": 29
+    },
+    "completed_at": "2026-09-02T02:10:14.012Z"
+  },
+  "effects": {
+    "inspections": 1,
+    "evaluations": 1,
+    "local_simulations": 1,
+    "metadata_validations": 1,
+    "qpu_submissions": 0,
+    "evidence_exports": 1
+  },
+  "format": "qsharp",
+  "artifact_profile": {
+    "id": "qsharp-qdk",
+    "label": "Q# / QDK WASM",
+    "format": "qsharp",
+    "capabilities": {
+      "inspect": true,
+      "compile": true,
+      "simulate": true,
+      "static_only": false
+    }
+  },
+  "compiler_facts": {
+    "name": "qsharp-lang",
+    "version": "1.31.0",
+    "status": "compiled",
+    "diagnostic_count": 0,
+    "diagnostics": [],
+    "profile_digest": "qsharp-lang-1-31-0-local-wasm",
+    "bounded_entrypoint": true,
+    "estimated_qubits": 2
+  },
+  "digest": "1b46631564997d1547a0812ad22854903cced8fd09681816dee13c2bba997239",
+  "created_at": "2026-09-02T02:09:05.759Z",
+  "updated_at": "2026-09-02T02:10:36.865Z"
+}

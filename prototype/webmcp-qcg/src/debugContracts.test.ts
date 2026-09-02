@@ -1,6 +1,6 @@
 // @vitest-environment node
 import { describe, expect, it } from 'vitest'
-import { createDebugMessage, qcgDebugMessage } from './debugContracts'
+import { createDebugMessage, createGeminiManualHandoff, qcgDebugMessage, validateGeminiManualReplyBinding } from './debugContracts'
 import { committedIdbRequest, createInMemoryDebugLedger, ResilientBackend, type DebugLedgerBackend } from './debugLedger'
 
 const sessionId = '11111111-1111-4111-8111-111111111111'
@@ -30,6 +30,13 @@ describe('qcg-debug-message.v1', () => {
       expect(() => createDebugMessage({ ...draft(), event_id: crypto.randomUUID(), summary }, 1)).toThrow()
     }
     expect(() => createDebugMessage({ ...draft(), event_id: crypto.randomUUID(), evidence_refs: ['C:\\private\\proof'] }, 1)).toThrow()
+  })
+
+  it('allows ordinary body, stack and trace language while retaining narrow transport and stack protections', () => {
+    expect(createDebugMessage({ ...draft(), event_id: crypto.randomUUID(), summary: 'Trace the decision body and stack of evidence claims.' }, 1).summary).toContain('Trace the decision body')
+    for (const summary of ['request body: private payload', 'response body: private payload', 'stack trace: private path', 'traceback: private path']) {
+      expect(() => createDebugMessage({ ...draft(), event_id: crypto.randomUUID(), summary }, 1)).toThrow()
+    }
   })
 
   it('normalizes Unicode and rejects invisible control or bidi manipulation', () => {
@@ -99,5 +106,16 @@ describe('qcg-debug-message.v1', () => {
     expect(settled).toBe(false)
     transaction.oncomplete?.(new Event('complete') as Event & { target: IDBTransaction })
     await expect(committed).resolves.toBe('stored')
+  })
+
+  it('binds a Gemini manual reply to the issued handoff and active page session', () => {
+    const now = new Date('2026-08-29T12:00:00.000Z')
+    const pageId = `qcg-page:${sessionId}`
+    const issued = createGeminiManualHandoff({ session_id: sessionId, page_id: pageId, intent: 'find', prompt: 'Find one bounded source.', evidence_refs: [] }, now)
+    const reply = { schema_version: 'qcg-gemini-manual-reply.v1' as const, handoff_id: issued.handoff_id, intent: 'find' as const, summary: 'One bounded source was identified.', evidence_refs: [], confidence: 'medium' as const }
+
+    expect(validateGeminiManualReplyBinding(reply, issued, { session_id: sessionId, page_id: pageId }, now)).toEqual({ accepted: true })
+    expect(validateGeminiManualReplyBinding(reply, issued, { session_id: crypto.randomUUID(), page_id: pageId }, now)).toMatchObject({ accepted: false, reason: 'active_context_mismatch' })
+    expect(validateGeminiManualReplyBinding(reply, issued, { session_id: sessionId, page_id: 'qcg-page:other' }, now)).toMatchObject({ accepted: false, reason: 'active_context_mismatch' })
   })
 })
