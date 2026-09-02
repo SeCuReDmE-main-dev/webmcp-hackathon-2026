@@ -89,6 +89,22 @@
     "temporary_public_preview_expired_at": "2026-08-28T21:02:08.336Z",
     "temporary_public_native_webmcp_proven": true
   },
+  "adjacent_private_proofs": {
+    "included_in_hackathon_claims": false,
+    "pushed_to_adjacent_remotes": false,
+    "fnp_qnn": {
+      "status": "done_local_unpushed",
+      "commit": "4d544e29db92798246448af89058ac3eee1b55b2",
+      "tests": "461 tests run with 2 expected skips; 9 adapter tests passed",
+      "qcg_snapshot_sanitizer": "passed"
+    },
+    "fnpqnn_gateway": {
+      "status": "done_local_unpushed",
+      "commit": "878846ad632aed602a59d0375a5bfb7701427ca6",
+      "tests": "4 adapter tests passed; full suite limited by unrelated optional E2B environment",
+      "qcg_snapshot_sanitizer": "passed"
+    }
+  },
   "devpost": {
     "project_id": 1404828,
     "project_created": true,

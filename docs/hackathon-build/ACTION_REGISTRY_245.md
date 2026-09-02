@@ -71,8 +71,8 @@ This registry preserves Actions 1–148 and the historical redesign work. It rec
 | 239 | Jean-Sébastien + Sol | BLOCKED_BY_AUTHOR | Record, edit and publish human-voice video | Public video URL |
 | 240 | Sol | PENDING | Complete Devpost fields without submission | Rendered draft review |
 | 241 | Sol + Jean-Sébastien | PENDING | Finalize Summer article and traces | Author-approved package |
-| 242 | Terra | PENDING | Prove separate FNP-QNN Companion adapter | FNP receipt |
-| 243 | Terra | PENDING | Prove separate Gateway snapshot producer | Gateway receipt |
+| 242 | Terra | DONE | Prove separate FNP-QNN Companion adapter | `docs/evidence/ACTIONS_242_243_ADJACENT_ADAPTER_PROOFS_2026-09-02.md`; local commit `4d544e2` |
+| 243 | Terra | DONE | Prove separate Gateway snapshot producer | Same receipt; local commit `878846a` |
 | 244 | Sol + Luna | PENDING | Audit first 70 actions | `70/71 DONE` report |
 | 245 | Jean-Sébastien | BLOCKED_BY_AUTHOR | Decide submission and freeze public surfaces | Devpost submission receipt or explicit no-submit record |
 

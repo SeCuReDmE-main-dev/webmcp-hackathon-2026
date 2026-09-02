@@ -21,6 +21,7 @@ Updated: 2026-09-02
 | Vercel parity | pass | <https://webmcp-qcg.vercel.app/> passes 24/24, exact `/decisions` SPA fallback, seven headers, correct MIME and `.htaccess` non-disclosure |
 | Final native-agent trace | partial pass | official `webmcp-evals@0.0.4` inspection/evaluation is 2/2 on promoted bytes; human consent, local simulation and evidence export remain for Action 237 |
 | Source tag/archive/DOI | tag/archive pass; DOI externally blocked | public tag `v0.1.0-hackathon` targets `6b669fe`; source ZIP SHA `7B7198…3D00`; Zenodo DOI remains reserved and unpublished after transport failures |
+| Adjacent FNP-QNN/Gateway proofs | local pass, outside submission | both source-free `qcg-console-snapshot.v2` producers pass the real Companion sanitizer; local commits remain unpushed and excluded from hackathon claims |
 | Editorial Spring | open under author control | research and drafts remain material for composition; no article-closure or publication action |
 | Devpost | `submission_draft` | final submission remains an author-only decision |
 
