@@ -13,9 +13,11 @@ Their source and output hashes are recorded in
 
 ## Product mark
 
-`asset/logo/icône app.png` is the runtime icon master. Its exterior RGB canvas
-is removed only where it is connected to the image edge, then it is resized
-with high-quality interpolation.
+The open-gate symbol in `asset/logo/logo A — épuré.png` is the compact runtime
+mark. A fixed, text-free square crop is resized with high-quality interpolation
+so the gate, locks and evidence path remain legible at browser-toolbar size.
+The more detailed `icône app.png` remains artwork for large-format use; it is
+not reduced into the Web header.
 
 | Surface | Runtime output |
 | --- | --- |

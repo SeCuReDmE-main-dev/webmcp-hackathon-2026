@@ -1,16 +1,21 @@
 {
   "schema_version": "webmcp-qcg.brand-runtime-manifest.v1",
-  "generated_at": "2026-09-02T06:44:24.3334661+00:00",
+  "generated_at": "2026-09-02T20:10:21.8418002+00:00",
   "sources": [
     {
-      "role": "runtime_icon_master",
-      "path": "asset/logo/icône app.png",
-      "sha256": "1b6449d1141a7b64a347e3a375f1ead96f83c99d208d7771f168d56c4ef3653e"
+      "role": "runtime_compact_mark_source",
+      "path": "asset/logo/logo A — épuré.png",
+      "sha256": "e849a93f09faec2d3bc51511b734295792f9075f731fb659e4263aa6a4848005"
     },
     {
       "role": "social_card",
       "path": "asset/logo/thumbnail GitHub.png",
       "sha256": "6bc2ed5a6bff140c78ae4256a85ae55b4e2bbb04044928f3734e47f99eff287b"
+    },
+    {
+      "role": "web_ambient_background",
+      "path": "asset/logo/hero web bg.png",
+      "sha256": "4de675c985f7c8722b0a2ab88c70ff25bd6cfbd4a73e3c8a0af6a4529b0b38be"
     },
     {
       "role": "inspector_q_avatar_source",
@@ -26,23 +31,23 @@
     },
     {
       "path": "companion/qcg-devtools-extension/icons/qcg-128.png",
-      "bytes": 44459,
-      "sha256": "5480e05013c87390b6d6e621db68b67c102a1256034dea0078030c1ea0d00706"
+      "bytes": 19651,
+      "sha256": "4f39ab12448b103ab8c68154a005b964b136c14a46ecdbc1216fddcabf6f1949"
     },
     {
       "path": "companion/qcg-devtools-extension/icons/qcg-16.png",
-      "bytes": 1080,
-      "sha256": "d38b8eec8783f1a4e6208b091883a3acbc66db64fcab72ace4eedbc2d6c02587"
+      "bytes": 675,
+      "sha256": "72dc988346e230688872a3ad6ade8edfd25f3e1cdb914feaca248f0688c2f7a1"
     },
     {
       "path": "companion/qcg-devtools-extension/icons/qcg-32.png",
-      "bytes": 3557,
-      "sha256": "2ccfbae2584a97e5a38be5770ea325abd31272db14841659b76d8d46e76d0e6a"
+      "bytes": 1831,
+      "sha256": "6e1af3a191ce0ea94a3bd92b4616620e11fb46bffb6a9ca662f670f49bda6554"
     },
     {
       "path": "companion/qcg-devtools-extension/icons/qcg-48.png",
-      "bytes": 7386,
-      "sha256": "d7d52a127ca912d03fea68c76829c983af045f0b497ce02d7f91b84a1bb4cc19"
+      "bytes": 3607,
+      "sha256": "f9d2c8d8ce8fc85a1d8c25ef27fd8a302b37222aefc4a2f8fb66653e49211823"
     },
     {
       "path": "prototype/webmcp-qcg/public/brand/inspector-q-avatar.jpg",
@@ -50,39 +55,44 @@
       "sha256": "7f705371786fa8f9b09d9eb0e54a61d07575c7f23182bc254ff4a6dce7140467"
     },
     {
+      "path": "prototype/webmcp-qcg/public/brand/qcg-ambient-bg.jpg",
+      "bytes": 262360,
+      "sha256": "0ef0a685ad9ae423a1ff0bc7d186969483e00fddb0ef953c0a03678631fc30d6"
+    },
+    {
       "path": "prototype/webmcp-qcg/public/brand/qcg-icon-128.png",
-      "bytes": 44459,
-      "sha256": "5480e05013c87390b6d6e621db68b67c102a1256034dea0078030c1ea0d00706"
+      "bytes": 19651,
+      "sha256": "4f39ab12448b103ab8c68154a005b964b136c14a46ecdbc1216fddcabf6f1949"
     },
     {
       "path": "prototype/webmcp-qcg/public/brand/qcg-icon-16.png",
-      "bytes": 1080,
-      "sha256": "d38b8eec8783f1a4e6208b091883a3acbc66db64fcab72ace4eedbc2d6c02587"
+      "bytes": 675,
+      "sha256": "72dc988346e230688872a3ad6ade8edfd25f3e1cdb914feaca248f0688c2f7a1"
     },
     {
       "path": "prototype/webmcp-qcg/public/brand/qcg-icon-180.png",
-      "bytes": 83074,
-      "sha256": "927478a5a686eef2af38b123939e9f902b0ba7754203e07539e3b94389028603"
+      "bytes": 36335,
+      "sha256": "937311c3baa6de63a1ff83b8e8dfec2ab2b918172103783890e967b56089964b"
     },
     {
       "path": "prototype/webmcp-qcg/public/brand/qcg-icon-192.png",
-      "bytes": 92455,
-      "sha256": "ddcf596d5644c5252dc1b43c76423fa5a135cbc7e5ca71d807503785f08ecfec"
+      "bytes": 40823,
+      "sha256": "d126a1a656194f0d61b7d3dee669af507a49d97b451a857ff51938f14295df53"
     },
     {
       "path": "prototype/webmcp-qcg/public/brand/qcg-icon-32.png",
-      "bytes": 3557,
-      "sha256": "2ccfbae2584a97e5a38be5770ea325abd31272db14841659b76d8d46e76d0e6a"
+      "bytes": 1831,
+      "sha256": "6e1af3a191ce0ea94a3bd92b4616620e11fb46bffb6a9ca662f670f49bda6554"
     },
     {
       "path": "prototype/webmcp-qcg/public/brand/qcg-icon-48.png",
-      "bytes": 7386,
-      "sha256": "d7d52a127ca912d03fea68c76829c983af045f0b497ce02d7f91b84a1bb4cc19"
+      "bytes": 3607,
+      "sha256": "f9d2c8d8ce8fc85a1d8c25ef27fd8a302b37222aefc4a2f8fb66653e49211823"
     },
     {
       "path": "prototype/webmcp-qcg/public/brand/qcg-icon-512.png",
-      "bytes": 583197,
-      "sha256": "7dcbcb6153beee0aceafc1dee5cfc6ffb4929992e2b3f9312a1ec64d4a02dc51"
+      "bytes": 238651,
+      "sha256": "6b8faf75f0c7e0e0b1ff657d68592cd4bc0550c0b6e98b9a227d6346386b65dd"
     },
     {
       "path": "prototype/webmcp-qcg/public/brand/qcg-social-card.png",

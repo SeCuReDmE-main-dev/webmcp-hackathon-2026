@@ -8,7 +8,7 @@ import { DebugLedger } from './debugLedger'
 import { installQcgDevtoolsBridge } from './devtoolsBridge'
 import { registerQcgDevtoolsTools } from './devtoolsTools'
 import type { QcgDebugMessage } from './debugContracts'
-import { ConsoleShell, type CompanionSetupMode } from './console/ConsoleShell'
+import { ConsoleShell, type CompanionSetupMode, type WorkflowStatuses } from './console/ConsoleShell'
 import { ConsoleInspector, ConsoleViews, defaultImportedEvaluation, type ImportedEvaluationDraft } from './console/ConsoleViews'
 import { QCG_THEME_STORAGE_KEY, type ConsoleView, type QcgTheme } from './console/contracts'
 import { LOCAL_PROFILE_ID } from './targetProfiles'
@@ -193,7 +193,16 @@ export default function App({ serviceOverride }: { serviceOverride?: QcgServices
     return result.message
   }
 
-  return <ConsoleShell theme={theme} onThemeChange={setTheme} view={view} onViewChange={setView} supported={supported} toolCount={toolNames.length} registrationStatus={registrationStatus} sessionId={debugSessionId} companionStatus={companionStatus} companionOpen={companionOpen} companionTriggerId={companionTriggerId} companionSetupMode={companionSetupMode()} companionSetupOpen={companionSetupOpen} onOpenCompanion={openCompanion} onCloseCompanionSetup={() => setCompanionSetupOpen(false)} inspector={(navigate) => <ConsoleInspector state={state} debugMessages={debugMessages} sessionId={debugSessionId} onViewChange={navigate} />}>
+  const artifactInspected = Boolean(state.recommendation || (state.manifest && inspectedManifestId === state.manifest.manifest_id))
+  const workflowStatuses: WorkflowStatuses = {
+    trust: state.manifest ? 'completed' : 'current',
+    inspect: artifactInspected ? 'completed' : state.manifest ? 'current' : 'locked',
+    decide: state.humanDecision ? 'completed' : state.recommendation ? 'current' : 'locked',
+    verify: state.receipt ? 'completed' : state.humanDecision ? 'current' : 'locked',
+    execute: state.effects.local_simulations > 0 ? 'completed' : state.consent && !state.consent.used ? 'current' : 'locked',
+  }
+
+  return <ConsoleShell theme={theme} onThemeChange={setTheme} view={view} onViewChange={setView} supported={supported} toolCount={toolNames.length} registrationStatus={registrationStatus} sessionId={debugSessionId} companionStatus={companionStatus} companionOpen={companionOpen} companionTriggerId={companionTriggerId} workflowStatuses={workflowStatuses} companionSetupMode={companionSetupMode()} companionSetupOpen={companionSetupOpen} onOpenCompanion={openCompanion} onCloseCompanionSetup={() => setCompanionSetupOpen(false)} inspector={(navigate) => <ConsoleInspector state={state} debugMessages={debugMessages} sessionId={debugSessionId} onViewChange={navigate} />}>
     <ConsoleViews view={view} state={state} selected={selected} select={setSelected} artifactProfileId={artifactProfileId} setArtifactProfileId={setArtifactProfileId} busy={busy} runDemo={() => void runDemo()} importArtifact={(file) => void importArtifact(file)} inspectImported={() => void inspectImported()} importedEvaluation={importedEvaluation} updateImportedEvaluation={(patch) => setImportedEvaluation((current) => ({ ...current, ...patch }))} evaluateImported={() => void evaluateImported()} importedInspectionReady={Boolean(state.manifest?.provenance === 'human_import' && inspectedManifestId === state.manifest.manifest_id)} operationError={operationError} operationAnnouncement={operationAnnouncement} setView={setView} recordDecision={(choice, justification) => void recordDecision(choice, justification)} runSimulation={() => void runSimulation()} revokeConsent={revokeConsent} exportEvidence={(format) => void exportEvidence(format)} toolNames={toolNames} registrationStatus={registrationStatus} supported={supported} debugReady={debugReady} debugMessages={debugMessages} humanMessage={humanMessage} storedReceipts={storedReceipts} actorFilter={actorFilter} kindFilter={kindFilter} setFilters={(actor, kind) => { setActorFilter(actor); setKindFilter(kind) }} requestHandoff={requestHandoff} />
   </ConsoleShell>
 }

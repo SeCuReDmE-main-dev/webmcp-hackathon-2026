@@ -5,14 +5,15 @@ $ErrorActionPreference = 'Stop'
 
 $repoRoot = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $sourceRoot = Join-Path $repoRoot 'asset\logo'
-$iconSource = Join-Path $sourceRoot 'icône app.png'
+$iconSource = Join-Path $sourceRoot 'logo A — épuré.png'
 $socialSource = Join-Path $sourceRoot 'thumbnail GitHub.png'
+$ambientSource = Join-Path $sourceRoot 'hero web bg.png'
 $mascotSource = Join-Path $repoRoot 'asset\mascotte-inspecteur Q\mascotte — Inspector Q.png'
 $webRoot = Join-Path $repoRoot 'prototype\webmcp-qcg\public\brand'
 $extensionRoot = Join-Path $repoRoot 'companion\qcg-devtools-extension\icons'
 $receiptPath = Join-Path $repoRoot 'evidence\releases\qcg-brand-runtime-manifest.json'
 
-foreach ($required in @($iconSource, $socialSource, $mascotSource)) {
+foreach ($required in @($iconSource, $socialSource, $ambientSource, $mascotSource)) {
   if (-not (Test-Path -LiteralPath $required -PathType Leaf)) {
     throw "Required brand source is missing: $required"
   }
@@ -105,6 +106,34 @@ function Save-ResizedPng {
   }
 }
 
+function Save-CroppedPng {
+  param(
+    [Parameter(Mandatory)][string]$SourcePath,
+    [Parameter(Mandatory)][System.Drawing.Rectangle]$SourceRectangle,
+    [Parameter(Mandatory)][int]$Size,
+    [Parameter(Mandatory)][string]$Destination
+  )
+
+  $source = [System.Drawing.Bitmap]::FromFile($SourcePath)
+  try {
+    $target = [System.Drawing.Bitmap]::new($Size, $Size, [System.Drawing.Imaging.PixelFormat]::Format24bppRgb)
+    $graphics = [System.Drawing.Graphics]::FromImage($target)
+    try {
+      $graphics.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
+      $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+      $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+      $graphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+      $graphics.DrawImage($source, [System.Drawing.Rectangle]::new(0, 0, $Size, $Size), $SourceRectangle, [System.Drawing.GraphicsUnit]::Pixel)
+      $target.Save($Destination, [System.Drawing.Imaging.ImageFormat]::Png)
+    } finally {
+      $graphics.Dispose()
+      $target.Dispose()
+    }
+  } finally {
+    $source.Dispose()
+  }
+}
+
 function Save-CroppedJpeg {
   param(
     [Parameter(Mandatory)][string]$SourcePath,
@@ -145,21 +174,54 @@ function Save-CroppedJpeg {
   }
 }
 
+function Save-ResizedJpeg {
+  param(
+    [Parameter(Mandatory)][string]$SourcePath,
+    [Parameter(Mandatory)][int]$Width,
+    [Parameter(Mandatory)][int]$Height,
+    [Parameter(Mandatory)][long]$Quality,
+    [Parameter(Mandatory)][string]$Destination
+  )
+
+  $source = [System.Drawing.Bitmap]::FromFile($SourcePath)
+  try {
+    $target = [System.Drawing.Bitmap]::new($Width, $Height, [System.Drawing.Imaging.PixelFormat]::Format24bppRgb)
+    $graphics = [System.Drawing.Graphics]::FromImage($target)
+    try {
+      $graphics.CompositingQuality = [System.Drawing.Drawing2D.CompositingQuality]::HighQuality
+      $graphics.InterpolationMode = [System.Drawing.Drawing2D.InterpolationMode]::HighQualityBicubic
+      $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::HighQuality
+      $graphics.PixelOffsetMode = [System.Drawing.Drawing2D.PixelOffsetMode]::HighQuality
+      $graphics.DrawImage($source, [System.Drawing.Rectangle]::new(0, 0, $Width, $Height))
+      $codec = [System.Drawing.Imaging.ImageCodecInfo]::GetImageEncoders() | Where-Object MimeType -eq 'image/jpeg' | Select-Object -First 1
+      $parameters = [System.Drawing.Imaging.EncoderParameters]::new(1)
+      try {
+        $parameters.Param[0] = [System.Drawing.Imaging.EncoderParameter]::new([System.Drawing.Imaging.Encoder]::Quality, $Quality)
+        $target.Save($Destination, $codec, $parameters)
+      } finally {
+        $parameters.Dispose()
+      }
+    } finally {
+      $graphics.Dispose()
+      $target.Dispose()
+    }
+  } finally {
+    $source.Dispose()
+  }
+}
+
 New-Item -ItemType Directory -Force -Path $webRoot, $extensionRoot, (Split-Path -Parent $receiptPath) | Out-Null
 
-$master = New-TransparentIconMaster -Path $iconSource
-try {
-  foreach ($size in @(16, 32, 48, 128, 180, 192, 512)) {
-    Save-ResizedPng -Source $master -Size $size -Destination (Join-Path $webRoot "qcg-icon-$size.png")
-  }
-  foreach ($size in @(16, 32, 48, 128)) {
-    Save-ResizedPng -Source $master -Size $size -Destination (Join-Path $extensionRoot "qcg-$size.png")
-  }
-} finally {
-  $master.Dispose()
+$compactMarkCrop = [System.Drawing.Rectangle]::new(270, 145, 484, 484)
+foreach ($size in @(16, 32, 48, 128, 180, 192, 512)) {
+  Save-CroppedPng -SourcePath $iconSource -SourceRectangle $compactMarkCrop -Size $size -Destination (Join-Path $webRoot "qcg-icon-$size.png")
+}
+foreach ($size in @(16, 32, 48, 128)) {
+  Save-CroppedPng -SourcePath $iconSource -SourceRectangle $compactMarkCrop -Size $size -Destination (Join-Path $extensionRoot "qcg-$size.png")
 }
 
 Copy-Item -LiteralPath $socialSource -Destination (Join-Path $webRoot 'qcg-social-card.png') -Force
+Save-ResizedJpeg -SourcePath $ambientSource -Width 1536 -Height 864 -Quality 76 -Destination (Join-Path $webRoot 'qcg-ambient-bg.jpg')
 $mascotCrop = [System.Drawing.Rectangle]::new(220, 80, 680, 680)
 Save-CroppedJpeg -SourcePath $mascotSource -SourceRectangle $mascotCrop -Size 256 -Destination (Join-Path $webRoot 'inspector-q-avatar.jpg')
 Copy-Item -LiteralPath (Join-Path $webRoot 'inspector-q-avatar.jpg') -Destination (Join-Path $extensionRoot 'inspector-q-avatar.jpg') -Force
@@ -180,7 +242,7 @@ $receipt = [ordered]@{
   generated_at = [DateTimeOffset]::UtcNow.ToString('o')
   sources = @(
     [ordered]@{
-      role = 'runtime_icon_master'
+      role = 'runtime_compact_mark_source'
       path = [System.IO.Path]::GetRelativePath($repoRoot, $iconSource).Replace('\', '/')
       sha256 = (Get-FileHash -LiteralPath $iconSource -Algorithm SHA256).Hash.ToLowerInvariant()
     },
@@ -188,6 +250,11 @@ $receipt = [ordered]@{
       role = 'social_card'
       path = [System.IO.Path]::GetRelativePath($repoRoot, $socialSource).Replace('\', '/')
       sha256 = (Get-FileHash -LiteralPath $socialSource -Algorithm SHA256).Hash.ToLowerInvariant()
+    },
+    [ordered]@{
+      role = 'web_ambient_background'
+      path = [System.IO.Path]::GetRelativePath($repoRoot, $ambientSource).Replace('\', '/')
+      sha256 = (Get-FileHash -LiteralPath $ambientSource -Algorithm SHA256).Hash.ToLowerInvariant()
     },
     [ordered]@{
       role = 'inspector_q_avatar_source'

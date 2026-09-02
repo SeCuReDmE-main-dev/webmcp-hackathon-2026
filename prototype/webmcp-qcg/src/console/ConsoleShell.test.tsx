@@ -152,6 +152,28 @@ describe('QCG console shell', () => {
     expect(console.dataset.contrast).toBe('high')
   })
 
+  it('renders the bounded workflow as non-interactive, textual state badges', () => {
+    render(<ConsoleShell {...baseProps} workflowStatuses={{ trust: 'completed', inspect: 'completed', decide: 'current', verify: 'locked', execute: 'locked' }} onViewChange={vi.fn()} inspector={() => <p>State inspector</p>}><h1>Inspector</h1></ConsoleShell>)
+    const workflow = screen.getByRole('region', { name: 'QCG bounded workflow' })
+    expect(within(workflow).getAllByRole('listitem')).toHaveLength(5)
+    expect(within(workflow).getByText('Trust').closest('li')?.textContent).toContain('completed')
+    expect(within(workflow).getByText('Decide').closest('li')?.getAttribute('aria-current')).toBe('step')
+    expect(within(workflow).getByText('Execute').closest('li')?.getAttribute('title')).toBe('Bounded local execution only')
+    expect(within(workflow).queryAllByRole('button')).toHaveLength(0)
+  })
+
+  it('integrates Access below the top bar and restores focus when Escape closes it', async () => {
+    const user = userEvent.setup()
+    render(<ConsoleShell {...baseProps} onViewChange={vi.fn()} inspector={() => <p>State inspector</p>}><h1>Inspector</h1></ConsoleShell>)
+    const toggle = screen.getByRole('button', { name: 'Access' })
+    await user.click(toggle)
+    const panel = screen.getByRole('dialog', { name: 'Access preferences' })
+    expect(panel.previousElementSibling?.tagName).toBe('HEADER')
+    await user.keyboard('{Escape}')
+    expect(screen.queryByRole('dialog', { name: 'Access preferences' })).toBeNull()
+    expect(document.activeElement).toBe(toggle)
+  })
+
   it('closes the inspector drawer after a contextual jump', async () => {
     const user = userEvent.setup()
     const onViewChange = vi.fn()

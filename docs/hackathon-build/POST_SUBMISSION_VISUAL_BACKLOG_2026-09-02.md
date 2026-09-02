@@ -1,6 +1,8 @@
 # Post-submission visual refinement
 
-Status: `DEFERRED_BY_AUTHOR`
+Status: `COMPLETED_IN_LOCAL_CANDIDATE`
+
+Completion receipt: [`../../evidence/qa/POST_SUBMISSION_VISUAL_REFINEMENT_2026-09-02.md`](../../evidence/qa/POST_SUBMISSION_VISUAL_REFINEMENT_2026-09-02.md)
 
 Jean-Sébastien fixed the execution order on 2026-09-02 after the overnight release pass:
 
@@ -25,3 +27,12 @@ Jean-Sébastien fixed the execution order on 2026-09-02 after the overnight rele
 - The Web grid uses a hard-coded blue stroke in both themes, which keeps the Light center brighter and visually busier than the Companion.
 
 These items are deliberately excluded from the stable pre-video candidate so the final overnight technical closeout does not introduce an unreviewed visual regression.
+
+## Resolution
+
+The author reopened this bounded visual pass after submission. The Companion
+palette is now the Web source of truth, the warm control edge is restored on
+both surfaces, the repeated Web grid is removed, and a low-opacity derivative
+of `hero web bg.png` provides the workbench ambience. The detailed medal icon
+was replaced at toolbar size by the text-free open-gate mark cropped from
+`logo A — épuré.png`.

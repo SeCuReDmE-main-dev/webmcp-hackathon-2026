@@ -5,23 +5,30 @@ const QCG_ACCESSIBILITY_STORAGE_KEY = 'qcg-accessibility-v1'
 type TextScale = '100' | '112' | '125'
 type AccessibilityProfile = 'base' | 'autism-calm' | 'adhd-sprint' | 'deep-work'
 export type CompanionSetupMode = 'production' | 'development'
+export type WorkflowStatus = 'completed' | 'current' | 'locked'
+export type WorkflowStatuses = Record<'trust' | 'inspect' | 'decide' | 'verify' | 'execute', WorkflowStatus>
 interface AccessibilityPreferences { profile: AccessibilityProfile; textScale: TextScale; highContrast: boolean; reduceMotion: boolean; underlineControls: boolean }
 const accessibilityProfiles: Array<{ id: AccessibilityProfile; label: string }> = [
   { id: 'base', label: 'Base' }, { id: 'autism-calm', label: 'Autism Calm' },
   { id: 'adhd-sprint', label: 'ADHD Sprint' }, { id: 'deep-work', label: 'Deep Work' }
 ]
 const defaultAccessibility: AccessibilityPreferences = { profile: 'base', textScale: '100', highContrast: false, reduceMotion: false, underlineControls: false }
+const defaultWorkflowStatuses: WorkflowStatuses = { trust: 'current', inspect: 'locked', decide: 'locked', verify: 'locked', execute: 'locked' }
+const workflowSteps: Array<{ id: keyof WorkflowStatuses; label: string; help?: string }> = [
+  { id: 'trust', label: 'Trust' }, { id: 'inspect', label: 'Inspect' }, { id: 'decide', label: 'Decide' },
+  { id: 'verify', label: 'Verify' }, { id: 'execute', label: 'Execute', help: 'Bounded local execution only' },
+]
 const compactConsoleQuery = '(max-width: 1100px)'
 const isCompactConsole = (): boolean => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia(compactConsoleQuery).matches
 const companionPackages = {
   production: {
     href: '/qcg-console-companion-0.2.4.zip',
-    sha256: '5F5EC558D3D7AE9286B57C48E1E9DBBB12943BB5DB2BF5BE93D7C5976B92926F',
+    sha256: '4C61E0DE64D8D00299CED83D2D798AE9EAC90AC8F5EDE6D6C1510A9231AC6055',
     label: 'Production · qcg.securedme.ca',
   },
   development: {
     href: '/qcg-console-companion-dev-0.2.4.zip',
-    sha256: 'E2294C3C23DD551A950FCD7478D266AFC67468D664552268267160DDC5D99D34',
+    sha256: '6E0B543BAF9EB0BDCB20ABF1CC4DDD6B9F0AF3A58741C40880579F37F4FA3D75',
     label: 'Development · localhost and qcg.securedme.ca',
   },
 } as const
@@ -46,9 +53,9 @@ export const consoleNavigation: Array<{ id: ConsoleView; label: string; mark: st
   { id: 'sources', label: 'Sources', mark: 'S' }, { id: 'receipts', label: 'Receipts', mark: 'R' }, { id: 'activity', label: 'Activity', mark: 'A' }
 ]
 
-export function ConsoleShell({ theme, onThemeChange, view, onViewChange, children, inspector, supported, toolCount, registrationStatus, sessionId, companionStatus, companionOpen = false, companionTriggerId, companionSetupMode = 'production', companionSetupOpen = false, onOpenCompanion, onCloseCompanionSetup = () => undefined }: {
+export function ConsoleShell({ theme, onThemeChange, view, onViewChange, children, inspector, supported, toolCount, registrationStatus, sessionId, companionStatus, companionOpen = false, companionTriggerId, workflowStatuses = defaultWorkflowStatuses, companionSetupMode = 'production', companionSetupOpen = false, onOpenCompanion, onCloseCompanionSetup = () => undefined }: {
   theme: QcgTheme; onThemeChange(theme: QcgTheme): void; view: ConsoleView; onViewChange(view: ConsoleView): void
-  children: ReactNode; inspector(navigate: (view: ConsoleView) => void): ReactNode; supported: boolean; toolCount: number; registrationStatus: string; sessionId: string; companionStatus: string; companionOpen?: boolean; companionTriggerId: string; companionSetupMode?: CompanionSetupMode; companionSetupOpen?: boolean; onOpenCompanion(): void; onCloseCompanionSetup?: () => void
+  children: ReactNode; inspector(navigate: (view: ConsoleView) => void): ReactNode; supported: boolean; toolCount: number; registrationStatus: string; sessionId: string; companionStatus: string; companionOpen?: boolean; companionTriggerId: string; workflowStatuses?: WorkflowStatuses; companionSetupMode?: CompanionSetupMode; companionSetupOpen?: boolean; onOpenCompanion(): void; onCloseCompanionSetup?: () => void
 }) {
   const [collapsed, setCollapsed] = useState(false)
   const [compactLayout, setCompactLayout] = useState(isCompactConsole)
@@ -59,6 +66,7 @@ export function ConsoleShell({ theme, onThemeChange, view, onViewChange, childre
   const [extensionAddressStatus, setExtensionAddressStatus] = useState('')
   const [accessibility, setAccessibility] = useState<AccessibilityPreferences>(initialAccessibility)
   const companionSetupHeading = useRef<HTMLHeadingElement>(null)
+  const accessToggle = useRef<HTMLButtonElement>(null)
   const companionPackage = companionPackages[companionSetupMode]
   useEffect(() => {
     if (typeof window.matchMedia !== 'function') return
@@ -86,7 +94,7 @@ export function ConsoleShell({ theme, onThemeChange, view, onViewChange, childre
   }, [accessibility])
   useEffect(() => {
     if (!accessOpen) return
-    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') setAccessOpen(false) }
+    const closeOnEscape = (event: KeyboardEvent) => { if (event.key === 'Escape') { setAccessOpen(false); accessToggle.current?.focus() } }
     window.addEventListener('keydown', closeOnEscape)
     return () => window.removeEventListener('keydown', closeOnEscape)
   }, [accessOpen])
@@ -115,17 +123,29 @@ export function ConsoleShell({ theme, onThemeChange, view, onViewChange, childre
     onViewChange(nextView)
     setRailMenuOpen(false)
   }
+  const toggleAccess = () => {
+    setAccessOpen((open) => !open)
+    setDrawerOpen(false)
+    setRailMenuOpen(false)
+  }
+  const closeAccess = () => {
+    setAccessOpen(false)
+    accessToggle.current?.focus()
+  }
   const selected = consoleNavigation.find((item) => item.id === view)?.label ?? 'Console'
   const profileReducesMotion = accessibility.profile === 'autism-calm' || accessibility.profile === 'deep-work'
   return <main className="qcg-console" data-theme={theme} data-access-profile={accessibility.profile} data-contrast={accessibility.highContrast ? 'high' : 'standard'} data-reduce-motion={accessibility.reduceMotion || profileReducesMotion ? 'true' : 'false'} data-underline-controls={accessibility.underlineControls ? 'true' : 'false'} style={{ '--qcg-inspector-width': `${inspectorWidth}px` } as React.CSSProperties}>
     <a className="skip-link" href="#qcg-console-workspace">Skip to workspace</a>
     <header className="console-topbar">
-      {compactLayout ? <button className="brand brand-nav-toggle" type="button" aria-label={railMenuOpen ? 'Close console navigation' : 'Open console navigation'} aria-expanded={railMenuOpen} aria-controls="qcg-console-navigation" onClick={() => setRailMenuOpen((value) => !value)}><img src="/brand/qcg-icon-32.png" width="25" height="25" alt="" aria-hidden="true" /><strong>QCG Console</strong></button> : <div className="brand"><img src="/brand/qcg-icon-32.png" width="25" height="25" alt="" aria-hidden="true" /><strong>QCG Console</strong></div>}
+      {compactLayout ? <button className="brand brand-nav-toggle" type="button" aria-label={railMenuOpen ? 'Close console navigation' : 'Open console navigation'} aria-expanded={railMenuOpen} aria-controls="qcg-console-navigation" onClick={() => { setAccessOpen(false); setRailMenuOpen((value) => !value) }}><img src="/brand/qcg-icon-32.png" width="30" height="30" alt="" aria-hidden="true" /><strong>QCG Console</strong></button> : <div className="brand"><img src="/brand/qcg-icon-32.png" width="30" height="30" alt="" aria-hidden="true" /><strong>QCG Console</strong></div>}
       <div className="topbar-context"><span>web / local</span><code title={sessionId}>session {sessionId.slice(0, 8)}</code><span className={supported ? 'status-online' : 'status-offline'}>{supported ? `WebMCP · ${toolCount}` : 'WebMCP unavailable'}</span></div>
-      <div className="topbar-actions"><button className="companion-button companion-desktop-control" data-qcg-open-companion={companionTriggerId} data-qcg-companion-action={companionOpen ? 'close' : 'open'} aria-pressed={companionOpen} onClick={onOpenCompanion}>{companionOpen ? 'Close' : 'Open'} Companion</button><span className="companion-mobile-note" role="note" aria-label="Companion availability">Companion · desktop</span><output className="companion-status" aria-live="polite">{companionStatus}</output><button className="inspector-toggle" aria-expanded={drawerOpen} aria-controls="qcg-inspector-drawer" onClick={() => setDrawerOpen((value) => !value)}>Inspector</button><button className="accessibility-toggle" aria-expanded={accessOpen} aria-controls="qcg-accessibility-panel" onClick={() => setAccessOpen((value) => !value)}>Access</button><div className="theme-switch" role="group" aria-label="QCG theme"><button aria-pressed={theme === 'dark'} onClick={() => onThemeChange('dark')}>Dark</button><button aria-pressed={theme === 'light'} onClick={() => onThemeChange('light')}>Light</button></div></div>
+      <div className="topbar-actions"><button className="companion-button companion-desktop-control" data-qcg-open-companion={companionTriggerId} data-qcg-companion-action={companionOpen ? 'close' : 'open'} aria-pressed={companionOpen} onClick={onOpenCompanion}>{companionOpen ? 'Close' : 'Open'} Companion</button><span className="companion-mobile-note" role="note" aria-label="Companion availability">Companion · desktop</span><output className="companion-status" aria-live="polite">{companionStatus}</output><button className="inspector-toggle" aria-expanded={drawerOpen} aria-controls="qcg-inspector-drawer" onClick={() => { setAccessOpen(false); setDrawerOpen((value) => !value) }}>Inspector</button><button ref={accessToggle} className="accessibility-toggle" aria-expanded={accessOpen} aria-controls="qcg-accessibility-panel" onClick={toggleAccess}>Access</button><div className="theme-switch" role="group" aria-label="QCG theme"><button aria-pressed={theme === 'dark'} onClick={() => onThemeChange('dark')}>Dark</button><button aria-pressed={theme === 'light'} onClick={() => onThemeChange('light')}>Light</button></div></div>
       <span className="sr-only">{registrationStatus}</span>
-      {accessOpen && <section id="qcg-accessibility-panel" className="accessibility-panel" role="dialog" aria-modal="false" aria-labelledby="qcg-accessibility-title"><div className="accessibility-heading"><div><b id="qcg-accessibility-title">Access preferences</b><small>Stored in this browser only</small></div><button aria-label="Close access preferences" onClick={() => setAccessOpen(false)}>Close</button></div><fieldset><legend>Reading profile</legend><div className="accessibility-profile-row">{accessibilityProfiles.map((profile) => <button key={profile.id} aria-pressed={accessibility.profile === profile.id} onClick={() => setAccessibility((current) => ({ ...current, profile: profile.id }))}>{profile.label}</button>)}</div></fieldset><label>Text size<select aria-label="Text size" value={accessibility.textScale} onChange={(event) => setAccessibility((current) => ({ ...current, textScale: event.target.value as TextScale }))}><option value="100">100%</option><option value="112">112.5%</option><option value="125">125%</option></select></label><label><input type="checkbox" checked={accessibility.highContrast} onChange={(event) => setAccessibility((current) => ({ ...current, highContrast: event.target.checked }))} /> Stronger contrast</label><label><input type="checkbox" checked={accessibility.reduceMotion} onChange={(event) => setAccessibility((current) => ({ ...current, reduceMotion: event.target.checked }))} /> Reduce motion</label><label><input type="checkbox" checked={accessibility.underlineControls} onChange={(event) => setAccessibility((current) => ({ ...current, underlineControls: event.target.checked }))} /> Underline controls</label><button className="accessibility-reset" onClick={() => setAccessibility(defaultAccessibility)}>Reset preferences</button><p>Reading profiles adjust presentation only. These controls do not replace semantic structure, keyboard testing or human review.</p></section>}
     </header>
+    {accessOpen && <section id="qcg-accessibility-panel" className="accessibility-panel" role="dialog" aria-modal="false" aria-labelledby="qcg-accessibility-title"><div className="accessibility-heading"><div><b id="qcg-accessibility-title">Access preferences</b><small>Stored in this browser only</small></div><button aria-label="Close access preferences" onClick={closeAccess}>Close</button></div><fieldset><legend>Reading profile</legend><div className="accessibility-profile-row">{accessibilityProfiles.map((profile) => <button key={profile.id} aria-pressed={accessibility.profile === profile.id} onClick={() => setAccessibility((current) => ({ ...current, profile: profile.id }))}>{profile.label}</button>)}</div></fieldset><label>Text size<select aria-label="Text size" value={accessibility.textScale} onChange={(event) => setAccessibility((current) => ({ ...current, textScale: event.target.value as TextScale }))}><option value="100">100%</option><option value="112">112.5%</option><option value="125">125%</option></select></label><label><input type="checkbox" checked={accessibility.highContrast} onChange={(event) => setAccessibility((current) => ({ ...current, highContrast: event.target.checked }))} /> Stronger contrast</label><label><input type="checkbox" checked={accessibility.reduceMotion} onChange={(event) => setAccessibility((current) => ({ ...current, reduceMotion: event.target.checked }))} /> Reduce motion</label><label><input type="checkbox" checked={accessibility.underlineControls} onChange={(event) => setAccessibility((current) => ({ ...current, underlineControls: event.target.checked }))} /> Underline controls</label><button className="accessibility-reset" onClick={() => setAccessibility(defaultAccessibility)}>Reset preferences</button><p>Reading profiles adjust presentation only. These controls do not replace semantic structure, keyboard testing or human review.</p></section>}
+    <section className="workflow-strip" aria-label="QCG bounded workflow">
+      <ol>{workflowSteps.map((step) => <li key={step.id} className={`workflow-step ${workflowStatuses[step.id]}`} aria-current={workflowStatuses[step.id] === 'current' ? 'step' : undefined} title={step.help}><b>{step.label}</b><small>{workflowStatuses[step.id]}</small></li>)}</ol>
+    </section>
     <div className={`console-layout ${collapsed ? 'rail-collapsed' : ''} ${drawerOpen ? 'drawer-open' : ''} ${railMenuOpen ? 'rail-menu-open' : ''}`}>
       {compactLayout && railMenuOpen && <button className="rail-backdrop" type="button" aria-label="Close console navigation" onClick={() => setRailMenuOpen(false)} />}
       {(!compactLayout || railMenuOpen) && <nav id="qcg-console-navigation" className="console-rail" aria-label="QCG console views">
@@ -142,7 +162,7 @@ export function ConsoleShell({ theme, onThemeChange, view, onViewChange, childre
         <div className="companion-setup-heading"><div><span>Optional browser surface</span><h2 id="qcg-companion-setup-title" ref={companionSetupHeading} tabIndex={-1}>Install QCG Companion</h2></div><button aria-label="Close Companion setup" onClick={onCloseCompanionSetup}>Close</button></div>
         <p>QCG already works in this page. Companion adds the synchronized Chrome side panel and the QCG panel in F12.</p>
         <ol>
-          <li><b>Download and extract</b><a className="companion-download" href={companionPackage.href} download>Download Companion 0.2.4 · 21 KB</a><small>{companionPackage.label}</small><small>SHA-256 <code>{companionPackage.sha256}</code></small></li>
+          <li><b>Download and extract</b><a className="companion-download" href={companionPackage.href} download>Download Companion 0.2.4 · 73 KB</a><small>{companionPackage.label}</small><small>SHA-256 <code>{companionPackage.sha256}</code></small></li>
           <li><b>Load it once in Chrome</b><div className="extension-address"><code>chrome://extensions</code><button onClick={() => void copyExtensionAddress()}>Copy address</button></div><small>Open that address, enable Developer mode, select Load unpacked, then choose the extracted folder containing <code>manifest.json</code>.</small>{extensionAddressStatus && <output aria-live="polite">{extensionAddressStatus}</output>}</li>
           <li><b>Reconnect QCG</b><small>Return here, reload the page, then retry. Open F12 and select QCG when you want the DevTools surface.</small></li>
         </ol>

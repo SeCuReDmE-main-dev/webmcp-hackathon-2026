@@ -19,6 +19,11 @@ $defaultOutput = if ($Mode -eq 'development') {
 $archive = if ($OutputPath) { $ExecutionContext.SessionState.Path.GetUnresolvedProviderPathFromPSPath($OutputPath) } else { $defaultOutput }
 $archiveDirectory = Split-Path -Parent $archive
 New-Item -ItemType Directory -Path $archiveDirectory -Force | Out-Null
+$publicFileName = if ($Mode -eq 'development') { "qcg-console-companion-dev-$version.zip" } else { "qcg-console-companion-$version.zip" }
+$publicDestinations = @(
+  Join-Path $repository "prototype\webmcp-qcg\public\$publicFileName"
+  Join-Path $repository "prototype\webmcp-qcg\public\downloads\$publicFileName"
+)
 
 $runtimeFiles = @(
   'background.js',
@@ -60,6 +65,13 @@ try {
   }
 }
 
+foreach ($destination in $publicDestinations) {
+  New-Item -ItemType Directory -Path (Split-Path -Parent $destination) -Force | Out-Null
+  if ([IO.Path]::GetFullPath($destination) -ne [IO.Path]::GetFullPath($archive)) {
+    Copy-Item -LiteralPath $archive -Destination $destination -Force
+  }
+}
+
 [pscustomobject]@{
   mode = $Mode
   version = $version
@@ -67,4 +79,5 @@ try {
   bytes = (Get-Item -LiteralPath $archive).Length
   sha256 = (Get-FileHash -LiteralPath $archive -Algorithm SHA256).Hash
   entries = @(tar -tf $archive)
+  publicCopies = $publicDestinations
 } | ConvertTo-Json -Depth 4
