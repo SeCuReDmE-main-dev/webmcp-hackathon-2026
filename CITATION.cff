@@ -1,0 +1,21 @@
+cff-version: 1.2.0
+message: "If you use WebMCP-QCG, please cite this software release."
+title: "WebMCP-QCG: Quantum Call Gate"
+type: software
+authors:
+  - family-names: "Beaulieu"
+    given-names: "Jean-Sébastien"
+    orcid: "https://orcid.org/0009-0007-2904-0443"
+    affiliation: "SecuredMe"
+version: "0.1.0-hackathon"
+date-released: 2026-09-01
+doi: "10.5281/zenodo.22240306"
+license: MIT
+repository-code: "https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026"
+url: "https://qcg.securedme.ca/"
+abstract: >-
+  WebMCP-QCG is a browser-native, human-in-the-loop quantum preflight
+  workbench. It inspects bounded experiment evidence, returns one of five
+  deterministic recommendations, records explicit human decisions, supports
+  bounded local Q# and OpenQASM Bell-fixture simulation, and exports
+  reproducible evidence receipts without submitting a QPU or provider job.

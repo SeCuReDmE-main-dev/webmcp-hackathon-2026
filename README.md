@@ -1,246 +1,243 @@
-![WebMCP-QCG: Quantum Call Gate — Autumn](asset/thumbnail/thumbnail_devpost.png)
+# WebMCP-QCG: Quantum Call Gate
 
-# WebMCP Quantum Call Gate
+<p align="center">
+  <img src="asset/thumbnail/readme/summer-gate-readme.jpg" alt="Summer Gate — WebMCP-QCG across three browser surfaces with one human decision" width="1200" />
+</p>
+<p align="center">
+  <a href="https://doi.org/10.5281/zenodo.22240306">
+    <img src="https://zenodo.org/badge/DOI/10.5281/zenodo.22240306.svg" alt="DOI: 10.5281/zenodo.22240306" />
+  </a>
+</p>
 
-**QCG v3** is a working browser prototype for one decision that should happen
-before quantum execution: reuse existing evidence, reject the request, recompile,
-simulate locally first, or report that the request is ready for a separately
-authorized external system.
+> **Software DOI reserved — publication pending final release QA.**
 
-It is a human-in-the-loop preflight workbench, not a quantum provider. The
-prototype imports a local quantum artifact, derives a byte-exact manifest,
-evaluates it against a time-bounded target-profile snapshot, records the human
-decision, and exports a reproducible v3 evidence receipt. Q# and OpenQASM 3 have
-bounded local execution paths. Eight additional ecosystem profiles are explicit
-static-inspection surfaces and can never request simulation or external readiness.
+**Review before you run. Decide before quantum execution.**
 
-- Stable release URL: [https://qcg.securedme.ca/](https://qcg.securedme.ca/)
-- Vercel validation URL: [https://webmcp-qcg.vercel.app/](https://webmcp-qcg.vercel.app/)
-- Current public status: the author-approved three-surface QCG Console is live
-  on the canonical cPanel origin and synchronized to the stable Vercel validation
-  address. The cPanel promotion preserved a rollback backup, verified all 14
-  expected paths and matched all 12 content-bearing public files to the local
-  production build by SHA-256. See the
-  [canonical deployment receipt](docs/evidence/QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md).
-- License: [MIT](LICENSE). Dependency licenses remain with their authors; see
-  [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+WebMCP-QCG is a browser-native, human-in-the-loop quantum preflight workbench.
+It inspects bounded evidence, recommends one of five outcomes, records an
+explicit human decision, can simulate only the checked-in Q# and OpenQASM Bell
+fixtures locally, and exports a reproducible evidence receipt. It never submits
+a QPU or provider job.
 
-No QPU submission, paid API, provider credential, or remote quantum job exists
-in this MVP. The QPU submission counter is structurally fixed at zero.
+[Live application](https://qcg.securedme.ca/) ·
+[Vercel validation](https://webmcp-qcg.vercel.app/) ·
+[Devpost project](https://devpost.com/software/webmcp-qcg-quantum-call-gate) ·
+[MIT license](LICENSE)
 
-## The build in four seasons
+The Devpost page is public. Hackathon submission remains under Jean-Sébastien
+Beaulieu's explicit control.
 
-The seasons describe how the code matured; they are an editorial map, not
-runtime themes. QCG itself deliberately exposes only **Dark** and **Light**.
+## Four seasons of one build
 
-| Season | Engineering threshold | Evidence trail | Thumbnail |
-|---|---|---|---|
-| **Autumn — choose** | The broad quantum-router idea became one browser-native call gate with explicit non-goals. | [Initial portfolio](docs/decisions/2026-08-27-initial-portfolio.md) and [progressive four-tool decision](docs/decisions/2026-08-28-progressive-four-tool-browser-gate.md) | Current cover above |
-| **Winter — bound** | Tool contracts, five deterministic recommendations, human authority and evidence receipts replaced architectural ambition with inspectable states. | [Browser-native HITL workbench ADR](docs/decisions/2026-08-29-browser-native-hitl-quantum-preflight-workbench.md) | asset/thumbnail/thumbnail_winter.png — in production |
-| **Spring — prove** | Functional expansion stopped; Q#, OpenQASM, benchmarks, accessibility and one console across three surfaces became release gates. | [Day 5 feature freeze](docs/decisions/2026-08-30-day5-spring-proof-and-feature-freeze.md) and [console authority ADR](docs/decisions/2026-08-30-qcg-console-redesign-authority.md) | asset/thumbnail/thumbnail_spring.png — in production |
-| **Summer — converge** | Web, F12 and Companion now share sanitized evidence while agents contribute and the human remains the decision holder. The remaining work is proof, documentation, video and release QA. | [Day 7 public-safe trace](research/day7/DAY7_PUBLIC_SAFE_TRACE_2026-09-01.md) and [video/A2A/README status](research/day7/DAY7_VIDEO_A2A_README_STATUS_2026-09-01.md) | asset/thumbnail/thumbnail_summer.png — in production |
+The seasons tell the engineering story. They are editorial chapters, not
+runtime themes. The product exposes only **Dark** and **Light**.
 
-The complete four-image gallery will be enabled when the Winter, Spring and
-Summer assets exist. Keeping the filenames explicit avoids broken public images
-while the artwork is still being produced.
+| Autumn — choose | Winter — bound |
+| --- | --- |
+| <img src="asset/thumbnail/readme/autumn-gate-readme.jpg" alt="Autumn Gate — choosing a bounded problem" width="560" /> | <img src="asset/thumbnail/readme/winter-gate-readme.jpg" alt="Winter Gate — defining contracts and human authority" width="560" /> |
+| The broad router idea became one browser-native call gate with explicit non-goals. [Decision trail](docs/decisions/2026-08-27-initial-portfolio.md). [Article DOI 10.5281/zenodo.22135277](https://doi.org/10.5281/zenodo.22135277). | Tool contracts, evidence receipts and five deterministic recommendations turned ambition into inspectable states. [Architecture decision](docs/decisions/2026-08-29-browser-native-hitl-quantum-preflight-workbench.md). Reserved article DOI: [10.5281/zenodo.22167091](https://doi.org/10.5281/zenodo.22167091). |
 
-## What QCG v3 actually does
+| Spring — prove | Summer — converge |
+| --- | --- |
+| <img src="asset/thumbnail/readme/spring-gate-readme.jpg" alt="Spring Gate — benchmarking and freezing the product" width="560" /> | <img src="asset/thumbnail/readme/summer-gate-readme.jpg" alt="Summer Gate — converging Web, F12 and Companion" width="560" /> |
+| Feature expansion stopped. Q#, OpenQASM, accessibility, benchmarks and release gates became the work. [Feature-freeze decision](docs/decisions/2026-08-30-day5-spring-proof-and-feature-freeze.md). [Article DOI 10.5281/zenodo.22211182](https://doi.org/10.5281/zenodo.22211182). | Web, F12 and Companion converge around sanitized state while the human remains the decision holder. [Day 7 public trace](research/day7/DAY7_PUBLIC_SAFE_TRACE_2026-09-01.md). Reserved article DOI: [10.5281/zenodo.22240281](https://doi.org/10.5281/zenodo.22240281). |
 
-1. A human imports a UTF-8 artifact of at most 128 KiB, explicitly selects its
-   profile, or selects one of five falsifiable demo cards.
-2. QCG computes a SHA-256 digest of the exact bytes and creates a
-   `webmcp-qcg.artifact-manifest.v2` manifest with bounded compiler evidence.
-3. QCG evaluates scientific intent, observable, requested limits, and one
-   frozen target profile. The result is one of five explicit decisions.
-4. A human accepts, defers, or overrides the recommendation. An override needs
-   a justification. Only an accepted `simulate_first` recommendation creates
-   short-lived, one-use consent for local simulation.
-5. The pinned `qsharp-lang@1.31.0` runtime can execute the published Q# and
-   OpenQASM 3 Bell samples in a Web Worker. Python, C++ and QIR text profiles
-   remain static-only. The receipt records effects and keeps QPU submissions at 0.
-6. JSON or Markdown evidence can be exported without raw Q#, credentials,
-   provider diagnostics, or local filesystem paths. Receipts are also stored
-   locally in browser IndexedDB when it is available.
+## The decision path
 
-## One console, three surfaces
+```text
+import → inspect → evaluate → human decision
+       → optional bounded Bell simulation → export evidence
+```
 
-The redesign branch presents the same bounded state through the web workbench,
-the QCG DevTools panel and an installable Chrome/Edge side panel. All three expose
-seven explicit views: **Inspector, Console, WebMCP, Decisions, Sources, Receipts,
-and Activity**. The left rail changes the center workbench; the right evidence
-inspector stays persistent on desktop and becomes a closing drawer on smaller
-screens.
+1. A human imports a UTF-8 artifact of at most 128 KiB and selects its profile,
+   or opens one of five falsifiable demonstration cards.
+2. QCG hashes the exact bytes and creates a versioned artifact manifest with
+   bounded compiler evidence.
+3. QCG evaluates the intent, observable, request limits and one frozen target
+   profile.
+4. It returns exactly one recommendation:
+   `reuse_result`, `reject`, `recompile`, `simulate_first`, or
+   `ready_for_external_execution`.
+5. A human accepts, defers or overrides. An override requires a justification.
+6. An accepted `simulate_first` recommendation can create one short-lived,
+   single-use consent token for the checked-in local Bell fixture.
+7. QCG exports JSON or Markdown evidence without raw source, credentials,
+   provider diagnostics, consent tokens or local filesystem paths.
 
-The product has exactly two themes: **Dark** and **Light**. Cyan identifies active
-technical context in Dark, while emerald gives Light a clearer selected-state
-identity. Gold remains human authority and red remains refusal or error. Seasonal
-art direction belongs to the editorial series, not the application.
+`ready_for_external_execution` is a preflight result. It is never provider
+authorization, a QPU submission or permission to spend money.
 
-An `Access` panel stores direct-use preferences locally: text size, stronger
-contrast, reduced motion and underlined controls. It complements semantic HTML,
-keyboard access, labels, action history and receipts; it does not claim to certify
-accessibility conformance or replace assistive technology.
+## One bounded state, three browser surfaces
+
+| Surface | Current responsibility | Authority boundary |
+| --- | --- | --- |
+| **Web application** | Import, inspect, evaluate, record the human decision, run an approved bounded local fixture and export evidence. | The only surface that can hold consent or trigger simulation. |
+| **QCG F12 panel** | Render sanitized manifest, recommendation, activity, participants and review requests for the inspected page. | Optional unpacked extension; no source, consent or simulation command crosses it. |
+| **QCG Companion side panel** | Keep bounded context visible beside the active QCG tab and support structured human/agent handoffs. | Uses declared participants rather than authenticated agent identities. |
+
+The canonical Web application is public. The F12 and side-panel surfaces are an
+optional unpacked Manifest V3 Companion. Current evidence proves the Companion
+opening on the canonical Chrome origin. The final retained-tab F12 sequence is
+one of the release gates for the last coding and recording pass.
+
+Gemini in DevTools remains a manual, inspectable relay:
+
+```text
+QCG sanitized export → human copy/paste → Gemini response
+                     → human preview → schema-validated import
+```
+
+QCG does not claim a private Gemini API or direct access to Gemini's native
+conversation.
+
+## Eight tools, two responsibilities
+
+### Quantum-facing WebMCP tools
+
+| Tool | Availability | Bounded effect |
+| --- | --- | --- |
+| `inspect_quantum_experiment` | After a valid human-loaded manifest exists | Returns the bounded artifact manifest. Raw source never crosses the contract. |
+| `evaluate_quantum_call` | After a valid manifest exists | Returns one recommendation, reason codes, unknowns, confidence and a safer alternative. |
+| `run_bounded_local_simulation` | Only after valid `simulate_first` evaluation and live one-use human consent | Runs the approved Q# or OpenQASM Bell fixture locally in a Worker. |
+| `export_quantum_evidence_report` | After evaluation creates a receipt | Exports JSON or Markdown without re-evaluating or executing. |
+
+### Collaboration tools registered by the QCG page
+
+| Tool | Purpose |
+| --- | --- |
+| `read_debug_context` | Read a bounded, sanitized collaboration snapshot. |
+| `post_debug_message` | Add a structured observation, hypothesis, proposal or challenge. |
+| `request_human_review` | Ask the human decision holder to review a bounded question. |
+| `export_debug_handoff` | Export a sanitized packet for another participant or manual Gemini relay. |
+
+The page registers collaboration tools through `devtoolstooldiscovery`. The
+extension renders and transports bounded state. Collaboration tools cannot
+accept a recommendation, create consent, run simulation or authorize an
+external effect.
+
+## Quantum profiles
+
+| Capability | Profiles |
+| --- | --- |
+| **Bounded local fixture execution** | Q# through QDK; OpenQASM through the same pinned QDK WebAssembly runtime. |
+| **Static inspection only** | Qiskit Python, Cirq/TFQ Python, TorchQuantum Python, PennyLane Python, CUDA-Q Python, CUDA-Q C++, Braket Python and QIR text. |
+
+Only the exact checked-in
+[`qcg-bell-sample.qs`](prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qs)
+and
+[`qcg-bell-sample.qasm`](prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qasm)
+fixtures can reach local simulation. Arbitrary imports receive inspection and
+bounded compiler evidence; they do not become executable through QCG.
 
 ## Quick start
 
 From the repository root:
 
-```bash
-cd prototype/webmcp-qcg
+```powershell
+Set-Location prototype/webmcp-qcg
 npm ci
 npm test
 npm run build
 npm run dev
 ```
 
-Open the local URL printed by Vite. The human interface works without WebMCP.
-For the exact setup, sample path, browser modes, and troubleshooting, use the
-[getting-started guide](docs/GETTING_STARTED.md).
+Open the URL printed by Vite. The human interface remains usable when WebMCP is
+unavailable.
 
-The checked-in executable samples are
-[`qcg-bell-sample.qs`](prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qs)
-and [`qcg-bell-sample.qasm`](prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qasm).
+Optional WebMCP evaluations:
 
-## Four progressive WebMCP tools
+```powershell
+npm run eval:smoke
+npm run eval:live
+```
 
-The tools are registered dynamically. A clean page exposes no artifact tool;
-the first two appear only after the human has loaded a valid local artifact.
+### Optional QCG Companion
 
-| Tool | When it is available | Effect |
-|---|---|---|
-| `inspect_quantum_experiment` | After a human-loaded artifact manifest exists | Verifies the artifact identifier and returns its bounded manifest. Raw Q# does not cross the tool contract. |
-| `evaluate_quantum_call` | After a human-loaded artifact manifest exists | Returns one recommendation, reason codes, unknowns, confidence, and a safer alternative. It grants no execution authority. |
-| `run_bounded_local_simulation` | Only while a valid executable-profile `simulate_first` recommendation has accepted, unused human consent | Consumes consent and runs an approved Q# or OpenQASM Bell sample locally in a Worker. It makes no provider or QPU call. |
-| `export_quantum_evidence_report` | After an evaluation has created a v3 receipt | Exports the current receipt as JSON or Markdown without re-evaluating or executing it. |
+Validate the unpacked extension:
 
-An evaluation normally makes the export tool discoverable immediately. The
-simulation tool appears only for the narrower consented branch and disappears
-after its one-use consent is consumed.
+```powershell
+Set-Location companion/qcg-devtools-extension
+npm test
+```
 
-## Optional QCG DevTools companion
+Then open `chrome://extensions`, enable Developer mode, select **Load unpacked**
+and choose `companion/qcg-devtools-extension/`. The production manifest is
+restricted to `https://qcg.securedme.ca/*`; localhost requires the separate
+development manifest workflow described in the
+[Companion README](companion/qcg-devtools-extension/README.md).
 
-`companion/qcg-devtools-extension/` contains an unpacked Manifest V3 extension
-that creates a local F12 panel named **QCG** and a callable browser side panel.
-Both prioritize the sanitized `window.__QCG_CONSOLE_V2__` snapshot and command
-envelope, with the older collaboration bridge retained only as a bounded fallback.
-They display reduced artifact, recommendation, reason codes, counters, declared
-participants, collaboration messages and pending human-review requests. Visible
-human buttons may accept, defer or override the active recommendation; simulation
-remains website-only and consent tokens never cross the extension boundary.
+The extension has no dependency installation or build step.
 
-Four collaboration-only tools are exposed through the official
-`devtoolstooldiscovery` event: `read_debug_context`,
-`post_debug_message`, `request_human_review`, and
-`export_debug_handoff`. They are separate from the four WebMCP quantum tools
-and cannot create consent, run simulation, or authorize external execution.
-Each write is bound to the active page session. Agent identity is explicitly
-**declared**, not authenticated; human and system entries originate in QCG.
-Free-text entries are schema-bounded and screened for recognized high-risk
-credential, path, source-code, stack and transport patterns. The panel also
-warns every participant to keep secrets and source code out of the ledger.
+## Verification snapshot
 
-Loading an unpacked extension and opening its F12 panel are manual browser
-actions. The application remains fully usable without the extension, Gemini,
-or Chrome DevTools MCP. See the
-[multi-agent DevTools runbook](docs/DEVTOOLS_MULTI_AGENT_RUNBOOK.md).
+Current first-draft verification on 2026-09-01:
 
-## Browser modes
+- canonical cPanel and Vercel validation URLs return HTTP 200 and served the
+  same application bundle at audit time;
+- TypeScript and Vite production build pass;
+- current application bundle: 132 modules, 371.16 kB JavaScript and 14.11 kB CSS;
+- 52 Vitest cases are declared; the final clean-suite run will establish the
+  published pass count after the last coding pass;
+- QCG Companion v0.2.2 validation, trusted-click opening and low-glare theme
+  tests pass;
+- canonical-origin Companion side-panel opening is observed;
+- F12 evidence exists for the local build; the retained-tab current-version
+  proof remains a final release gate;
+- the public repository is licensed under MIT.
 
-- **Human controls:** available in an ordinary modern browser; native tool
-  discovery is optional.
-- **WebMCP-capable in-app browser:** native tools are available when the page
-  receives `document.modelContext.registerTool`.
-- **Experimental Chrome WebMCP testing:** use a Chrome build that exposes
-  `chrome://flags/#enable-webmcp-testing`, enable the flag, and fully restart
-  Chrome. Flag availability is browser-build dependent.
+The repository records prior deterministic benchmark evidence separately from
+HTTP delivery evidence. The final release will refresh both the verification
+snapshot and deployment receipt rather than reusing an older bundle hash.
 
-If the WebMCP API is absent or registration fails, QCG reports that state and
-keeps the human workflow usable.
+## Security and deliberate limits
 
-## Current verification
+- No QPU call, provider job, provider credential, payment or remote quantum
+  execution exists in this release.
+- The QPU submission counter is structurally fixed at zero.
+- Source code, private paths, consent tokens, secrets, internal stacks and raw
+  network bodies are excluded from exported contracts.
+- Agent identities are declared, not cryptographically authenticated.
+- Human decisions are bound to the active session and recommendation.
+- Simulation remains website-only and consumes one-use local consent.
+- Static profiles cannot return `simulate_first` or
+  `ready_for_external_execution`.
+- The access panel improves direct-use preferences; it does not claim WCAG
+  certification or replace assistive technology.
+- Chrome is the verified Companion runtime. Edge support remains a compatibility
+  target until a dedicated runtime receipt exists.
 
-The Day 5 QCG working tree was rechecked on 2026-08-30:
+See the [threat model](docs/security/QCG_THREAT_MODEL.md) for the complete trust
+boundaries and residual risks.
 
-- clean `npm ci`: pass, 0 vulnerabilities reported;
-- automated tests: 51 passed;
-- TypeScript check and Vite production build: pass;
-- Q# and OpenQASM Bell execution: pass; eight other profiles remain static-only;
-- 320 px, tablet and desktop layouts, seven central views, Dark/Light persistence,
-  access preferences, contrast and reduced motion: pass on the local candidate;
-- live unpacked QCG F12 panel and four Chrome DevTools MCP collaboration tools:
-  pass on one page ID;
-- native Gemini conversation access remains manual: export, human transfer,
-  preview and schema-validated import;
-- E2B campaign: 2.6 million deterministic operations, including two 100-sandbox
-  million-operation passes with 100/100 matching digests;
-- public canary: 80/80 HTTP 200, zero errors/timeouts, p95 30.825 ms.
+## Evidence and design trail
 
-The 2026-08-30 stable-origin human smoke compiled and evaluated the published Q#
-Bell fixture, produced `simulate_first`, preserved the pending human decision,
-and kept local simulations and QPU submissions at zero. A fresh native-agent
-invocation and a full author-controlled simulation/export remain separate gates.
-See [`evidence/qa/`](evidence/qa/) for dated receipts.
-
-On 2026-09-01, the unpacked extension was reloaded and pinned, and the canonical
-QCG page opened the Companion side panel successfully. The narrow Light surface
-was also moved to lower-glare sage-mineral neutrals after direct user feedback.
-The final recording must still repeat F12, Companion and same-session proof on
-the retained tab. See the
-[Day 7 Companion trace](research/day7/COMPANION_A2A_AND_LOW_GLARE_TRACE_2026-09-01.md).
-
-## Limits and non-goals
-
-- QCG v3 executes only its bounded Q# and OpenQASM 3 paths. Qiskit, Cirq/TFQ,
-  TorchQuantum, PennyLane, CUDA-Q Python/C++, Braket and QIR text are static
-  inspection profiles, not execution claims.
-- It is not a universal circuit-language converter or multi-provider router.
-- The request bounds are at most 256 shots, 8 qubits, and 15 seconds. They bound
-  input and policy; they are not generalized capacity or performance claims.
-- `ready_for_external_execution` means only that the recorded preflight found no
-  blocker under the supplied snapshot. Provider availability, credentials,
-  queue state, price, submission, and authorization remain unknown and external.
-- Bundled target profiles expire. A stale or unknown profile is rejected rather
-  than treated as current evidence.
-- IndexedDB receipts are local to the browser profile; there is no account,
-  server sync, analytics, or remote persistence.
-- Stable-origin evidence is recorded in the
-  [live acceptance receipt](evidence/qa/LIVE_ORIGIN_ACCEPTANCE_RECEIPT_2026-08-29.md).
-  Future builds must repeat those gates before replacing this release.
-
-## Documentation map
-
-- [Getting started](docs/GETTING_STARTED.md) — install, test, build, run, sample,
-  browser setup, workflow, and troubleshooting.
-- [Console redesign contract](docs/design/qcg-console-redesign/DESIGN.md) — three
-  surfaces, two themes, access preferences, authority and visual boundaries.
-- [DevTools multi-agent runbook](docs/DEVTOOLS_MULTI_AGENT_RUNBOOK.md) — shared
-  page routing, official experimental flags and the extension boundary.
-- [Release runbook](docs/RELEASE.md) — release artifact, gates, required headers,
-  stable-origin validation, rollback boundary, and open blockers.
-- [Canonical cPanel deployment receipt](docs/evidence/QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md)
-  — immutable package, operator transaction, public hashes, headers and live smoke.
-- [Threat model](docs/security/QCG_THREAT_MODEL.md) — assets, trust boundaries,
-  controls, residual risks, security headers, and deliberate exclusions.
-- [`docs/PROJECT_CHARTER.md`](docs/PROJECT_CHARTER.md) — scope and non-goals.
-- [`docs/decisions/`](docs/decisions/) — dated architecture decisions.
-- [`docs/hackathon-build/`](docs/hackathon-build/) — specification, checklist,
-  build notes, and current action registry.
-- [`evidence/`](evidence/) — machine-readable receipts and provenance.
-- [`evidence/hosting/`](evidence/hosting/) — current read-only hosting baseline.
-- [`docs/journal/`](docs/journal/) — public development journal.
-
-- [Day 7 public-safe trace](research/day7/DAY7_PUBLIC_SAFE_TRACE_2026-09-01.md)
-  — Summer closure, privacy boundaries and feature-freeze scope.
-- [Day 7 video/A2A/README status](research/day7/DAY7_VIDEO_A2A_README_STATUS_2026-09-01.md)
-  — current production gates and thumbnail contract.
+- [Console design contract](docs/design/qcg-console-redesign/DESIGN.md)
+- [DevTools multi-agent runbook](docs/DEVTOOLS_MULTI_AGENT_RUNBOOK.md)
+- [Release runbook](docs/RELEASE.md)
+- [Architecture decisions](docs/decisions/)
+- [Machine-readable evidence](evidence/)
+- [Day 7 Companion and A2A trace](research/day7/COMPANION_A2A_AND_LOW_GLARE_TRACE_2026-09-01.md)
+- [Video, A2A and README status](research/day7/DAY7_VIDEO_A2A_README_STATUS_2026-09-01.md)
 - [Summer 9/39 source register](research/day7/SUMMER_9_39_SOURCE_REGISTER_2026-09-01.md)
-  — thirty exclusive sources routed across nine editorial chapters.
+
+## Citation and release state
+
+- Software release: `v0.1.0-hackathon`
+- Evidence schema: `webmcp-qcg.evidence-receipt.v3`
+- Reserved software DOI: [10.5281/zenodo.22240306](https://doi.org/10.5281/zenodo.22240306)
+- License: [MIT](LICENSE)
+
+The software DOI is reserved. The Zenodo software record, release tag and
+source archive will be published only after the final code, clean-clone QA and
+Jean-Sébastien's approval. The four editorial articles retain their independent
+publication records.
 
 ## Governance
 
 - Public construction is not a Devpost submission.
-- No QPU, paid API, provider job, or spending action is authorized by QCG.
-- Deterministic quantum libraries perform compilation and simulation; an AI
-  agent may orchestrate and explain but does not manufacture quantum results.
-- No secret, provider credential, private path, Origin Trial token, or private
-  correspondence belongs in the repository or an exported receipt.
+- AI agents may inspect, propose, challenge and explain. They never replace
+  explicit human authority.
+- Deterministic quantum libraries perform compilation and local simulation; an
+  AI agent does not manufacture quantum results.
+- No secret, provider credential, private correspondence or private filesystem
+  path belongs in this repository or an exported receipt.
