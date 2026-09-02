@@ -20,7 +20,7 @@ Updated: 2026-09-02
 | Companion packages | pass | production `D69B3D…16916`; development `33EACB…BD35B` |
 | Vercel parity | pass | <https://webmcp-qcg.vercel.app/> passes 24/24, exact `/decisions` SPA fallback, seven headers, correct MIME and `.htaccess` non-disclosure |
 | Final native-agent trace | partial pass | official `webmcp-evals@0.0.4` inspection/evaluation is 2/2 on promoted bytes; human consent, local simulation and evidence export remain for Action 237 |
-| Source tag/archive/DOI | open under author control | tag and source archive are not created; reserved software DOI remains unpublished |
+| Source tag/archive/DOI | tag/archive pass; DOI externally blocked | public tag `v0.1.0-hackathon` targets `6b669fe`; source ZIP SHA `7B7198…3D00`; Zenodo DOI remains reserved and unpublished after transport failures |
 | Editorial Spring | open under author control | research and drafts remain material for composition; no article-closure or publication action |
 | Devpost | `submission_draft` | final submission remains an author-only decision |
 
@@ -29,9 +29,9 @@ Updated: 2026-09-02
 Feature work is frozen. Clean-copy, repaired package, source publication,
 cPanel/Vercel parity and the official 2/2 public WebMCP inspection/evaluation
 smoke pass. Remaining work is limited to the human-controlled portion of Action
-237, source tag/archive/DOI gates, documentation, article composition, video
-production, optional rollback restoration proof and the final human submission
-decision.
+237, a Zenodo upload retry after service recovery, documentation, article
+composition, video production, optional rollback restoration proof and the
+final human submission decision.
 
 The accepted console is the canonical public interface and Vercel is its
 synchronized secondary. The video is missing and Devpost remains unsubmitted;

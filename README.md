@@ -9,7 +9,7 @@
   </a>
 </p>
 
-> **Software DOI reserved — publication pending final release QA.**
+> **Software DOI reserved — publication pending Zenodo archive transfer.**
 
 **Review before you run. Decide before quantum execution.**
 
@@ -226,9 +226,9 @@ Current published release-candidate verification recorded on 2026-09-02:
 The repaired G3 clean-copy and Actions 227–232 parity receipts establish the
 current source, package and hosting chain. The official current-runtime agent
 smoke is complete; the human consent, local simulation and evidence-export
-portion of Action 237 remains. The source tag, Zenodo archive, software DOI
-publication, video and Devpost submission remain separate later actions under
-human authority.
+portion of Action 237 remains. The source tag and hash-validated archive are
+complete; software DOI publication is blocked only at Zenodo transport. Video
+and Devpost submission remain separate later actions under human authority.
 
 The repository records deterministic benchmark evidence separately from HTTP
 delivery evidence. The final cPanel package, public hashes, security headers
@@ -269,19 +269,24 @@ boundaries and residual risks.
 - [Qodo cold-review disposition](docs/evidence/QODO_COLD_REVIEW_DISPOSITION_2026-09-02.md)
 - [Actions 214–219 documentation receipt](docs/evidence/ACTIONS_214_219_DOCUMENTATION_2026-09-02.md)
 - [Current-runtime WebMCP smoke receipt](docs/evidence/ACTION_237A_CURRENT_RUNTIME_WEBMCP_SMOKE_2026-09-02.md)
+- [Tag, source archive and Zenodo transport receipt](docs/evidence/ACTIONS_233_236_TAG_ARCHIVE_ZENODO_2026-09-02.md)
 - [Author-deferred post-submission visual refinement](docs/hackathon-build/POST_SUBMISSION_VISUAL_BACKLOG_2026-09-02.md)
 
 ## Citation and release state
 
-- Planned release tag: `v0.1.0-hackathon` (not yet created)
+- Public release tag: [`v0.1.0-hackathon`](https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026/tree/v0.1.0-hackathon)
+- Tagged source archive SHA-256:
+  `7B7198BD0FAE128ADD66725FC238DE7009E2072AFFB72066F72DBC9810663D00`
 - Evidence schema: `webmcp-qcg.evidence-receipt.v3`
 - Reserved software DOI: [10.5281/zenodo.22240306](https://doi.org/10.5281/zenodo.22240306)
 - License: [MIT](LICENSE)
 
-The software DOI is reserved. The Zenodo software record, release tag and source
-archive remain unpublished pending their dedicated gates, the final public
-trace and Jean-Sébastien's approval. The four editorial articles retain their
-independent publication records.
+The software DOI is reserved, the Git tag is public and its source archive is
+locally validated. Zenodo transport failed before the file reached the draft,
+so the DOI record remains unpublished and the pending badge is intentionally
+unchanged. Publication resumes only after Zenodo accepts and validates that
+exact tagged archive. The four editorial articles retain their independent
+publication records.
 
 ## Governance
 

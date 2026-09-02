@@ -77,7 +77,7 @@ WebMCP is strongest here as a decision surface. The agent gains precise capabili
 
 ### What's next
 
-The repaired G3 source candidate keeps Q#/OpenQASM fixture execution, eight static profiles and the F12/Companion collaboration surfaces while preserving declared identities and read-only collaboration authority. Its clean-copy, package and cPanel/Vercel parity gates pass. The official public WebMCP inspect/evaluate smoke is 2/2. Native Gemini DevTools remains a human-mediated export/preview/import lane because no documented conversation-write API is used. The immediate gates are the human-controlled remainder of Action 237, the public demo video and my field-by-field review. The source tag, Zenodo archive and reserved software DOI remain unpublished. External execution remains a separate, explicitly authorized product surface.
+The repaired G3 source candidate keeps Q#/OpenQASM fixture execution, eight static profiles and the F12/Companion collaboration surfaces while preserving declared identities and read-only collaboration authority. Its clean-copy, package and cPanel/Vercel parity gates pass. The official public WebMCP inspect/evaluate smoke is 2/2. Native Gemini DevTools remains a human-mediated export/preview/import lane because no documented conversation-write API is used. The immediate gates are the human-controlled remainder of Action 237, the public demo video and my field-by-field review. The public release tag and hash-validated source archive are complete; the reserved software DOI remains unpublished because Zenodo did not accept the archive transfer. External execution remains a separate, explicitly authorized product surface.
 
 ## Required custom-field draft
 

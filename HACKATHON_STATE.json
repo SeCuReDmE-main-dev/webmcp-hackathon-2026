@@ -18,9 +18,12 @@
     "application_candidate": "938da498312edab8dd41c12f4b9558865993c833",
     "runtime_candidate": "938da498312edab8dd41c12f4b9558865993c833",
     "origin_main_exact": true,
-    "release_tag_created": false,
-    "source_archive_created": false,
-    "software_doi_state": "reserved_unpublished"
+    "release_tag_created": true,
+    "release_tag": "v0.1.0-hackathon",
+    "release_tag_target": "6b669fe204b2d5f04257d8b274bc91629c183ab0",
+    "source_archive_created": true,
+    "source_archive_sha256": "7B7198BD0FAE128ADD66725FC238DE7009E2072AFFB72066F72DBC9810663D00",
+    "software_doi_state": "reserved_unpublished_upload_blocked_by_zenodo_transport"
   },
   "prototype": {
     "status": "g3_clean_copy_passed_and_candidate_deployed",
@@ -96,5 +99,5 @@
     "video_url": "",
     "video_state": "missing"
   },
-  "next_gate": "action_237_human_consent_simulation_export_then_video_author_review_and_explicit_submission_authorization"
+  "next_gate": "retry_zenodo_after_service_recovery_and_complete_action_237_human_trace_then_video_author_review_and_submission"
 }

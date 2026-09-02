@@ -62,10 +62,10 @@ This registry preserves Actions 1–148 and the historical redesign work. It rec
 | 230 | Sol | DONE | Deploy identical Vercel candidate | Publication/parity receipt; exact bytes, SPA routing, seven headers and host-config non-disclosure |
 | 231 | Sol | DONE | Deploy identical cPanel candidate | Publication/parity receipt; R2 plan/apply, `24/24 PASS` and `8/8` Chrome image decode |
 | 232 | Luna | DONE | Compare GitHub, packages and deployments | Publication/parity receipt; candidate and public-byte parity chain |
-| 233 | Sol | PENDING | Create and push `v0.1.0-hackathon` | Tag receipt |
-| 234 | Luna | PENDING | Generate Zenodo source archive and SHA-256 | Archive manifest |
-| 235 | Sol | BLOCKED_BY_AUTHOR | Publish reserved software DOI | Public Zenodo record |
-| 236 | Luna | PENDING | Synchronize citation and resolve DOI badge | Citation receipt |
+| 233 | Sol | DONE | Create and push `v0.1.0-hackathon` | `docs/evidence/ACTIONS_233_236_TAG_ARCHIVE_ZENODO_2026-09-02.md` |
+| 234 | Luna | DONE | Generate Zenodo source archive and SHA-256 | Tag/archive receipt; SHA `7B7198…3D00` |
+| 235 | Sol | FAILED | Publish reserved software DOI | Zenodo transport incident; reserved draft remains empty and unpublished |
+| 236 | Luna | RUNNING | Synchronize citation and resolve DOI badge | Citation is synchronized; badge remains explicitly pending until Action 235 succeeds |
 | 237 | Luna | RUNNING | Capture final product path | Current official inspect/evaluate smoke `2/2`; human consent, simulation, export and final screenshot set pending |
 | 238 | Sol + Jean-Sébastien | PENDING | Rehearse sub-three-minute storyboard | Timed rehearsal receipt |
 | 239 | Jean-Sébastien + Sol | BLOCKED_BY_AUTHOR | Record, edit and publish human-voice video | Public video URL |

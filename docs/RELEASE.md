@@ -12,8 +12,9 @@ package SHA-256 is
 Repaired runtime candidate `938da498312edab8dd41c12f4b9558865993c833`
 exactly matches `origin/main`. Canonical cPanel and the synchronized
 Vercel secondary each passed the 24-path deployment manifest. This closes
-Actions 227–232; it does not create the source tag, Zenodo archive, DOI, video,
-fresh Action 237 native-agent trace or Devpost submission.
+Actions 227–232. The public source tag and hash-validated archive were created
+later; Zenodo publication is still blocked at archive transfer. This does not
+publish a video, complete the human portion of Action 237 or submit Devpost.
 
 ## 1. Release inputs
 
@@ -189,8 +190,9 @@ Remaining release-adjacent gates are:
    expires before the final acceptance run;
 2. complete the human-controlled remainder of Action 237: consent, local
    simulation and export trace on the promoted public bytes;
-3. create the source tag and Zenodo archive, then publish/synchronize the
-   reserved software DOI only with author approval;
+3. retry upload of the already tagged and hash-validated source archive after
+   Zenodo transport recovers, then publish/synchronize the reserved software
+   DOI;
 4. run a rollback restoration drill during a separately authorized maintenance
    window if operational proof beyond the retained backup boundary is required.
 
