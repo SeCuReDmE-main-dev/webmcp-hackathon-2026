@@ -12,13 +12,13 @@
       {
         "functionName": "inspect_quantum_experiment",
         "arguments": {
-          "artifact_id": "simulate-first-c88be57cffca7fa8bce95d05"
+          "artifact_id": "simulate-first-c88be57cffca7fa84552e1ec628a37e2"
         }
       },
       {
         "functionName": "evaluate_quantum_call",
         "arguments": {
-          "manifest_id": "manifest-c88be57cffca7fa8bce95d05",
+          "manifest_id": "manifest-c88be57cffca7fa84552e1ec628a37e2",
           "target_profile_id": "qsharp-local-wasm-1310",
           "scientific_intent": "Measure the Bell correlation through one bounded local Q# simulation.",
           "observable": "bell_correlation",
