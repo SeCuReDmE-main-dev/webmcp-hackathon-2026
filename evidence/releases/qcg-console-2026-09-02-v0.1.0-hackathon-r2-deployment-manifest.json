@@ -1,0 +1,165 @@
+{
+  "schema": "webmcp-qcg.deployment-manifest.v1",
+  "generated_at": "2026-09-02T10:29:22.7818909Z",
+  "release": "v0.1.0-hackathon",
+  "candidate_commit": "938da498312edab8dd41c12f4b9558865993c833",
+  "build_receipt": "docs/evidence/ACTIONS_220_225_G3_RELEASE_CANDIDATE_2026-09-02.md",
+  "archive": {
+    "path": "evidence/releases/qcg-console-2026-09-02-v0.1.0-hackathon-r2-docroot.zip",
+    "bytes": 4014684,
+    "sha256": "C4FE4BB205F58B52ECDC30D73855ADF16E29A62EF578A275103632E3D47C4D50",
+    "entry_count": 24
+  },
+  "rollback": {
+    "prior_archive": "evidence/releases/qcg-console-2026-09-01-final-0.2.4-docroot.zip",
+    "prior_sha256": "F8D90102B088B544692A6F90BDC79779165A05A37F72E6FCB38103530A734CF8",
+    "cpanel_destination": "public_html/qcg.securedme.ca"
+  },
+  "supersedes": "evidence/releases/qcg-console-2026-09-02-v0.1.0-hackathon-deployment-manifest.json",
+  "files": [
+    {
+      "path": "_headers",
+      "bytes": 150,
+      "sha256": "9F45F4DA658FC3BADC0B735F3DC4344BDBD0979314A518D9F9182A6B508B038F",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": ".htaccess",
+      "bytes": 926,
+      "sha256": "44DF4675F24F9CAAD4D62F2D0B217E883B36EE6512CAD6C0AB511369B73830E5",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "assets/index-76lOak0k.css",
+      "bytes": 18843,
+      "sha256": "8EC7C940518E4BB5AA68DB15E3DE89103D400BF48FBB85052EC179EDB9A23198",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "assets/index-DKPA35Cf.js",
+      "bytes": 388346,
+      "sha256": "4BDBAAEE3C2EF8F8E9118D71D11D375ABC0DF623D4F0D51B9313AC156D3146F7",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "assets/qsc_wasm_bg-CCIGAYD7.wasm",
+      "bytes": 6066574,
+      "sha256": "5F01879BB9B00D2B75E28D14AF6B083A1BF8A92617FFAD933B0325E991D5F280",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "assets/qsharp.worker-Bu8umShR.js",
+      "bytes": 34374,
+      "sha256": "2FC0A69A27F3C87795B6CC7DBF461D9FD8A09CD97418427D5D66E51B59E1C048",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "brand/inspector-q-avatar.jpg",
+      "bytes": 23034,
+      "sha256": "7F705371786FA8F9B09D9EB0E54A61D07575C7F23182BC254FF4A6DCE7140467",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "brand/qcg-icon-128.png",
+      "bytes": 44459,
+      "sha256": "5480E05013C87390B6D6E621DB68B67C102A1256034DEA0078030C1EA0D00706",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "brand/qcg-icon-16.png",
+      "bytes": 1080,
+      "sha256": "D38B8EEC8783F1A4E6208B091883A3ACBC66DB64FCAB72ACE4EEDBC2D6C02587",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "brand/qcg-icon-180.png",
+      "bytes": 83074,
+      "sha256": "927478A5A686EEF2AF38B123939E9F902B0BA7754203E07539E3B94389028603",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "brand/qcg-icon-192.png",
+      "bytes": 92455,
+      "sha256": "DDCF596D5644C5252DC1B43C76423FA5A135CBC7E5CA71D807503785F08ECFEC",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "brand/qcg-icon-32.png",
+      "bytes": 3557,
+      "sha256": "2CCFBAE2584A97E5A38BE5770EA325ABD31272DB14841659B76D8D46E76D0E6A",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "brand/qcg-icon-48.png",
+      "bytes": 7386,
+      "sha256": "D7D52A127CA912D03FEA68C76829C983AF045F0B497CE02D7F91B84A1BB4CC19",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "brand/qcg-icon-512.png",
+      "bytes": 583197,
+      "sha256": "7DCBCB6153BEEE0ACEAFC1DEE5CFC6FFB4929992E2B3F9312A1EC64D4A02DC51",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "brand/qcg-social-card.png",
+      "bytes": 506683,
+      "sha256": "6BC2ED5A6BFF140C78AE4256A85AE55B4E2BBB04044928F3734E47F99EFF287B",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "downloads/qcg-console-companion-0.2.4.zip",
+      "bytes": 104895,
+      "sha256": "D69B3DEE68C6DF5A28D526B5A8616CC0148CA58EA7B40F5159F2D193D4216916",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "downloads/qcg-console-companion-dev-0.2.4.zip",
+      "bytes": 104912,
+      "sha256": "33EACB2CBD3475E86E86EFD899F2540E5FD5DD7B0F0F99E6E3726BC246BBD35B",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "fixtures/qcg-bell-sample.qasm",
+      "bytes": 126,
+      "sha256": "4FA14FE18813B8643EED4D545FB123BEB4933FB34FD993E17ADB16DD58487FC6",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "fixtures/qcg-bell-sample.qs",
+      "bytes": 236,
+      "sha256": "602EC14B539C7AC01513B043EEDD01931894DC00B746F2C55ED22EF0305E17DF",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "index.html",
+      "bytes": 2196,
+      "sha256": "01D8DF74F16809A57C0E1E773D35EE6F8F124E5B49728BBF43BDCD6861E95EF0",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "qcg-console-companion-0.2.4.zip",
+      "bytes": 104895,
+      "sha256": "D69B3DEE68C6DF5A28D526B5A8616CC0148CA58EA7B40F5159F2D193D4216916",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "qcg-console-companion-dev-0.2.4.zip",
+      "bytes": 104912,
+      "sha256": "33EACB2CBD3475E86E86EFD899F2540E5FD5DD7B0F0F99E6E3726BC246BBD35B",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "qcg-mark.svg",
+      "bytes": 391,
+      "sha256": "18EB92A24AAF10C606BD56069FE985ADE9544C9E3F6EFE58357FB37FE2D1DF73",
+      "source": "prototype/webmcp-qcg/dist"
+    },
+    {
+      "path": "site.webmanifest",
+      "bytes": 574,
+      "sha256": "4D1CC00BBE787FCDA5F06A08D069B9335568733158CD94D6468B694B0A76E5BA",
+      "source": "prototype/webmcp-qcg/dist"
+    }
+  ]
+}

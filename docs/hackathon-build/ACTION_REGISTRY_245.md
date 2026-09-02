@@ -56,17 +56,17 @@ This registry preserves Actions 1–148 and the historical redesign work. It rec
 | 224 | Terra | DONE | Run fresh-copy install/test/build and budgets | G3 receipt; clean install, zero vulnerabilities and bundle budgets pass |
 | 225 | Sol | DONE | Close release-candidate checkpoint G3 | G3 receipt records `G3_PASS` |
 | 226 | Luna | DONE | Build deployment manifest and rollback procedure | `docs/evidence/ACTION_226_DEPLOYMENT_MANIFEST_AND_ROLLBACK_2026-09-02.md` |
-| 227 | Sol | PENDING | Create final candidate commit | Commit receipt |
-| 228 | Sol | PENDING | Push main and verify remote SHA | Remote receipt |
-| 229 | Sol | PENDING | Verify public visibility and branch protection | GitHub receipt |
-| 230 | Sol | PENDING | Deploy identical Vercel candidate | Vercel receipt |
-| 231 | Sol | PENDING | Deploy identical cPanel candidate | cPanel receipt |
-| 232 | Luna | PENDING | Compare GitHub, packages and deployments | Parity receipt |
+| 227 | Sol | DONE | Create final candidate commit | `docs/evidence/ACTIONS_227_232_PUBLICATION_PARITY_2026-09-02.md` |
+| 228 | Sol | DONE | Push main and verify remote SHA | Publication/parity receipt; repaired runtime `938da49` exactly matched `origin/main` at promotion |
+| 229 | Sol | DONE | Verify public visibility and branch protection | Publication/parity receipt; public repository and minimal branch safeguards |
+| 230 | Sol | DONE | Deploy identical Vercel candidate | Publication/parity receipt; exact bytes, SPA routing, seven headers and host-config non-disclosure |
+| 231 | Sol | DONE | Deploy identical cPanel candidate | Publication/parity receipt; R2 plan/apply, `24/24 PASS` and `8/8` Chrome image decode |
+| 232 | Luna | DONE | Compare GitHub, packages and deployments | Publication/parity receipt; candidate and public-byte parity chain |
 | 233 | Sol | PENDING | Create and push `v0.1.0-hackathon` | Tag receipt |
 | 234 | Luna | PENDING | Generate Zenodo source archive and SHA-256 | Archive manifest |
 | 235 | Sol | BLOCKED_BY_AUTHOR | Publish reserved software DOI | Public Zenodo record |
 | 236 | Luna | PENDING | Synchronize citation and resolve DOI badge | Citation receipt |
-| 237 | Luna | PENDING | Capture final product path | Final screenshot set |
+| 237 | Luna | RUNNING | Capture final product path | Current official inspect/evaluate smoke `2/2`; human consent, simulation, export and final screenshot set pending |
 | 238 | Sol + Jean-Sébastien | PENDING | Rehearse sub-three-minute storyboard | Timed rehearsal receipt |
 | 239 | Jean-Sébastien + Sol | BLOCKED_BY_AUTHOR | Record, edit and publish human-voice video | Public video URL |
 | 240 | Sol | PENDING | Complete Devpost fields without submission | Rendered draft review |

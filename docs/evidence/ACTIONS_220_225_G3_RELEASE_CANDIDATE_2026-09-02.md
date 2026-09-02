@@ -101,6 +101,30 @@ released. Text checkout rules were made explicit, both packages were rebuilt,
 both public locations were synchronized, and the clean-copy gate then passed.
 This is the expected G3 feedback-loop behavior.
 
+## R2 clean-copy revalidation after PNG incident
+
+A later Chrome decode gate found a second checkout-history issue: eight brand
+PNGs had valid working-tree originals but older Git blobs contained newline
+normalization inside compressed binary data. Hash parity across hosts had
+faithfully reproduced the invalid blobs and therefore did not detect the
+usability defect.
+
+The raw binary blobs and live-smoke identifiers were repaired in runtime commit
+`938da498312edab8dd41c12f4b9558865993c833`. A second clean copy, based on
+release HEAD `90bf290` plus the exact staged runtime patch, then recorded:
+
+- `npm ci`: 108 packages installed, 109 audited, zero vulnerabilities;
+- Vitest: 13 files and 88 tests passed;
+- Companion: 5/5 gates passed;
+- TypeScript/Vite production build: passed;
+- JavaScript: 388,346 bytes; CSS: 18,843 bytes;
+- clean-copy `dist` PNG decode: 8/8;
+- `git diff --check`: passed.
+
+The R2 clean-copy supersedes the first candidate for runtime promotion while
+preserving both incident records. No application contract, consent policy,
+receipt version or product theme was changed.
+
 ## Output
 
 - Immutable candidate inputs are ready for the final commit.

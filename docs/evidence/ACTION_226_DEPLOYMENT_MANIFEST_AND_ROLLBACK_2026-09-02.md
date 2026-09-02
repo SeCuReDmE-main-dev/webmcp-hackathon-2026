@@ -1,6 +1,6 @@
 # Action 226 — deployment manifest and rollback receipt
 
-Status: `PASS`
+Status: `PASS — SUPERSEDED BY VERIFIED R2 PACKAGE`
 
 Date: 2026-09-02 (America/Toronto)
 
@@ -62,3 +62,33 @@ are ready for Actions 227–232.
 
 `ACTION_226_PASS` — every file intended for publication has a content hash and
 source boundary, and both hosting surfaces have a bounded recovery path.
+
+## R2 supersession after browser decode gate
+
+The first package and manifest passed byte-hash comparison but a later Chrome
+decode gate found that eight PNG blobs had previously been normalized as text
+inside Git. The local design originals were valid; the indexed and deployed
+blobs were not. This discovery does not erase the first receipt: it documents
+why byte identity alone was insufficient. The release was stopped, the Git
+index was repaired with raw binary blobs, and the complete clean-copy, archive,
+host-parity and Chrome-decode gates were repeated.
+
+The authoritative package for release is now:
+
+- archive:
+  `evidence/releases/qcg-console-2026-09-02-v0.1.0-hackathon-r2-docroot.zip`;
+- archive bytes: `4,014,684`;
+- archive SHA-256:
+  `C4FE4BB205F58B52ECDC30D73855ADF16E29A62EF578A275103632E3D47C4D50`;
+- manifest:
+  `evidence/releases/qcg-console-2026-09-02-v0.1.0-hackathon-r2-deployment-manifest.json`;
+- manifest SHA-256:
+  `10A7AAAFBB4EEC52F4479E3280BA2359FD915CCB989C50DFEDF92E393B12CA59`;
+- runtime candidate: `938da498312edab8dd41c12f4b9558865993c833`;
+- entries: `24`;
+- archive extraction/hash validation: `24/24 PASS`;
+- PNG decode validation after extraction: `8/8 PASS`.
+
+The original archive remains preserved as incident evidence and is not the
+release input. The R2 archive and manifest supersede it for every downstream
+deployment, tag and publication claim.

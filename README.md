@@ -20,7 +20,7 @@ programs locally, and exports a reproducible evidence receipt. It never submits
 a QPU or provider job.
 
 [Live application](https://qcg.securedme.ca/) ·
-[Vercel design preview — older build](https://webmcp-qcg.vercel.app/) ·
+[Synchronized Vercel secondary](https://webmcp-qcg.vercel.app/) ·
 [Devpost project](https://devpost.com/software/webmcp-qcg-quantum-call-gate) ·
 [MIT license](LICENSE)
 
@@ -193,33 +193,47 @@ The extension has no dependency installation or build step.
 
 ## Verification snapshot
 
-Current release-candidate verification recorded on 2026-09-02:
+Current published release-candidate verification recorded on 2026-09-02:
 
-- the canonical cPanel URL and the Vercel design preview both return HTTP 200,
-  but they still serve different retained bundles; release-candidate parity is
-  therefore pending Actions 230–232, and cPanel remains the release authority;
+- repaired runtime candidate `938da498312edab8dd41c12f4b9558865993c833`
+  exactly matches `origin/main`;
+- canonical cPanel and the synchronized Vercel secondary each pass the 24-path
+  deployment manifest. Vercel also returns exact root HTML for `/decisions`,
+  seven policy headers, correct WASM/ZIP MIME types and no readable `.htaccess`;
+- the repaired cPanel package SHA-256 is
+  `C4FE4BB205F58B52ECDC30D73855ADF16E29A62EF578A275103632E3D47C4D50`;
+- Chrome decodes all eight published brand PNGs on both hosts; this explicitly
+  closes the binary-normalization defect that a byte-only host comparison had
+  initially failed to reveal;
 - TypeScript and Vite production build pass;
-- current candidate bundle: 131 modules, 388.34 kB JavaScript and 18.80 kB
+- current candidate bundle: 131 modules, 388.34 kB JavaScript and 18.84 kB
   CSS, with QDK WebAssembly tracked separately;
-- 88 Vitest cases pass across 13 test files;
-- QCG Companion v0.2.4 manifest, trusted-click, strict snapshot lifecycle and
-  low-glare Light-theme tests pass;
-- real Chrome browser routes for imported Q# and OpenQASM both reached
+- a clean copy passes 88 Vitest cases across 13 test files, all 5 Companion
+  gates and `npm audit` with zero vulnerabilities;
+- production/development Companion ZIP SHA-256 values are respectively
+  `D69B3DEE68C6DF5A28D526B5A8616CC0148CA58EA7B40F5159F2D193D4216916`
+  and `33EACB2CBD3475E86E86EFD899F2540E5FD5DD7B0F0F99E6E3726BC246BBD35B`;
+- the current public runtime passes the official `webmcp-evals@0.0.4` live
+  inspection/evaluation smoke 2/2 and returns `simulate_first` with high
+  confidence and no external authority;
+- prior human-controlled real Chrome routes for imported Q# and OpenQASM reached
   `simulate_first`, a declared human acceptance, a 64-shot local Bell result,
   evidence export and zero QPU submissions;
 - the retained-tab Companion/F12 proof, trusted open/close toggle, reconnect
   paths and responsive/accessibility matrix passed in the G2 browser receipt;
 - the public repository is licensed under MIT.
 
-These candidate results describe the working tree recorded by the dated G2
-receipt. They do not prove that GitHub, the Companion ZIPs, Vercel and cPanel
-serve identical candidate bytes; package, clean-copy and deployment-parity gates
-remain later release actions.
+The repaired G3 clean-copy and Actions 227–232 parity receipts establish the
+current source, package and hosting chain. The official current-runtime agent
+smoke is complete; the human consent, local simulation and evidence-export
+portion of Action 237 remains. The source tag, Zenodo archive, software DOI
+publication, video and Devpost submission remain separate later actions under
+human authority.
 
 The repository records deterministic benchmark evidence separately from HTTP
 delivery evidence. The final cPanel package, public hashes, security headers
 and rollback boundary are captured in the
-[deployment receipt](docs/evidence/QCG_FINAL_CPANEL_DEPLOYMENT_RECEIPT_2026-09-01.md).
+[publication and deployment parity receipt](docs/evidence/ACTIONS_227_232_PUBLICATION_PARITY_2026-09-02.md).
 
 ## Security and deliberate limits
 
@@ -254,18 +268,20 @@ boundaries and residual risks.
 - [Gemini cold-judge disposition](docs/evidence/GEMINI_FINDING_DISPOSITION_2026-09-02.md)
 - [Qodo cold-review disposition](docs/evidence/QODO_COLD_REVIEW_DISPOSITION_2026-09-02.md)
 - [Actions 214–219 documentation receipt](docs/evidence/ACTIONS_214_219_DOCUMENTATION_2026-09-02.md)
+- [Current-runtime WebMCP smoke receipt](docs/evidence/ACTION_237A_CURRENT_RUNTIME_WEBMCP_SMOKE_2026-09-02.md)
+- [Author-deferred post-submission visual refinement](docs/hackathon-build/POST_SUBMISSION_VISUAL_BACKLOG_2026-09-02.md)
 
 ## Citation and release state
 
-- Planned release tag: `v0.1.0-hackathon` (not created by this documentation pass)
+- Planned release tag: `v0.1.0-hackathon` (not yet created)
 - Evidence schema: `webmcp-qcg.evidence-receipt.v3`
 - Reserved software DOI: [10.5281/zenodo.22240306](https://doi.org/10.5281/zenodo.22240306)
 - License: [MIT](LICENSE)
 
-The software DOI is reserved. The Zenodo software record, release tag and
-source archive will be published only after the final code, clean-clone QA and
-Jean-Sébastien's approval. The four editorial articles retain their independent
-publication records.
+The software DOI is reserved. The Zenodo software record, release tag and source
+archive remain unpublished pending their dedicated gates, the final public
+trace and Jean-Sébastien's approval. The four editorial articles retain their
+independent publication records.
 
 ## Governance
 

@@ -3,8 +3,8 @@
   "project": "WebMCP Quantum Call Gate",
   "repository": "https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026",
   "visibility": "public",
-  "updated_at": "2026-08-29",
-  "phase": "day_4_stable_origin_proven_submission_unsubmitted",
+  "updated_at": "2026-09-02",
+  "phase": "release_candidate_repaired_deployed_parity_passed_human_trace_pending",
   "candidates": {
     "quantech_vid": "rejected_for_this_hackathon",
     "webccp": "deferred_bench",
@@ -14,41 +14,77 @@
   "selected_concepts": [1, 3, 9],
   "selection_final": true,
   "mvp_contract_final": true,
+  "source": {
+    "application_candidate": "938da498312edab8dd41c12f4b9558865993c833",
+    "runtime_candidate": "938da498312edab8dd41c12f4b9558865993c833",
+    "origin_main_exact": true,
+    "release_tag_created": false,
+    "source_archive_created": false,
+    "software_doi_state": "reserved_unpublished"
+  },
   "prototype": {
-    "status": "stable_origin_vertical_slice_passed",
+    "status": "g3_clean_copy_passed_and_candidate_deployed",
     "qsharp_lang_version": "1.31.0",
-    "node_wasm_elapsed_ms": 716,
     "browser_worker_proven": true,
-    "native_webmcp_invocation_proven": true,
-    "native_webmcp_environment": "codex_in_app_browser",
-    "external_chrome_environment": "official_webmcp_evals_live_origin_passed",
+    "historical_native_webmcp_invocation_proven": true,
+    "historical_native_webmcp_environment": "codex_in_app_browser",
+    "final_fresh_public_native_agent_trace": "inspect_and_evaluate_2_of_2_pass_human_simulation_export_pending",
+    "external_chrome_environment": "official_webmcp_evals_0_0_4_live_origin_passed_current_runtime",
     "tool_count": 4,
+    "collaboration_tool_count": 4,
     "scenario_count": 5,
     "bounded_shots_requested": 64,
     "bounded_shots_completed": 64,
     "bell_invariant": true,
     "local_simulations": 1,
     "external_provider_calls": 0,
-    "automated_tests": 18,
-    "official_live_webmcp_smoke_steps": "2/2"
+    "automated_tests": 88,
+    "automated_test_files": 13,
+    "companion_gates": "5/5",
+    "npm_audit_vulnerabilities": 0,
+    "current_official_live_webmcp_smoke_steps": "2/2",
+    "current_official_live_webmcp_smoke_timestamp_utc": "2026-09-02T10:34:31Z"
   },
   "deployment": {
     "production_build_ready": true,
     "stable_live_url": "https://qcg.securedme.ca/",
-    "cloudflare_authenticated": false,
-    "cloudflare_workers_asset_limit_blocked": true,
-    "temporary_public_preview": "https://temporary-express-coral-5r9ow5p.vercel.app",
-    "temporary_public_preview_expires_at": "2026-08-28T21:02:08.336Z",
-    "temporary_public_native_webmcp_proven": true,
-    "status": "stable_public_proof_passed"
+    "canonical_host": "cpanel",
+    "secondary_live_url": "https://webmcp-qcg.vercel.app/",
+    "status": "canonical_and_secondary_24_of_24_pass",
+    "cpanel_package_sha256": "C4FE4BB205F58B52ECDC30D73855ADF16E29A62EF578A275103632E3D47C4D50",
+    "cpanel_plan_id": "e001700c1c88f9e14d7f00ce",
+    "cpanel_live_manifest": "24/24",
+    "cpanel_backup_retained": true,
+    "vercel_live_manifest": "24/24",
+    "vercel_spa_decisions_exact_root_html": true,
+    "vercel_policy_headers": "7/7",
+    "vercel_wasm_zip_mime_correct": true,
+    "vercel_htaccess_non_disclosed": true,
+    "browser_decoded_brand_pngs": "8/8 on cpanel and vercel",
+    "parity_chain_closed": true
+  },
+  "companion_packages": {
+    "production_sha256": "D69B3DEE68C6DF5A28D526B5A8616CC0148CA58EA7B40F5159F2D193D4216916",
+    "development_sha256": "33EACB2CBD3475E86E86EFD899F2540E5FD5DD7B0F0F99E6E3726BC246BBD35B"
   },
   "paid_execution_authorized": false,
   "public_submission_authorized": false,
   "clean_clone": {
     "verified": true,
-    "verified_commit": "9dfb62572d3c761be8ae183dc77a7bd224168c87",
-    "automated_tests": "18/18",
+    "verified_source_identity": "runtime_candidate_commit_with_binary_asset_repair",
+    "verified_commit": "938da498312edab8dd41c12f4b9558865993c833",
+    "automated_tests": "88/88 across 13 files",
+    "companion_gates": "5/5",
+    "npm_audit_vulnerabilities": 0,
     "production_build": "passed"
+  },
+  "historical_proof": {
+    "day4_stable_origin_proven": true,
+    "day4_automated_tests": "18/18",
+    "day4_clean_clone_commit": "9dfb62572d3c761be8ae183dc77a7bd224168c87",
+    "temporary_public_preview": "https://temporary-express-coral-5r9ow5p.vercel.app",
+    "temporary_public_preview_expired_at": "2026-08-28T21:02:08.336Z",
+    "temporary_public_native_webmcp_proven": true
   },
   "devpost": {
     "project_id": 1404828,
@@ -57,7 +93,8 @@
     "submitted": false,
     "submitted_at": null,
     "project_url": "https://devpost.com/software/webmcp-qcg-quantum-call-gate",
-    "video_url": ""
+    "video_url": "",
+    "video_state": "missing"
   },
-  "next_gate": "video_author_review_then_explicit_submission_authorization"
+  "next_gate": "action_237_human_consent_simulation_export_then_video_author_review_and_explicit_submission_authorization"
 }

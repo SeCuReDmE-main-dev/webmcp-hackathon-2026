@@ -5,14 +5,15 @@ a hosting mutation, provider call, QPU submission, Devpost submission, or spend.
 
 The stable product address is
 [https://qcg.securedme.ca/](https://qcg.securedme.ca/). The author-approved
-2026-08-30 console release is served directly over HTTPS. Its immutable cPanel
+2026-09-02 release candidate is served directly over HTTPS. Its immutable cPanel
 package SHA-256 is
-`371a206716fcfcd71699285cce51a8bb8aa7368b2615505397328dcc86e02269`.
+`C4FE4BB205F58B52ECDC30D73855ADF16E29A62EF578A275103632E3D47C4D50`.
 
-The 2026-09-02 G2 working-tree candidate is newer than that stable package.
-Passing candidate tests does not establish GitHub, ZIP, Vercel or cPanel byte
-parity. Treat the public origin as the retained release until later actions
-identify, package, compare and explicitly deploy one immutable candidate.
+Repaired runtime candidate `938da498312edab8dd41c12f4b9558865993c833`
+exactly matches `origin/main`. Canonical cPanel and the synchronized
+Vercel secondary each passed the 24-path deployment manifest. This closes
+Actions 227–232; it does not create the source tag, Zenodo archive, DOI, video,
+fresh Action 237 native-agent trace or Devpost submission.
 
 ## 1. Release inputs
 
@@ -49,19 +50,20 @@ Set-Location ../..
 git diff --check
 ```
 
-Recorded results for the 2026-09-02 G2 candidate:
+Recorded results for the 2026-09-02 G3 candidate:
 
 - dependency installation completes from the lock file;
 - 88 application tests pass across 13 files;
 - TypeScript validation passes;
 - Vite creates `prototype/webmcp-qcg/dist/`;
-- Companion manifest, trusted-click, lifecycle and Light-theme gates pass;
+- all 5 Companion gates pass;
+- `npm audit` reports zero vulnerabilities;
 - `git diff --check` reports no whitespace errors.
 
-The live official WebMCP smoke suite previously passed 2/2 on the retained
-stable release. Run it again against the exact promoted candidate; do not carry
-that result forward as deployment-parity evidence. Treat all counts as recorded
-baselines, not a reason to ignore newly added tests.
+The live official `webmcp-evals@0.0.4` inspection/evaluation smoke passes 2/2
+on the exact repaired public runtime. Action 237 retains the human-controlled
+consent, local simulation and evidence-export portion. Treat all counts as
+recorded baselines, not a reason to ignore newly added tests.
 
 ## 3. Artifact gate
 
@@ -99,7 +101,7 @@ The current cPanel release uses:
 
 - live document root: `public_html/qcg.securedme.ca`;
 - an operator-controlled candidate and backup boundary;
-- a package manifest that verifies the 14 expected release paths.
+- a package manifest that verifies the 24 expected release paths.
 
 Do not upload manually over the live document root. Use the SecuredMe cPanel
 Operator's explicit `plan -> confirmation -> apply` transaction with the exact
@@ -107,7 +109,11 @@ package hash and expected paths. The operator completed and verified that flow
 for this release. A destructive rollback drill remains a separate maintenance
 gate; the release procedure itself preserves a backup boundary. See the
 [hosting baseline](../evidence/hosting/README.md) and the
-[canonical deployment receipt](evidence/QCG_CPANEL_LIVE_DEPLOYMENT_RECEIPT_2026-08-30.md).
+[publication and deployment parity receipt](evidence/ACTIONS_227_232_PUBLICATION_PARITY_2026-09-02.md).
+
+The synchronized Vercel secondary also passes 24/24 manifest checks, exact SPA
+fallback at `/decisions`, seven policy headers, correct WASM/ZIP MIME types and
+host-configuration non-disclosure. cPanel remains the canonical origin.
 
 ## 5. Stable-origin acceptance gate
 
@@ -175,19 +181,18 @@ availability, a quote, a credential check, a job submission, or authorization.
 
 ## 8. Open release blockers
 
-The QCG v3 console, headers, samples, WASM asset and bounded human preflight are
-live on the canonical origin as the retained release. The newer G2 candidate is
-not yet proven identical across packages and deployments. Remaining
-release-adjacent gates are:
+The QCG v3 console, headers, samples, WASM asset, Companion packages and bounded
+human preflight are published with a closed source/package/hosting parity chain.
+Remaining release-adjacent gates are:
 
-1. rebuild and hash the production/development Companion packages;
-2. run the application and Companion gates from a fresh copy;
-3. refresh or revalidate target-profile evidence if either bundled profile
+1. refresh or revalidate target-profile evidence if either bundled profile
    expires before the final acceptance run;
-4. compare the candidate commit, archives and both hosting targets byte-for-byte;
-5. run a fresh native-agent invocation plus author-controlled consent, local
-   simulation and export trace on the promoted bytes;
-6. run a rollback drill during a separately authorized maintenance window.
+2. complete the human-controlled remainder of Action 237: consent, local
+   simulation and export trace on the promoted public bytes;
+3. create the source tag and Zenodo archive, then publish/synchronize the
+   reserved software DOI only with author approval;
+4. run a rollback restoration drill during a separately authorized maintenance
+   window if operational proof beyond the retained backup boundary is required.
 
 Video production and final Devpost submission are separate author-controlled
 gates and are outside this release runbook.

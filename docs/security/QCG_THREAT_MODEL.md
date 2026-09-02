@@ -1,6 +1,6 @@
 # WebMCP-QCG v3 release-candidate threat model
 
-Status: G2 candidate verified locally and in real Chrome; immutable package and deployment parity remain unproven
+Status: repaired G3 clean-copy and deployment parity pass; official public inspect/evaluate smoke passes; human-controlled simulation/export remains open
 Date: 2026-09-02
 Scope: multi-format preflight, bounded Q#/OpenQASM simulation, declared-agent collaboration and evidence export
 
@@ -50,6 +50,14 @@ QCG helps a human review an agent-proposed quantum action without giving the age
 
 The stable origin serves a restrictive Content Security Policy, `Origin-Agent-Cluster: ?1`, `Permissions-Policy: tools=(self)`, `X-Content-Type-Options: nosniff`, same-origin resource policy and a bounded referrer policy. The pinned WASM asset is served as `application/wasm`.
 
+The repaired 2026-09-02 release candidate passed a 24-path live manifest on
+canonical cPanel and the synchronized Vercel secondary. Chrome also decoded all
+eight corrected brand PNGs on both hosts. Vercel additionally passed exact
+SPA fallback HTML at `/decisions`, all seven expected policy headers, correct
+WASM/ZIP MIME types and `.htaccess` non-disclosure. These checks establish the
+recorded deployed bytes and host behavior, not protection from a compromised
+hosting account, browser or operating system.
+
 ## Deliberate exclusions
 
 This threat model does not claim provider authentication, cloud budget enforcement, QPU isolation, scientific correctness for arbitrary code, authenticated external-agent identity, direct automation of Gemini's native DevTools conversation, regulatory compliance, penetration-test coverage or protection against a compromised browser/operating system.
@@ -73,4 +81,4 @@ This threat model does not claim provider authentication, cloud budget enforceme
 
 ## Release evidence
 
-See [the stable live-origin receipt](../../evidence/qa/LIVE_ORIGIN_ACCEPTANCE_RECEIPT_2026-08-29.md), [the G1 adversarial receipt](../evidence/ACTIONS_183_199_G1_SURGERY_2026-09-02.md), [the G2 real-browser receipt](../evidence/ACTIONS_200_213_G2_REAL_BROWSER_2026-09-02.md), [the Gemini disposition](../evidence/GEMINI_FINDING_DISPOSITION_2026-09-02.md) and [the Qodo disposition](../evidence/QODO_COLD_REVIEW_DISPOSITION_2026-09-02.md). These records support bounded findings in their recorded environments; they are not a security certification or proof of deployment parity.
+See [the stable live-origin receipt](../../evidence/qa/LIVE_ORIGIN_ACCEPTANCE_RECEIPT_2026-08-29.md), [the G1 adversarial receipt](../evidence/ACTIONS_183_199_G1_SURGERY_2026-09-02.md), [the G2 real-browser receipt](../evidence/ACTIONS_200_213_G2_REAL_BROWSER_2026-09-02.md), [the G3 clean-copy receipt](../evidence/ACTIONS_220_225_G3_RELEASE_CANDIDATE_2026-09-02.md), [the publication/parity receipt](../evidence/ACTIONS_227_232_PUBLICATION_PARITY_2026-09-02.md), [the Gemini disposition](../evidence/GEMINI_FINDING_DISPOSITION_2026-09-02.md) and [the Qodo disposition](../evidence/QODO_COLD_REVIEW_DISPOSITION_2026-09-02.md). These records support bounded findings in their recorded environments; they are not a security certification. The human-controlled simulation/export portion of Action 237 remains open.
