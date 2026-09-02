@@ -12,9 +12,10 @@ package SHA-256 is
 Repaired runtime candidate `938da498312edab8dd41c12f4b9558865993c833`
 exactly matches `origin/main`. Canonical cPanel and the synchronized
 Vercel secondary each passed the 24-path deployment manifest. This closes
-Actions 227–232. The public source tag and hash-validated archive were created
-later; Zenodo publication is still blocked at archive transfer. This does not
-publish a video, complete the human portion of Action 237 or submit Devpost.
+Actions 227–232. The public source tag, hash-validated archive and Zenodo
+software DOI are published. Devpost has been submitted with a provisional
+safety video; the remaining public replacement is the final sub-three-minute
+human-voice demo.
 
 ## 1. Release inputs
 
@@ -54,7 +55,7 @@ git diff --check
 Recorded results for the 2026-09-02 G3 candidate:
 
 - dependency installation completes from the lock file;
-- 88 application tests pass across 13 files;
+- 94 application tests pass across 13 files;
 - TypeScript validation passes;
 - Vite creates `prototype/webmcp-qcg/dist/`;
 - all 5 Companion gates pass;
@@ -62,9 +63,10 @@ Recorded results for the 2026-09-02 G3 candidate:
 - `git diff --check` reports no whitespace errors.
 
 The live official `webmcp-evals@0.0.4` inspection/evaluation smoke passes 2/2
-on the exact repaired public runtime. Action 237 retains the human-controlled
-consent, local simulation and evidence-export portion. Treat all counts as
-recorded baselines, not a reason to ignore newly added tests.
+on the exact repaired public runtime. Retained human-controlled Chrome traces
+cover consent, local simulation, evidence export and zero QPU submissions.
+Treat all counts as recorded baselines, not a reason to ignore newly added
+tests.
 
 ## 3. Artifact gate
 
@@ -180,21 +182,17 @@ or external readiness from a build alone.
 `ready_for_external_execution` is a preflight report state. It is not provider
 availability, a quote, a credential check, a job submission, or authorization.
 
-## 8. Open release blockers
+## 8. Open release-adjacent work
 
 The QCG v3 console, headers, samples, WASM asset, Companion packages and bounded
 human preflight are published with a closed source/package/hosting parity chain.
-Remaining release-adjacent gates are:
+Remaining release-adjacent work is:
 
 1. refresh or revalidate target-profile evidence if either bundled profile
    expires before the final acceptance run;
-2. complete the human-controlled remainder of Action 237: consent, local
-   simulation and export trace on the promoted public bytes;
-3. retry upload of the already tagged and hash-validated source archive after
-   Zenodo transport recovers, then publish/synchronize the reserved software
-   DOI;
-4. run a rollback restoration drill during a separately authorized maintenance
+2. run a rollback restoration drill during a separately authorized maintenance
    window if operational proof beyond the retained backup boundary is required.
 
-Video production and final Devpost submission are separate author-controlled
-gates and are outside this release runbook.
+Final video production remains outside this release runbook. The current
+Devpost entry is submitted with the provisional safety video and can be updated
+after the final demo is recorded.

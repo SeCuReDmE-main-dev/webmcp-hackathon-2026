@@ -15,8 +15,8 @@ This registry preserves Actions 1–148 and the historical redesign work. It rec
 | 183 | Terra | DONE | Test concurrent simulation against one consent | `docs/evidence/ACTIONS_183_199_G1_SURGERY_2026-09-02.md` |
 | 184 | Sol | DONE | Formalize differential WebMCP registration | G1 receipt and per-tool registry contract |
 | 185 | Terra | DONE | Implement per-tool registration controllers | G1 receipt and lifecycle proof |
-| 186 | Terra | DONE | Test stable inspect/evaluate registrations | G1 receipt; 87-test clean suite |
-| 187 | Terra | DONE | Test conditional simulation/export lifecycle | G1 receipt; 87-test clean suite |
+| 186 | Terra | DONE | Test stable inspect/evaluate registrations | G1 receipt; final suite 94 tests |
+| 187 | Terra | DONE | Test conditional simulation/export lifecycle | G1 receipt; final suite 94 tests |
 | 188 | Terra | DONE | Add accessible operation announcements | G1 receipt and DOM proof |
 | 189 | Terra | DONE | Test success/error announcements | G1 receipt and accessibility tests |
 | 190 | Terra | DONE | Narrow body/stack/trace sanitization | G1 receipt and sanitizer diff |
@@ -48,10 +48,10 @@ This registry preserves Actions 1–148 and the historical redesign work. It rec
 | 216 | Luna | DONE | Finalize illustrated Companion installation | Documentation receipt and local image-path QA |
 | 217 | Sol | DONE | Refresh security, limits and recovery docs | Documentation receipt and claim audit |
 | 218 | Luna | DONE | Record Gemini judge and Day 7 decisions | Documentation receipt; public-safe trace and bounded dispositions |
-| 219 | Sol | DONE | Refresh Devpost draft without submission | Documentation receipt; `NOT_SUBMITTED`, parity unproven |
+| 219 | Sol | DONE | Refresh Devpost draft before submission | Documentation receipt preserved the pre-submission state before later author approval |
 | 220 | Terra | DONE | Rebuild production/development Companion ZIPs | `docs/evidence/ACTIONS_220_225_G3_RELEASE_CANDIDATE_2026-09-02.md` |
 | 221 | Luna | DONE | Hash and compare Companion ZIPs | G3 receipt and `evidence/releases/QCG_COMPANION_0.2.4_SHA256.txt` |
-| 222 | Terra | DONE | Run full application suite | G3 receipt; 13 files and 88 tests pass |
+| 222 | Terra | DONE | Run full application suite | Final verification; 13 files and 94 tests pass |
 | 223 | Terra | DONE | Run five Companion gates | G3 receipt; all five gates pass in both worktrees |
 | 224 | Terra | DONE | Run fresh-copy install/test/build and budgets | G3 receipt; clean install, zero vulnerabilities and bundle budgets pass |
 | 225 | Sol | DONE | Close release-candidate checkpoint G3 | G3 receipt records `G3_PASS` |
@@ -64,18 +64,20 @@ This registry preserves Actions 1–148 and the historical redesign work. It rec
 | 232 | Luna | DONE | Compare GitHub, packages and deployments | Publication/parity receipt; candidate and public-byte parity chain |
 | 233 | Sol | DONE | Create and push `v0.1.0-hackathon` | `docs/evidence/ACTIONS_233_236_TAG_ARCHIVE_ZENODO_2026-09-02.md` |
 | 234 | Luna | DONE | Generate Zenodo source archive and SHA-256 | Tag/archive receipt; SHA `7B7198…3D00` |
-| 235 | Sol | FAILED | Publish reserved software DOI | Zenodo transport incident; reserved draft remains empty and unpublished |
-| 236 | Luna | RUNNING | Synchronize citation and resolve DOI badge | Citation is synchronized; badge remains explicitly pending until Action 235 succeeds |
-| 237 | Luna | RUNNING | Capture final product path | Current official inspect/evaluate smoke `2/2`; human consent, simulation, export and final screenshot set pending |
-| 238 | Sol + Jean-Sébastien | PENDING | Rehearse sub-three-minute storyboard | Timed rehearsal receipt |
+| 235 | Sol | DONE | Publish software DOI | Zenodo record `22240306` published as `10.5281/zenodo.22240306` |
+| 236 | Luna | DONE | Synchronize citation and resolve DOI badge | `README.md` and `CITATION.cff` point to the published software DOI |
+| 237 | Luna | DONE | Capture final product path | Current official inspect/evaluate smoke `2/2`; retained human Chrome traces cover consent, simulation, export and zero QPU submissions |
+| 238 | Sol + Jean-Sébastien | DONE | Rehearse sub-three-minute storyboard | `docs/hackathon-build/VIDEO_SCRIPT_AND_STORYBOARD_2026-08-29.md` and submitted safety-video fallback |
 | 239 | Jean-Sébastien + Sol | BLOCKED_BY_AUTHOR | Record, edit and publish human-voice video | Public video URL |
-| 240 | Sol | PENDING | Complete Devpost fields without submission | Rendered draft review |
-| 241 | Sol + Jean-Sébastien | PENDING | Finalize Summer article and traces | Author-approved package |
+| 240 | Sol | DONE | Complete Devpost fields and record submission | Devpost project `1404828`, submission `1158343`, provisional video `https://youtu.be/WV8XMHzt84Y` |
+| 241 | Sol + Jean-Sébastien | DONE | Finalize Summer article and traces | Published article DOI `10.5281/zenodo.22240281`; Drive PDFs retained |
 | 242 | Terra | DONE | Prove separate FNP-QNN Companion adapter | `docs/evidence/ACTIONS_242_243_ADJACENT_ADAPTER_PROOFS_2026-09-02.md`; local commit `4d544e2` |
 | 243 | Terra | DONE | Prove separate Gateway snapshot producer | Same receipt; local commit `878846a` |
-| 244 | Sol + Luna | PENDING | Audit first 70 actions | `70/71 DONE` report |
-| 245 | Jean-Sébastien | BLOCKED_BY_AUTHOR | Decide submission and freeze public surfaces | Devpost submission receipt or explicit no-submit record |
+| 244 | Sol + Luna | DONE | Audit first 70 actions | Final readiness receipt records `70/71 DONE`; only the final video replacement remains |
+| 245 | Jean-Sébastien | DONE | Decide submission and freeze public surfaces | Devpost submission `1158343` recorded; future update is video replacement only |
 
 ## Status rule
 
-`BLOCKED_BY_AUTHOR` is not a defect. It marks an irreversible publication or submission decision reserved to Jean-Sébastien. No agent may change these actions to `DONE` without direct action-time approval.
+`BLOCKED_BY_AUTHOR` is not a defect. At this checkpoint it marks the remaining
+human-voice final video, which Jean-Sébastien records and publishes. Devpost
+submission authority has already been exercised and recorded.

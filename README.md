@@ -9,7 +9,7 @@
   </a>
 </p>
 
-> **Software DOI reserved — publication pending Zenodo archive transfer.**
+> **Published software DOI:** [10.5281/zenodo.22240306](https://doi.org/10.5281/zenodo.22240306)
 
 **Review before you run. Decide before quantum execution.**
 
@@ -24,8 +24,9 @@ a QPU or provider job.
 [Devpost project](https://devpost.com/software/webmcp-qcg-quantum-call-gate) ·
 [MIT license](LICENSE)
 
-The Devpost page is public. Hackathon submission remains under Jean-Sébastien
-Beaulieu's explicit control.
+The Devpost page is public and the WebMCP Challenge entry has been submitted
+with a provisional safety video. The only remaining public replacement is the
+final sub-three-minute human-voice demo video.
 
 ## Four seasons of one build
 
@@ -40,7 +41,7 @@ runtime themes. The product exposes only **Dark** and **Light**.
 | Spring — prove | Summer — converge |
 | --- | --- |
 | <img src="asset/thumbnail/readme/spring-gate-readme.jpg" alt="Spring Gate — benchmarking and freezing the product" width="560" /> | <img src="asset/thumbnail/readme/summer-gate-readme.jpg" alt="Summer Gate — converging Web, F12 and Companion" width="560" /> |
-| Feature expansion stopped. Q#, OpenQASM, accessibility, benchmarks and release gates became the work. [Feature-freeze decision](docs/decisions/2026-08-30-day5-spring-proof-and-feature-freeze.md). [Article DOI 10.5281/zenodo.22211182](https://doi.org/10.5281/zenodo.22211182). | Web, F12 and Companion converge around sanitized state while the human remains the decision holder. [Day 7 public trace](research/day7/DAY7_PUBLIC_SAFE_TRACE_2026-09-01.md). Reserved article DOI: [10.5281/zenodo.22240281](https://doi.org/10.5281/zenodo.22240281). |
+| Feature expansion stopped. Q#, OpenQASM, accessibility, benchmarks and release gates became the work. [Feature-freeze decision](docs/decisions/2026-08-30-day5-spring-proof-and-feature-freeze.md). [Article DOI 10.5281/zenodo.22211182](https://doi.org/10.5281/zenodo.22211182). | Web, F12 and Companion converge around sanitized state while the human remains the decision holder. [Day 7 public trace](research/day7/DAY7_PUBLIC_SAFE_TRACE_2026-09-01.md). [Article DOI 10.5281/zenodo.22240281](https://doi.org/10.5281/zenodo.22240281). |
 
 The sequence is one continuous release argument: Autumn narrows the question,
 Winter makes the boundaries explicit, Spring proves the bounded implementation,
@@ -206,9 +207,9 @@ Current published release-candidate verification recorded on 2026-09-02:
   closes the binary-normalization defect that a byte-only host comparison had
   initially failed to reveal;
 - TypeScript and Vite production build pass;
-- current candidate bundle: 131 modules, 388.34 kB JavaScript and 18.84 kB
+- current candidate bundle: 131 modules, 389.49 kB JavaScript and 23.65 kB
   CSS, with QDK WebAssembly tracked separately;
-- a clean copy passes 88 Vitest cases across 13 test files, all 5 Companion
+- the final local verification passes 94 Vitest cases across 13 test files, all 5 Companion
   gates and `npm audit` with zero vulnerabilities;
 - production/development Companion ZIP SHA-256 values are respectively
   `D69B3DEE68C6DF5A28D526B5A8616CC0148CA58EA7B40F5159F2D193D4216916`
@@ -225,10 +226,11 @@ Current published release-candidate verification recorded on 2026-09-02:
 
 The repaired G3 clean-copy and Actions 227–232 parity receipts establish the
 current source, package and hosting chain. The official current-runtime agent
-smoke is complete; the human consent, local simulation and evidence-export
-portion of Action 237 remains. The source tag and hash-validated archive are
-complete; software DOI publication is blocked only at Zenodo transport. Video
-and Devpost submission remain separate later actions under human authority.
+smoke is complete, and the retained human-controlled Chrome traces cover
+consent, local simulation, evidence export and zero QPU submissions. The source
+tag, hash-validated archive and Zenodo software DOI publication are complete.
+The WebMCP Challenge entry is submitted with a provisional safety video; the
+remaining public improvement is the final sub-three-minute human-voice demo.
 
 The repository records deterministic benchmark evidence separately from HTTP
 delivery evidence. The final cPanel package, public hashes, security headers
@@ -269,7 +271,8 @@ boundaries and residual risks.
 - [Qodo cold-review disposition](docs/evidence/QODO_COLD_REVIEW_DISPOSITION_2026-09-02.md)
 - [Actions 214–219 documentation receipt](docs/evidence/ACTIONS_214_219_DOCUMENTATION_2026-09-02.md)
 - [Current-runtime WebMCP smoke receipt](docs/evidence/ACTION_237A_CURRENT_RUNTIME_WEBMCP_SMOKE_2026-09-02.md)
-- [Tag, source archive and Zenodo transport receipt](docs/evidence/ACTIONS_233_236_TAG_ARCHIVE_ZENODO_2026-09-02.md)
+- [Tag, source archive and Zenodo publication receipt](docs/evidence/ACTIONS_233_236_TAG_ARCHIVE_ZENODO_2026-09-02.md)
+- [Final readiness receipt](docs/evidence/ACTION_244_FINAL_READINESS_2026-09-02.md)
 - [Author-deferred post-submission visual refinement](docs/hackathon-build/POST_SUBMISSION_VISUAL_BACKLOG_2026-09-02.md)
 
 ## Citation and release state
@@ -278,19 +281,17 @@ boundaries and residual risks.
 - Tagged source archive SHA-256:
   `7B7198BD0FAE128ADD66725FC238DE7009E2072AFFB72066F72DBC9810663D00`
 - Evidence schema: `webmcp-qcg.evidence-receipt.v3`
-- Reserved software DOI: [10.5281/zenodo.22240306](https://doi.org/10.5281/zenodo.22240306)
+- Published software DOI: [10.5281/zenodo.22240306](https://doi.org/10.5281/zenodo.22240306)
 - License: [MIT](LICENSE)
 
-The software DOI is reserved, the Git tag is public and its source archive is
-locally validated. Zenodo transport failed before the file reached the draft,
-so the DOI record remains unpublished and the pending badge is intentionally
-unchanged. Publication resumes only after Zenodo accepts and validates that
-exact tagged archive. The four editorial articles retain their independent
-publication records.
+The software DOI is published from the existing Zenodo record with the canonical
+tagged source archive. The README badge points only to the software DOI. The
+four editorial articles retain their independent publication records and appear
+as ordinary links in the seasonal history.
 
 ## Governance
 
-- Public construction is not a Devpost submission.
+- Public construction and Devpost submission are recorded as separate events.
 - AI agents may inspect, propose, challenge and explain. They never replace
   explicit human authority.
 - Deterministic quantum libraries perform compilation and local simulation; an
