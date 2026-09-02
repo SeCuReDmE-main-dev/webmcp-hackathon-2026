@@ -30,32 +30,32 @@ This registry preserves Actions 1–148 and the historical redesign work. It rec
 | 198 | Terra | DONE | Replace demo prefix inference with explicit provenance | G1 receipt and catalog/service diff |
 | 199 | Sol | DONE | Close adversarial checkpoint G1 | `docs/evidence/ACTIONS_183_199_G1_SURGERY_2026-09-02.md` |
 | 200 | Luna | DONE | Capture pre-fix three-surface visual state | `evidence/runtime/visual-qa-2026-09-02/BEFORE_MATRIX.md` |
-| 201 | Terra | PENDING | Open Companion from trusted page click | Chrome proof |
-| 202 | Terra | PENDING | Make `Open Companion` a real open/close toggle with confirmed page state | Chrome proof |
-| 203 | Terra | PENDING | Validate extension-action fallback and reconnection | Extension receipt |
-| 204 | Terra | PENDING | Validate low-glare Light contrast | Contrast receipt |
-| 205 | Terra | PENDING | Expose functional Access controls in Companion | Browser proof |
-| 206 | Terra | PENDING | Harmonize button hover/focus boundaries | Visual/accessibility proof |
-| 207 | Terra | PENDING | Keep site navigation operable beside Companion | Browser proof |
-| 208 | Terra | PENDING | Bind Web/F12/side panel to one tab/session | Transport receipt |
-| 209 | Terra | PENDING | Recover after reload/navigation/worker suspension | Lifecycle receipt |
-| 210 | Sol + Jean-Sébastien | PENDING | Demonstrate Codex–Gemini–human relay | Sanitized conversation receipt |
-| 211 | Terra | PENDING | Prove agents cannot exercise human authority | Negative-test receipt |
-| 212 | Luna | PENDING | Run responsive/accessibility browser matrix | QA matrix |
-| 213 | Sol | PENDING | Close real-browser checkpoint G2 | G2 receipt |
-| 214 | Sol + Luna | PENDING | Finalize four-season README narrative | README review |
-| 215 | Sol | PENDING | Explain with/without WebMCP | README review |
-| 216 | Luna | PENDING | Finalize illustrated Companion installation | Install QA receipt |
-| 217 | Sol | PENDING | Refresh security, limits and recovery docs | Claim audit |
-| 218 | Luna | PENDING | Record Gemini judge and Day 7 decisions | Public/private trace receipts |
-| 219 | Sol | PENDING | Refresh Devpost draft without submission | Draft state receipt |
-| 220 | Terra | PENDING | Rebuild production/development Companion ZIPs | Package receipt |
-| 221 | Luna | PENDING | Hash and compare Companion ZIPs | SHA-256 manifest |
-| 222 | Terra | PENDING | Run full application suite | Test receipt |
-| 223 | Terra | PENDING | Run five Companion gates | Extension receipt |
-| 224 | Terra | PENDING | Run fresh-copy install/test/build and budgets | Clean-copy receipt |
-| 225 | Sol | PENDING | Close release-candidate checkpoint G3 | G3 receipt |
-| 226 | Luna | PENDING | Build deployment manifest and rollback procedure | Deployment manifest |
+| 201 | Terra | DONE | Open Companion from trusted page click | `docs/evidence/ACTIONS_200_213_G2_REAL_BROWSER_2026-09-02.md` |
+| 202 | Terra | DONE | Make `Open Companion` a real open/close toggle with confirmed page state | G2 real-browser receipt |
+| 203 | Terra | DONE | Validate extension-action fallback and reconnection | G2 extension and lifecycle receipt |
+| 204 | Terra | DONE | Validate low-glare Light contrast | G2 receipt and Companion contrast gate |
+| 205 | Terra | DONE | Expose functional Access controls in Companion | G2 Access interaction proof |
+| 206 | Terra | DONE | Harmonize button hover/focus boundaries | G2 visual/accessibility matrix |
+| 207 | Terra | DONE | Keep site navigation operable beside Companion | G2 public-browser navigation proof |
+| 208 | Terra | DONE | Bind Web/F12/side panel to one tab/session | G2 transport receipt |
+| 209 | Terra | DONE | Recover after reload/navigation/worker suspension | G2 lifecycle receipt |
+| 210 | Sol + Jean-Sébastien | DONE | Demonstrate Codex–Gemini–human relay | G2 sanitized relay receipt |
+| 211 | Terra | DONE | Prove agents cannot exercise human authority | G2 negative-test receipt |
+| 212 | Luna | DONE | Run responsive/accessibility browser matrix | `evidence/runtime/visual-qa-2026-09-02/AFTER_MATRIX.md` |
+| 213 | Sol | DONE | Close real-browser checkpoint G2 | `docs/evidence/ACTIONS_200_213_G2_REAL_BROWSER_2026-09-02.md` |
+| 214 | Sol + Luna | DONE | Finalize four-season README narrative | `docs/evidence/ACTIONS_214_219_DOCUMENTATION_2026-09-02.md` |
+| 215 | Sol | DONE | Explain with/without WebMCP | Documentation receipt and README review |
+| 216 | Luna | DONE | Finalize illustrated Companion installation | Documentation receipt and local image-path QA |
+| 217 | Sol | DONE | Refresh security, limits and recovery docs | Documentation receipt and claim audit |
+| 218 | Luna | DONE | Record Gemini judge and Day 7 decisions | Documentation receipt; public-safe trace and bounded dispositions |
+| 219 | Sol | DONE | Refresh Devpost draft without submission | Documentation receipt; `NOT_SUBMITTED`, parity unproven |
+| 220 | Terra | DONE | Rebuild production/development Companion ZIPs | `docs/evidence/ACTIONS_220_225_G3_RELEASE_CANDIDATE_2026-09-02.md` |
+| 221 | Luna | DONE | Hash and compare Companion ZIPs | G3 receipt and `evidence/releases/QCG_COMPANION_0.2.4_SHA256.txt` |
+| 222 | Terra | DONE | Run full application suite | G3 receipt; 13 files and 88 tests pass |
+| 223 | Terra | DONE | Run five Companion gates | G3 receipt; all five gates pass in both worktrees |
+| 224 | Terra | DONE | Run fresh-copy install/test/build and budgets | G3 receipt; clean install, zero vulnerabilities and bundle budgets pass |
+| 225 | Sol | DONE | Close release-candidate checkpoint G3 | G3 receipt records `G3_PASS` |
+| 226 | Luna | DONE | Build deployment manifest and rollback procedure | `docs/evidence/ACTION_226_DEPLOYMENT_MANIFEST_AND_ROLLBACK_2026-09-02.md` |
 | 227 | Sol | PENDING | Create final candidate commit | Commit receipt |
 | 228 | Sol | PENDING | Push main and verify remote SHA | Remote receipt |
 | 229 | Sol | PENDING | Verify public visibility and branch protection | GitHub receipt |

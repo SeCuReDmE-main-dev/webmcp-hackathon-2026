@@ -9,6 +9,11 @@ The stable product address is
 package SHA-256 is
 `371a206716fcfcd71699285cce51a8bb8aa7368b2615505397328dcc86e02269`.
 
+The 2026-09-02 G2 working-tree candidate is newer than that stable package.
+Passing candidate tests does not establish GitHub, ZIP, Vercel or cPanel byte
+parity. Treat the public origin as the retained release until later actions
+identify, package, compare and explicitly deploy one immutable candidate.
+
 ## 1. Release inputs
 
 A release candidate must include:
@@ -21,6 +26,8 @@ A release candidate must include:
   `prototype/webmcp-qcg/public/fixtures/qcg-bell-sample.qasm`;
 - the root [MIT license](../LICENSE) and
   [third-party notices](../THIRD_PARTY_NOTICES.md);
+- the optional Companion source and its production/development manifests under
+  `companion/qcg-devtools-extension/` when Companion is part of the release;
 - current, sourced target-profile snapshots whose expiry extends through the
   release-validation window.
 
@@ -42,16 +49,19 @@ Set-Location ../..
 git diff --check
 ```
 
-Expected results for the 2026-08-30 QCG v3 baseline:
+Recorded results for the 2026-09-02 G2 candidate:
 
 - dependency installation completes from the lock file;
-- 51 automated tests pass;
+- 88 application tests pass across 13 files;
 - TypeScript validation passes;
 - Vite creates `prototype/webmcp-qcg/dist/`;
-- the live official WebMCP smoke suite passes 2/2;
+- Companion manifest, trusted-click, lifecycle and Light-theme gates pass;
 - `git diff --check` reports no whitespace errors.
 
-Treat test counts as a baseline, not a reason to ignore newly added tests.
+The live official WebMCP smoke suite previously passed 2/2 on the retained
+stable release. Run it again against the exact promoted candidate; do not carry
+that result forward as deployment-parity evidence. Treat all counts as recorded
+baselines, not a reason to ignore newly added tests.
 
 ## 3. Artifact gate
 
@@ -126,7 +136,12 @@ Record browser version, timestamp, stable URL, artifact hash, header values,
 tool discovery order, human consent event, simulation result, and zero-QPU
 counter in a dated evidence receipt.
 
-## 6. Rollback gate
+## 6. Recovery and rollback gate
+
+Before promotion, exercise local recovery paths: a blocked IndexedDB upgrade,
+page reload/navigation, Companion port replacement, side-panel/F12 reopen and
+extension-worker suspension must recover to a fresh correlated session or a
+cleared waiting state. Recovery must not reuse consent or restore a stale tool.
 
 Before promotion, identify the exact previous live state and a recoverable way
 to restore it. If any stable-origin gate fails:
@@ -137,7 +152,8 @@ to restore it. If any stable-origin gate fails:
 4. retain the failed artifact and evidence hash for diagnosis;
 5. do not mutate target evidence or receipts to make the failed run appear valid.
 
-The operator retained the identified previous-build backup during promotion. A
+The operator retained the identified previous-build backup during the earlier
+promotion. A
 rollback plan remains unproven until a separately authorized maintenance drill
 tests the actual restoration mechanism.
 
@@ -160,13 +176,18 @@ availability, a quote, a credential check, a job submission, or authorization.
 ## 8. Open release blockers
 
 The QCG v3 console, headers, samples, WASM asset and bounded human preflight are
-live on the canonical origin. Remaining release-adjacent gates are:
+live on the canonical origin as the retained release. The newer G2 candidate is
+not yet proven identical across packages and deployments. Remaining
+release-adjacent gates are:
 
-1. refresh or revalidate target-profile evidence if either bundled profile
+1. rebuild and hash the production/development Companion packages;
+2. run the application and Companion gates from a fresh copy;
+3. refresh or revalidate target-profile evidence if either bundled profile
    expires before the final acceptance run;
-2. run a fresh native-agent tool invocation on the new stable build;
-3. complete an author-controlled consent, local simulation and export trace;
-4. run a rollback drill during a separately authorized maintenance window.
+4. compare the candidate commit, archives and both hosting targets byte-for-byte;
+5. run a fresh native-agent invocation plus author-controlled consent, local
+   simulation and export trace on the promoted bytes;
+6. run a rollback drill during a separately authorized maintenance window.
 
 Video production and final Devpost submission are separate author-controlled
 gates and are outside this release runbook.

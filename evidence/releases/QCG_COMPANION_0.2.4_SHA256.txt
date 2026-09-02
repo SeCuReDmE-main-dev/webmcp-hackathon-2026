@@ -1,0 +1,4 @@
+D69B3DEE68C6DF5A28D526B5A8616CC0148CA58EA7B40F5159F2D193D4216916  prototype/webmcp-qcg/public/qcg-console-companion-0.2.4.zip
+D69B3DEE68C6DF5A28D526B5A8616CC0148CA58EA7B40F5159F2D193D4216916  prototype/webmcp-qcg/public/downloads/qcg-console-companion-0.2.4.zip
+33EACB2CBD3475E86E86EFD899F2540E5FD5DD7B0F0F99E6E3726BC246BBD35B  prototype/webmcp-qcg/public/qcg-console-companion-dev-0.2.4.zip
+33EACB2CBD3475E86E86EFD899F2540E5FD5DD7B0F0F99E6E3726BC246BBD35B  prototype/webmcp-qcg/public/downloads/qcg-console-companion-dev-0.2.4.zip

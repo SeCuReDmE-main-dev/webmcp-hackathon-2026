@@ -16,17 +16,23 @@ const packages = [
   { label: 'production', archiveName: `qcg-console-companion-${version}.zip`, manifestSource: 'manifest.json' },
   { label: 'development', archiveName: `qcg-console-companion-dev-${version}.zip`, manifestSource: 'manifest.dev.json' },
 ]
+const publicLocations = [
+  { label: 'root', prefix: '../../prototype/webmcp-qcg/public/' },
+  { label: 'downloads', prefix: '../../prototype/webmcp-qcg/public/downloads/' },
+]
 
 for (const packageSpec of packages) {
-  const archive = fileURLToPath(new URL(`../../prototype/webmcp-qcg/public/${packageSpec.archiveName}`, root))
-  const archivedEntries = execFileSync('tar', ['-tf', archive], { encoding: 'utf8' }).trim().split(/\r?\n/).filter((entry) => entry && !entry.endsWith('/')).sort()
-  assert.deepEqual(archivedEntries, [...entries].sort(), `the public ${packageSpec.label} Companion ZIP must contain only runtime files`)
-  for (const entry of entries) {
-    const archived = execFileSync('tar', ['-xOf', archive, entry])
-    const sourceName = entry === 'manifest.json' ? packageSpec.manifestSource : entry
-    const source = readFileSync(new URL(`./${sourceName}`, root))
-    assert.equal(Buffer.compare(archived, source), 0, `${entry} in the public ${packageSpec.label} ZIP must match the current extension source byte for byte`)
+  for (const location of publicLocations) {
+    const archive = fileURLToPath(new URL(`${location.prefix}${packageSpec.archiveName}`, root))
+    const archivedEntries = execFileSync('tar', ['-tf', archive], { encoding: 'utf8' }).trim().split(/\r?\n/).filter((entry) => entry && !entry.endsWith('/')).sort()
+    assert.deepEqual(archivedEntries, [...entries].sort(), `the public ${packageSpec.label} Companion ZIP in ${location.label} must contain only runtime files`)
+    for (const entry of entries) {
+      const archived = execFileSync('tar', ['-xOf', archive, entry])
+      const sourceName = entry === 'manifest.json' ? packageSpec.manifestSource : entry
+      const source = readFileSync(new URL(`./${sourceName}`, root))
+      assert.equal(Buffer.compare(archived, source), 0, `${entry} in the public ${packageSpec.label} ZIP in ${location.label} must match the current extension source byte for byte`)
+    }
   }
 }
 
-console.log(`QCG Companion ${version} production and development ZIPs match every runtime source file.`)
+console.log(`QCG Companion ${version} production and development ZIPs match every runtime source file in both public locations.`)

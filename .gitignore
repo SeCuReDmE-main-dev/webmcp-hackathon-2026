@@ -15,10 +15,13 @@ coverage/
 runtime/
 # Publish only the final sanitized browser receipts. Other runtime material
 # remains local and ignored.
+evidence/runtime/**
 !evidence/runtime/
 !evidence/runtime/browser-proof/
 !evidence/runtime/browser-proof/2026-09-01/
 !evidence/runtime/browser-proof/2026-09-01/**
+!evidence/runtime/visual-qa-2026-09-02/
+!evidence/runtime/visual-qa-2026-09-02/**
 artifacts/private/
 *.log
 *.pem

@@ -3,12 +3,16 @@
 Status: **PREPARED DRAFT — NOT SUBMITTED**  
 Project ID: `1404828`  
 Project URL: <https://devpost.com/software/webmcp-qcg-quantum-call-gate>  
-Last live-state check: 2026-08-30
+Draft synchronized with local G2 evidence: 2026-09-02
+
+Last retained-stable deployment evidence: 2026-09-01
+
+Candidate deployment parity: **NOT YET PROVEN**
 
 ## Missing release inputs
 
 - Public YouTube demo under three minutes with audio
-- Author approval and deployment of the final visual candidate
+- Immutable candidate package, clean-copy QA and GitHub/Vercel/cPanel parity
 - Final author review of every custom field
 - Explicit author authorization to submit
 
@@ -41,7 +45,7 @@ Five falsifiable cards exercise the decision space: reuse a fresh result, reject
 
 The app uses React, TypeScript, strict Zod contracts and `document.modelContext.registerTool`. Human controls and WebMCP tools call one canonical service layer. Tool registration is progressive and tied to an `AbortSignal` lifecycle. Q# and OpenQASM 3 run through pinned `qsharp-lang@1.31.0` WebAssembly in a cancellable Web Worker with explicit shot, qubit and timeout limits. Eight additional ecosystem profiles expose static inspection only.
 
-The native browser trace invoked inspection, evaluation, bounded simulation and export. The Worker completed 64/64 Bell-pair shots, observed only correlated pairs, passed the Bell invariant and recorded one local simulation with zero provider calls.
+The retained stable browser trace invoked inspection, evaluation, bounded simulation and export. Its Worker completed 64/64 Bell-pair shots, observed only correlated pairs, passed the Bell invariant and recorded one local simulation with zero provider calls. The newer G2 candidate separately passed local tests and a real-browser Companion/F12 session; those records are not yet proof that the public deployments serve the candidate bytes.
 
 ### Challenges
 
@@ -62,6 +66,10 @@ The principal challenge was preserving scientific meaning while keeping the agen
 - A capped public canary returned 80/80 HTTP 200 responses with zero errors or timeouts.
 - External provider calls, QPU calls and paid calls remain exactly zero.
 - The public repository contains source, tests, research provenance and machine-readable evidence.
+- Gemini/Antigravity supplied an independent cold-judge report whose findings
+  were dispositioned against code and tests; Qodo supplied a separate cold
+  review. These are bounded review inputs, not certifications or submission
+  approvals.
 
 ### What I learned
 
@@ -69,7 +77,7 @@ WebMCP is strongest here as a decision surface. The agent gains precise capabili
 
 ### What's next
 
-The retained stable public deployment and its live WebMCP smoke trace pass. The Day 5 source candidate adds Q#/OpenQASM execution, eight static profiles and a proven F12 collaboration panel while keeping declared identities and read-only authority. Native Gemini DevTools remains a human-mediated export/preview/import lane because no documented conversation-write API exists. The immediate gates are visual approval, deployment of the approved candidate, a final live trace, the public demo video and my field-by-field review. External execution remains a separate, explicitly authorized product surface.
+The retained stable public deployment and its recorded WebMCP smoke trace pass. The Day 7/G2 source candidate keeps Q#/OpenQASM fixture execution, eight static profiles and the F12/Companion collaboration surfaces while preserving declared identities and read-only collaboration authority. Native Gemini DevTools remains a human-mediated export/preview/import lane because no documented conversation-write API is used. The immediate gates are clean-copy QA, immutable packaging, deployment parity, a final live trace, the public demo video and my field-by-field review. External execution remains a separate, explicitly authorized product surface.
 
 ## Required custom-field draft
 
@@ -81,9 +89,9 @@ The retained stable public deployment and its live WebMCP smoke trace pass. The 
 | App Status | New |
 | Existing-project extension | Not applicable; the repository began during the submission period |
 | Live URL | <https://qcg.securedme.ca/> |
-| Testing instructions | **Draft only until the approved Day 5 candidate is deployed.** Open in ChatGPT's in-app browser. Ask the agent to list QCG tools, inspect `simulate-first`, evaluate it with 64 shots, grant visible one-time consent, run bounded local simulation and export Markdown evidence. Confirm Bell invariant PASS and external calls 0. Chrome testing requires Chrome 149+ with `chrome://flags/#enable-webmcp-testing` enabled and a restart. |
+| Testing instructions | **Draft only; revalidate after candidate parity is proven.** Open the stable URL in a WebMCP-capable browser. Ask the agent to list QCG tools, inspect `simulate-first`, evaluate it with 64 shots, grant visible one-time consent, run bounded local simulation and export Markdown evidence. Confirm Bell invariant PASS and external calls 0. The visible human workflow remains the fallback when WebMCP is unavailable. External Chrome testing depends on a build exposing `chrome://flags/#enable-webmcp-testing` and requires a restart after enabling it. |
 | Public code repository | <https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026> |
-| Agents or clients tested | ChatGPT/Codex in-app browser: native discovery and four WebMCP invocations passed on the retained release. Chrome DevTools MCP 1.8.0 discovered and invoked the four collaboration tools on one live page ID in the Day 5 candidate. A declared Gemini-role fixture and the manual native-Gemini relay were tested without claiming a direct Gemini conversation API. External Chrome through the official WebMCP eval runner: the retained HTTPS origin passed 2/2 smoke steps. |
+| Agents or clients tested | ChatGPT/Codex in-app browser: native discovery and four WebMCP invocations passed on the retained release. Chrome DevTools MCP discovered and invoked the four collaboration tools on one candidate page session. A real human-mediated Gemini/Antigravity cold-judge exchange was sanitized and dispositioned without claiming a direct Gemini conversation API. External Chrome through the official WebMCP eval runner: the retained HTTPS origin passed 2/2 smoke steps. Repeat these checks on the promoted candidate before submission. |
 | AI tools leveraged | OpenAI Codex served as the research partner for source mapping, contract design, implementation, tests, browser verification, evidence organization and editorial control. Independent ChatGPT and Gemini research reports supplied comparative inputs that were checked against primary sources. |
 | Learning derived | Significant |
 | Career AI value | Yes |
@@ -99,9 +107,10 @@ The retained stable public deployment and its live WebMCP smoke trace pass. The 
 - [x] Expiring public preview passed with required security headers and native WebMCP trace
 - [x] Stable live URL
 - [x] Native trace repeated at live URL
-- [x] Day 5 local F12/Chrome DevTools MCP proof
+- [x] Day 7/G2 local F12, Companion and reconnect proof
 - [x] Two reproducible 100-sandbox million-operation engine passes
-- [ ] Author-approved Day 5 visual candidate deployed
+- [ ] Immutable candidate packaged and clean-copy QA passed
+- [ ] GitHub, Companion ZIPs, Vercel and cPanel candidate parity proven
 - [ ] Public demo video under three minutes with audio
 - [ ] Final author review
 - [ ] Explicit author authorization to submit

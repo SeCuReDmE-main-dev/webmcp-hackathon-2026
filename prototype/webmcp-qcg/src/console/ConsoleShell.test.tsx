@@ -37,9 +37,14 @@ describe('QCG console shell', () => {
   it('marks the companion button with the bounded extension handshake id', () => {
     render(<ConsoleShell {...baseProps} onViewChange={vi.fn()} inspector={() => <p>State inspector</p>}><h1>Inspector</h1></ConsoleShell>)
     const button = screen.getByRole('button', { name: 'Open Companion' })
+    expect(button.classList.contains('companion-desktop-control')).toBe(true)
     expect(button.getAttribute('data-qcg-open-companion')).toBe(baseProps.companionTriggerId)
     expect(button.getAttribute('data-qcg-companion-action')).toBe('open')
     expect(button.getAttribute('aria-pressed')).toBe('false')
+    const mobileNote = screen.getByRole('note', { name: 'Companion availability' })
+    expect(mobileNote.classList.contains('companion-mobile-note')).toBe(true)
+    expect(mobileNote.textContent).toBe('Companion · desktop')
+    expect(mobileNote.tagName).toBe('SPAN')
   })
 
   it('presents the same trusted control as a close action when Companion is open', () => {
@@ -96,6 +101,15 @@ describe('QCG console shell', () => {
     await user.click(within(rail).getByRole('button', { name: 'Activity' }))
     expect(onViewChange).toHaveBeenCalledWith('activity')
     expect(rendered.container.querySelector('.console-layout')?.classList.contains('rail-menu-open')).toBe(false)
+  })
+
+  it('exposes only one compact navigation to assistive technology at a time', async () => {
+    mockCompactViewport(true)
+    const user = userEvent.setup()
+    render(<ConsoleShell {...baseProps} onViewChange={vi.fn()} inspector={() => <p>State inspector</p>}><h1>Inspector</h1></ConsoleShell>)
+    expect(screen.getAllByRole('navigation', { name: 'QCG console views' })).toHaveLength(1)
+    await user.click(screen.getByRole('button', { name: 'Open console navigation' }))
+    expect(screen.getAllByRole('navigation', { name: 'QCG console views' })).toHaveLength(1)
   })
 
   it('matches Companion reading profiles and persists the existing direct-use access controls', async () => {

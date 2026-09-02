@@ -42,6 +42,12 @@ runtime themes. The product exposes only **Dark** and **Light**.
 | <img src="asset/thumbnail/readme/spring-gate-readme.jpg" alt="Spring Gate — benchmarking and freezing the product" width="560" /> | <img src="asset/thumbnail/readme/summer-gate-readme.jpg" alt="Summer Gate — converging Web, F12 and Companion" width="560" /> |
 | Feature expansion stopped. Q#, OpenQASM, accessibility, benchmarks and release gates became the work. [Feature-freeze decision](docs/decisions/2026-08-30-day5-spring-proof-and-feature-freeze.md). [Article DOI 10.5281/zenodo.22211182](https://doi.org/10.5281/zenodo.22211182). | Web, F12 and Companion converge around sanitized state while the human remains the decision holder. [Day 7 public trace](research/day7/DAY7_PUBLIC_SAFE_TRACE_2026-09-01.md). Reserved article DOI: [10.5281/zenodo.22240281](https://doi.org/10.5281/zenodo.22240281). |
 
+The sequence is one continuous release argument: Autumn narrows the question,
+Winter makes the boundaries explicit, Spring proves the bounded implementation,
+and Summer brings the verified browser surfaces together. Each season points to
+its own decision or evidence record; none is a claim that the interface changes
+with the calendar.
+
 ## The decision path
 
 ```text
@@ -66,6 +72,21 @@ import → inspect → evaluate → human decision
 
 `ready_for_external_execution` is a preflight result. It is never provider
 authorization, a QPU submission or permission to spend money.
+
+## With WebMCP / without WebMCP
+
+Both paths use the same deterministic QCG services and preserve human authority.
+The difference is how a browser agent reaches those services.
+
+| Without WebMCP | With WebMCP |
+| --- | --- |
+| The person imports, inspects, evaluates, decides, optionally grants one-use local consent, and exports through visible controls. | An agent can discover the currently eligible typed tools, call inspect/evaluate, and receive bounded structured results without scraping the interface. |
+| The complete product remains usable in an ordinary browser. | Tool availability follows the same state gates: simulation appears only after `simulate_first` and visible human consent; export appears only when evidence exists. |
+| Evidence is read from the interface or downloaded receipt. | Tool inputs and outputs exclude raw source, credentials, local paths and consent tokens. |
+
+This comparison is reproducible from the [quick start](#quick-start), the
+[tool table](#eight-tools-two-responsibilities), the checked-in tests and the
+[public-safe browser receipt](docs/evidence/ACTIONS_200_213_G2_REAL_BROWSER_2026-09-02.md).
 
 ## One bounded state, three browser surfaces
 
@@ -172,23 +193,28 @@ The extension has no dependency installation or build step.
 
 ## Verification snapshot
 
-Current final-pass verification on 2026-09-01:
+Current release-candidate verification recorded on 2026-09-02:
 
-- the canonical cPanel URL returns HTTP 200 and serves the byte-verified final
-  bundle; the Vercel design preview also returns HTTP 200 but remains on an
-  earlier bundle and is not the release authority;
+- the canonical cPanel URL and the Vercel design preview both return HTTP 200,
+  but they still serve different retained bundles; release-candidate parity is
+  therefore pending Actions 230–232, and cPanel remains the release authority;
 - TypeScript and Vite production build pass;
-- current application bundle: 131 modules, 378.53 kB JavaScript and 14.38 kB
+- current candidate bundle: 131 modules, 388.34 kB JavaScript and 18.80 kB
   CSS, with QDK WebAssembly tracked separately;
-- 61 Vitest cases pass across 10 test files;
+- 88 Vitest cases pass across 13 test files;
 - QCG Companion v0.2.4 manifest, trusted-click, strict snapshot lifecycle and
   low-glare Light-theme tests pass;
 - real Chrome browser routes for imported Q# and OpenQASM both reached
   `simulate_first`, a declared human acceptance, a 64-shot local Bell result,
   evidence export and zero QPU submissions;
-- the retained-tab Companion/F12 proof remains a final release gate after the
-  unpacked extension is reloaded to v0.2.4;
+- the retained-tab Companion/F12 proof, trusted open/close toggle, reconnect
+  paths and responsive/accessibility matrix passed in the G2 browser receipt;
 - the public repository is licensed under MIT.
+
+These candidate results describe the working tree recorded by the dated G2
+receipt. They do not prove that GitHub, the Companion ZIPs, Vercel and cPanel
+serve identical candidate bytes; package, clean-copy and deployment-parity gates
+remain later release actions.
 
 The repository records deterministic benchmark evidence separately from HTTP
 delivery evidence. The final cPanel package, public hashes, security headers
@@ -225,10 +251,13 @@ boundaries and residual risks.
 - [Day 7 Companion and A2A trace](research/day7/COMPANION_A2A_AND_LOW_GLARE_TRACE_2026-09-01.md)
 - [Video, A2A and README status](research/day7/DAY7_VIDEO_A2A_README_STATUS_2026-09-01.md)
 - [Summer 9/39 source register](research/day7/SUMMER_9_39_SOURCE_REGISTER_2026-09-01.md)
+- [Gemini cold-judge disposition](docs/evidence/GEMINI_FINDING_DISPOSITION_2026-09-02.md)
+- [Qodo cold-review disposition](docs/evidence/QODO_COLD_REVIEW_DISPOSITION_2026-09-02.md)
+- [Actions 214–219 documentation receipt](docs/evidence/ACTIONS_214_219_DOCUMENTATION_2026-09-02.md)
 
 ## Citation and release state
 
-- Software release: `v0.1.0-hackathon`
+- Planned release tag: `v0.1.0-hackathon` (not created by this documentation pass)
 - Evidence schema: `webmcp-qcg.evidence-receipt.v3`
 - Reserved software DOI: [10.5281/zenodo.22240306](https://doi.org/10.5281/zenodo.22240306)
 - License: [MIT](LICENSE)

@@ -105,6 +105,12 @@ assert.deepEqual(firstPanel.messages.at(-1)?.snapshot?.tools.map((item) => item.
 assert.equal('raw_source' in firstPanel.messages.at(-1).snapshot, false, 'unknown source fields must be projected out before caching')
 assert.equal(firstPanel.messages.at(-1).snapshot.messages.length, 0, 'token signatures and private paths must be rejected before caching')
 
+const devtoolsPanel = port('qcg-console-devtools.v1')
+connectListener(devtoolsPanel)
+devtoolsPanel.emit({ type: 'qcg-console-attach.v1', tab_id: tabId })
+assert.equal(devtoolsPanel.messages.at(-1)?.snapshot?.session_id, firstPanel.messages.at(-1)?.snapshot?.session_id, 'F12 and side panel must receive the same tab-bound session')
+assert.equal(devtoolsPanel.messages.at(-1)?.snapshot?.artifact?.digest, firstPanel.messages.at(-1)?.snapshot?.artifact?.digest, 'F12 and side panel must receive the same sanitized artifact digest')
+
 const unsolicitedBefore = firstPanel.messages.length
 content.emit({ type: 'qcg-console-command-result.v1', request_id: 'f921c548-b9c0-4460-8410-b5bc01c1c014', result: { accepted: true, message: 'unsolicited' } })
 assert.equal(firstPanel.messages.length, unsolicitedBefore, 'an unsolicited page result must not reach the panel')
@@ -123,6 +129,7 @@ assert.equal(firstPanel.messages.at(-1)?.result?.message, 'Human decision record
 
 content.close()
 assert.equal(firstPanel.messages.at(-1)?.type, 'qcg-console-disconnected.v1', 'an attached panel must be told when its page bridge disconnects')
+assert.equal(devtoolsPanel.messages.at(-1)?.type, 'qcg-console-disconnected.v1', 'the attached F12 panel must be told when its page bridge disconnects')
 
 const secondPanel = port('qcg-console-side-panel.v1')
 connectListener(secondPanel)

@@ -1,2 +1,20 @@
 prototype/webmcp-qcg/index.html text eol=lf
-prototype/webmcp-qcg/public/** text eol=lf
+prototype/webmcp-qcg/public/** -text
+prototype/webmcp-qcg/public/.htaccess text eol=lf
+prototype/webmcp-qcg/public/_headers text eol=lf
+prototype/webmcp-qcg/public/*.html text eol=lf
+prototype/webmcp-qcg/public/*.json text eol=lf
+prototype/webmcp-qcg/public/*.svg text eol=lf
+prototype/webmcp-qcg/public/*.webmanifest text eol=lf
+prototype/webmcp-qcg/public/fixtures/*.qasm text eol=lf
+prototype/webmcp-qcg/public/fixtures/*.qs text eol=lf
+
+# The published Companion ZIPs are verified byte-for-byte in fresh clones.
+# Keep runtime and documentation text deterministic across Windows checkouts.
+companion/qcg-devtools-extension/*.css text eol=lf
+companion/qcg-devtools-extension/*.html text eol=lf
+companion/qcg-devtools-extension/*.js text eol=lf
+companion/qcg-devtools-extension/*.json text eol=lf
+companion/qcg-devtools-extension/*.md text eol=lf
+companion/qcg-devtools-extension/*.mjs text eol=lf
+companion/qcg-devtools-extension/icons/* binary

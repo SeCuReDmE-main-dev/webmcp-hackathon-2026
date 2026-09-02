@@ -2,7 +2,7 @@ const $ = (selector) => document.querySelector(selector)
 const query = new URLSearchParams(location.search)
 const isDevtools = query.get('surface') === 'devtools' && Boolean(chrome.devtools?.inspectedWindow)
 const surface = isDevtools ? 'DEVTOOLS PANEL' : query.get('surface') === 'companion-tab' ? 'COMPANION TAB' : 'SIDE PANEL'
-const state = { snapshot: null, tabId: Number(query.get('tab_id')) || null, port: null }
+const state = { snapshot: null, tabId: Number(query.get('tab_id')) || null, port: null, reconnectTimer: null }
 const ACCESS_STORAGE_KEY = 'qcg-companion-access-v1'
 const accessProfiles = ['base', 'autism-calm', 'adhd-sprint', 'deep-work']
 const defaultAccess = { profile: 'base', textScale: '100', highContrast: false, reduceMotion: false, underlineControls: false }
@@ -15,22 +15,59 @@ bindActions()
 void connect()
 
 async function connect() {
+  if (state.port) return
   if (isDevtools) {
     state.tabId = chrome.devtools.inspectedWindow.tabId
-    state.port = chrome.runtime.connect({ name: 'qcg-console-devtools.v1' })
-    state.port.postMessage({ type: 'qcg-console-attach.v1', tab_id: state.tabId })
-    state.port.onMessage.addListener(receive)
+    const port = connectPort('qcg-console-devtools.v1')
+    if (!port) return
+    postToBroker({ type: 'qcg-console-attach.v1', tab_id: state.tabId })
     setStatus('Waiting for the bounded QCG page bridge.')
     return
   }
-  state.port = chrome.runtime.connect({ name: 'qcg-console-side-panel.v1' })
-  state.port.onMessage.addListener(receive)
+  const port = connectPort('qcg-console-side-panel.v1')
+  if (!port) return
   if (!Number.isInteger(state.tabId)) {
     const result = await chrome.runtime.sendMessage({ type: 'qcg-console-get-active-tab' }).catch(() => ({ tab_id: null }))
     state.tabId = Number.isInteger(result?.tab_id) ? result.tab_id : null
   }
-  if (Number.isInteger(state.tabId)) state.port.postMessage({ type: 'qcg-console-attach.v1', tab_id: state.tabId })
+  if (state.port !== port) return
+  if (Number.isInteger(state.tabId)) postToBroker({ type: 'qcg-console-attach.v1', tab_id: state.tabId })
   else setStatus('Open a QCG tab, then reopen the companion.', true)
+}
+
+function connectPort(name) {
+  let port
+  try { port = chrome.runtime.connect({ name }) }
+  catch { scheduleReconnect(); return null }
+  state.port = port
+  port.onMessage.addListener(receive)
+  port.onDisconnect.addListener(() => {
+    if (state.port !== port) return
+    void chrome.runtime.lastError
+    state.port = null
+    clearSnapshot('The companion broker restarted. Reconnecting…')
+    scheduleReconnect()
+  })
+  return port
+}
+
+function scheduleReconnect() {
+  if (state.reconnectTimer !== null) return
+  state.reconnectTimer = window.setTimeout(() => {
+    state.reconnectTimer = null
+    void connect()
+  }, 250)
+}
+
+function postToBroker(message) {
+  const port = state.port
+  if (!port) { scheduleReconnect(); return false }
+  try { port.postMessage(message); return true }
+  catch {
+    if (state.port === port) state.port = null
+    scheduleReconnect()
+    return false
+  }
 }
 
 function receive(message) {
@@ -134,7 +171,7 @@ function bindActions() {
 function sendCommand(command) {
   if (!state.port || !Number.isInteger(state.tabId)) return setStatus('Open a QCG tab before submitting a command.', true)
   if (!state.snapshot?.session_id) return setStatus('Wait for a bounded QCG session snapshot.', true)
-  state.port.postMessage({ type: 'qcg-console-command.v1', request_id: crypto.randomUUID(), command: { schema_version: 'qcg-console-command.v1', session_id: state.snapshot.session_id, ...command } })
+  if (!postToBroker({ type: 'qcg-console-command.v1', request_id: crypto.randomUUID(), command: { schema_version: 'qcg-console-command.v1', session_id: state.snapshot.session_id, ...command } })) setStatus('The companion broker is reconnecting. Retry when the bounded context returns.', true)
 }
 function sendDecision(choice) {
   const recommendation = state.snapshot?.recommendation
