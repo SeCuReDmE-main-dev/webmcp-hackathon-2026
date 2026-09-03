@@ -41,6 +41,19 @@ interface RegisterOptions {
   compiledProfileDigest?: string
 }
 
+interface SimulationLease {
+  leaseId: string
+  artifactId: string
+  artifactDigest: string
+  manifestId: string
+  targetProfileId: string
+  targetProfileDigest: string
+  recommendationId: string
+  humanDecisionId: string
+  consentId: string
+  receiptId: string
+}
+
 function clone<T>(value: T): T {
   return structuredClone(value)
 }
@@ -103,6 +116,7 @@ export class QcgServices {
   private state: QcgState = initialState()
   private stateRevision = 0
   private mutationTail: Promise<void> = Promise.resolve()
+  private activeSimulation?: SimulationLease
   private readonly artifacts = new Map<string, ArtifactRecord>()
   private readonly reusableKeys = new Set<string>()
   private readonly localValidationDigests = new Set<string>()
@@ -132,8 +146,27 @@ export class QcgServices {
 
   private serializeMutation<T>(operation: () => Promise<T>): Promise<T> {
     const run = this.mutationTail.then(operation)
+    // Only the private queue tail is normalized so one rejection cannot deadlock
+    // later mutations. The returned `run` still rejects for the original caller.
     this.mutationTail = run.then(() => undefined, () => undefined)
     return run
+  }
+
+  private simulationLeaseMatches(lease: SimulationLease): boolean {
+    return Boolean(
+      this.activeSimulation?.leaseId === lease.leaseId &&
+      this.state.activeArtifactId === lease.artifactId &&
+      this.state.manifest?.artifact_id === lease.artifactId &&
+      this.state.manifest.manifest_id === lease.manifestId &&
+      this.state.manifest.artifact_digest === lease.artifactDigest &&
+      this.state.targetProfile?.profile_id === lease.targetProfileId &&
+      this.state.targetProfile.source_digest === lease.targetProfileDigest &&
+      this.state.recommendation?.recommendation_id === lease.recommendationId &&
+      this.state.humanDecision?.human_decision_id === lease.humanDecisionId &&
+      this.state.consent?.consent_id === lease.consentId &&
+      this.state.consent.used === true &&
+      this.state.receipt?.receipt_id === lease.receiptId
+    )
   }
 
   private invocation(
@@ -435,60 +468,70 @@ export class QcgServices {
   }
 
   async evaluate(raw: unknown, source: Invocation['source'] = 'human'): Promise<AgentRecommendation> {
-    const input = evaluateInput.parse(raw)
-    const manifest = this.state.manifest
-    if (!manifest || input.manifest_id !== manifest.manifest_id) throw new Error('manifest_id is unknown or stale.')
-    const record = this.artifacts.get(manifest.artifact_id)
-    if (!record) throw new Error('The artifact source is unavailable in this session.')
-    const targetProfile = await snapshotTargetProfile(input.target_profile_id, this.now())
-    const parametersDigest = await digest(input.parameters)
-    const reuseKey = await this.reuseKey(manifest, targetProfile, input.observable, parametersDigest, input.requested_limits)
-    const policy = this.resolveRecommendation(manifest, targetProfile, reuseKey, input.requested_limits)
-    if (policy.decision === 'simulate_first' && !record.bellFixture) {
-      policy.decision = 'recompile'
-      policy.reason_codes = ['BOUNDED_BELL_FIXTURE_REQUIRED']
-      policy.unknowns = ['The imported program is valid, but the MVP executes only its auditable Bell fixtures.']
-      policy.safer_alternative = 'Adapt the program to the published bounded Q# or OpenQASM Bell fixture, or retain inspection-only evidence.'
-    }
-    const recommendation: AgentRecommendation = {
-      schema_version: 'webmcp-qcg.recommendation.v2',
-      recommendation_id: id('recommendation', `${manifest.artifact_digest}-${this.now()}-${crypto.randomUUID()}`),
-      manifest_id: manifest.manifest_id,
-      target_profile_id: targetProfile.profile_id,
-      scientific_intent: input.scientific_intent,
-      observable: input.observable,
-      parameters_digest: parametersDigest,
-      requested_limits: input.requested_limits,
-      reuse_key: reuseKey,
-      expires_at: new Date(this.now() + RECOMMENDATION_TTL_MS).toISOString(),
-      valid: true,
-      ...policy
-    }
-    const effects: EffectCounters = {
-      ...this.state.effects,
-      evaluations: this.state.effects.evaluations + 1,
-      metadata_validations: this.state.effects.metadata_validations + 1
-    }
-    const receipt = await this.makeReceipt(manifest, targetProfile, recommendation, null, null, effects)
-    this.commit(
-      {
-        phase: 'active',
-        targetProfile,
-        recommendation,
-        humanDecision: undefined,
-        consent: undefined,
-        receipt,
-        effects,
-        error: undefined
-      },
-      {
-        tool: 'evaluate_quantum_call',
-        status: 'completed',
-        summary: `Agent recommendation: ${recommendation.decision}.`,
-        source
+    return this.serializeMutation(async () => {
+      const input = evaluateInput.parse(raw)
+      const manifest = this.state.manifest
+      if (!manifest || input.manifest_id !== manifest.manifest_id) throw new Error('manifest_id is unknown or stale.')
+      const record = this.artifacts.get(manifest.artifact_id)
+      if (!record) throw new Error('The artifact source is unavailable in this session.')
+      const revision = this.stateRevision
+      const targetProfile = await snapshotTargetProfile(input.target_profile_id, this.now())
+      const parametersDigest = await digest(input.parameters)
+      const reuseKey = await this.reuseKey(manifest, targetProfile, input.observable, parametersDigest, input.requested_limits)
+      const policy = this.resolveRecommendation(manifest, targetProfile, reuseKey, input.requested_limits)
+      if (policy.decision === 'simulate_first' && !record.bellFixture) {
+        policy.decision = 'recompile'
+        policy.reason_codes = ['BOUNDED_BELL_FIXTURE_REQUIRED']
+        policy.unknowns = ['The imported program is valid, but the MVP executes only its auditable Bell fixtures.']
+        policy.safer_alternative = 'Adapt the program to the published bounded Q# or OpenQASM Bell fixture, or retain inspection-only evidence.'
       }
-    )
-    return clone(recommendation)
+      const recommendation: AgentRecommendation = {
+        schema_version: 'webmcp-qcg.recommendation.v2',
+        recommendation_id: id('recommendation', `${manifest.artifact_digest}-${this.now()}-${crypto.randomUUID()}`),
+        manifest_id: manifest.manifest_id,
+        target_profile_id: targetProfile.profile_id,
+        scientific_intent: input.scientific_intent,
+        observable: input.observable,
+        parameters_digest: parametersDigest,
+        requested_limits: input.requested_limits,
+        reuse_key: reuseKey,
+        expires_at: new Date(this.now() + RECOMMENDATION_TTL_MS).toISOString(),
+        valid: true,
+        ...policy
+      }
+      const effects: EffectCounters = {
+        ...this.state.effects,
+        evaluations: this.state.effects.evaluations + 1,
+        metadata_validations: this.state.effects.metadata_validations + 1
+      }
+      const receipt = await this.makeReceipt(manifest, targetProfile, recommendation, null, null, effects)
+      if (
+        this.stateRevision !== revision ||
+        this.state.manifest?.manifest_id !== manifest.manifest_id ||
+        this.state.manifest.artifact_id !== manifest.artifact_id
+      ) {
+        throw new Error('The recommendation context changed before evaluation could be committed.')
+      }
+      this.commit(
+        {
+          phase: 'active',
+          targetProfile,
+          recommendation,
+          humanDecision: undefined,
+          consent: undefined,
+          receipt,
+          effects,
+          error: undefined
+        },
+        {
+          tool: 'evaluate_quantum_call',
+          status: 'completed',
+          summary: `Agent recommendation: ${recommendation.decision}.`,
+          source
+        }
+      )
+      return clone(recommendation)
+    })
   }
 
   private recommendationValid(): boolean {
@@ -596,22 +639,42 @@ export class QcgServices {
 
   async simulate(raw: unknown, signal: AbortSignal, source: Invocation['source'] = 'human'): Promise<EvidenceReceipt> {
     const input = simulationInput.parse(raw)
+    if (this.activeSimulation) throw new Error('The bounded local simulation is already running.')
     const recommendation = this.state.recommendation
-    const record = this.state.manifest ? this.artifacts.get(this.state.manifest.artifact_id) : undefined
+    const manifest = this.state.manifest
+    const targetProfile = this.state.targetProfile
+    const humanDecision = this.state.humanDecision
+    const consent = this.state.consent
+    const receipt = this.state.receipt
+    const record = manifest ? this.artifacts.get(manifest.artifact_id) : undefined
     if (!recommendation || input.recommendation_id !== recommendation.recommendation_id || !this.recommendationValid()) {
       throw new Error('recommendation_id is unknown or expired.')
     }
     if (
       recommendation.decision !== 'simulate_first' ||
-      this.state.humanDecision?.choice !== 'accepted' ||
+      humanDecision?.choice !== 'accepted' ||
       !this.consentValid(input)
     ) {
       throw new Error('A valid simulate_first recommendation and unused human consent are required.')
     }
+    if (!manifest || !targetProfile || !consent || !receipt) throw new Error('The bounded simulation evidence context is unavailable.')
     if (!record?.bellFixture) throw new Error('The bounded Bell fixture is unavailable.')
 
     const effects = { ...this.state.effects, local_simulations: this.state.effects.local_simulations + 1 }
-    this.state = { ...this.state, effects, consent: { ...this.state.consent!, used: true } }
+    const lease: SimulationLease = {
+      leaseId: crypto.randomUUID(),
+      artifactId: manifest.artifact_id,
+      artifactDigest: manifest.artifact_digest,
+      manifestId: manifest.manifest_id,
+      targetProfileId: targetProfile.profile_id,
+      targetProfileDigest: targetProfile.source_digest,
+      recommendationId: recommendation.recommendation_id,
+      humanDecisionId: humanDecision.human_decision_id,
+      consentId: consent.consent_id,
+      receiptId: receipt.receipt_id
+    }
+    this.activeSimulation = lease
+    this.state = { ...this.state, effects, consent: { ...consent, used: true } }
     this.stateRevision += 1
     try {
       if (!record.adapter.executable || (record.manifest.format !== 'qsharp' && record.manifest.format !== 'openqasm3')) {
@@ -620,53 +683,77 @@ export class QcgServices {
       const result = await this.simulator.run(signal, recommendation.requested_limits, record.source, record.manifest.format)
       const integrityError = simulationIntegrityError(result, recommendation.requested_limits.shots)
       if (integrityError) throw new Error(`Local QDK simulation evidence rejected: ${integrityError}`)
-      const simulation: SimulationEvidence = {
-        run_id: id('run', `${recommendation.recommendation_id}-${this.now()}-${crypto.randomUUID()}`),
-        bell_invariant: result.bellInvariant,
-        shots_requested: result.shotsRequested,
-        shots_returned: result.shotsReturned,
-        outcome_counts: result.outcomeCounts,
-        completed_at: new Date(this.now()).toISOString()
-      }
-      this.localValidationDigests.add(record.manifest.artifact_digest)
-      this.reusableKeys.add(recommendation.reuse_key)
-      const receipt = await this.makeReceipt(
-        record.manifest,
-        this.state.targetProfile!,
-        recommendation,
-        this.state.humanDecision!,
-        simulation,
-        effects,
-        this.state.receipt
-      )
-      this.commit(
-        { phase: 'active', receipt, effects, error: undefined },
-        {
-          tool: 'run_bounded_local_simulation',
-          status: 'completed',
-          summary: `Bounded local Bell simulation completed; invariant=${result.bellInvariant}.`,
-          source
+      return await this.serializeMutation(async () => {
+        if (!this.simulationLeaseMatches(lease)) {
+          throw new Error('The bounded simulation context changed before completion. The stale result was discarded.')
         }
-      )
-      return clone(receipt)
+        const simulation: SimulationEvidence = {
+          run_id: id('run', `${recommendation.recommendation_id}-${this.now()}-${crypto.randomUUID()}`),
+          bell_invariant: result.bellInvariant,
+          shots_requested: result.shotsRequested,
+          shots_returned: result.shotsReturned,
+          outcome_counts: result.outcomeCounts,
+          completed_at: new Date(this.now()).toISOString()
+        }
+        const currentEffects = this.state.effects
+        const currentReceipt = this.state.receipt
+        const completedReceipt = await this.makeReceipt(
+          manifest,
+          targetProfile,
+          recommendation,
+          humanDecision,
+          simulation,
+          currentEffects,
+          currentReceipt
+        )
+        if (!this.simulationLeaseMatches(lease)) {
+          throw new Error('The bounded simulation context changed before completion. The stale result was discarded.')
+        }
+        this.localValidationDigests.add(manifest.artifact_digest)
+        this.reusableKeys.add(recommendation.reuse_key)
+        this.commit(
+          { phase: 'active', receipt: completedReceipt, effects: currentEffects, error: undefined },
+          {
+            tool: 'run_bounded_local_simulation',
+            status: 'completed',
+            summary: `Bounded local Bell simulation completed; invariant=${result.bellInvariant}.`,
+            source
+          }
+        )
+        return clone(completedReceipt)
+      })
     } catch (error) {
+      if (!this.simulationLeaseMatches(lease)) {
+        throw new Error('The bounded simulation context changed before completion. The stale result was discarded.')
+      }
       const cancelled = error instanceof DOMException && error.name === 'AbortError'
-      this.commit(
-        {
-          phase: cancelled ? 'cancelled' : 'error',
-          effects,
-          error: cancelled
-            ? 'Local simulation was cancelled. Consent was consumed.'
-            : 'Local QDK simulation failed safely. Consent was consumed and no provider call occurred.'
-        },
-        {
-          tool: 'run_bounded_local_simulation',
-          status: cancelled ? 'cancelled' : 'error',
-          summary: cancelled ? 'Bounded simulation cancelled.' : 'Bounded simulation failed safely.',
-          source
-        }
-      )
+      let failureRecorded = false
+      await this.serializeMutation(async () => {
+        if (!this.simulationLeaseMatches(lease)) return
+        const currentEffects = this.state.effects
+        this.commit(
+          {
+            phase: cancelled ? 'cancelled' : 'error',
+            effects: currentEffects,
+            error: cancelled
+              ? 'Local simulation was cancelled. Consent was consumed.'
+              : 'Local QDK simulation failed safely. Consent was consumed and no provider call occurred.'
+          },
+          {
+            tool: 'run_bounded_local_simulation',
+            status: cancelled ? 'cancelled' : 'error',
+            summary: cancelled ? 'Bounded simulation cancelled.' : 'Bounded simulation failed safely.',
+            source
+          }
+        )
+        failureRecorded = true
+      })
+      if (!failureRecorded) {
+        throw new Error('The bounded simulation context changed before completion. The stale result was discarded.')
+      }
       throw error
+    } finally {
+      if (this.activeSimulation?.leaseId === lease.leaseId) this.activeSimulation = undefined
     }
   }
 

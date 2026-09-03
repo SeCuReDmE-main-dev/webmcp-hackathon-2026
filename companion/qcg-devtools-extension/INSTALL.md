@@ -1,4 +1,4 @@
-# Install QCG Console Companion 0.2.4
+# Install QCG Console Companion 0.2.5
 
 QCG works without this optional extension. Install Companion only when you want
 the synchronized Chrome side panel and the QCG panel in DevTools.

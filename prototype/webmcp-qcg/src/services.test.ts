@@ -36,6 +36,29 @@ class FakeSimulator implements Simulator {
   }
 }
 
+function blockingSimulator(): { simulator: Simulator; started: Promise<void>; release: () => void } {
+  let markStarted: () => void = () => undefined
+  let releaseWorker: () => void = () => undefined
+  const started = new Promise<void>((resolve) => { markStarted = resolve })
+  const released = new Promise<void>((resolve) => { releaseWorker = resolve })
+  return {
+    simulator: {
+      run: async (_signal, limits) => {
+        markStarted()
+        await released
+        return {
+          bellInvariant: true,
+          shotsRequested: limits.shots,
+          shotsReturned: limits.shots,
+          outcomeCounts: { '[Zero, Zero]': limits.shots }
+        }
+      }
+    },
+    started,
+    release: releaseWorker
+  }
+}
+
 async function evaluated(
   services: QcgServices,
   cardId = 'simulate-first'
@@ -385,6 +408,61 @@ describe('QCG v2 service contract', () => {
     expect(qcg.snapshot().invocations.filter((event) => event.summary.startsWith('Human choice recorded:'))).toHaveLength(1)
   })
 
+  it('serializes concurrent evaluations without losing effect counters', async () => {
+    const qcg = services()
+    const { manifest, card } = await qcg.loadDemoArtifact('simulate-first')
+    const inspected = await qcg.inspect({ artifact_id: manifest.artifact_id })
+    const input = {
+      manifest_id: inspected.manifest_id,
+      target_profile_id: card.profileId,
+      scientific_intent: card.scientificIntent,
+      observable: card.observable,
+      parameters: {},
+      requested_limits: card.requestedLimits
+    }
+    const [first, second] = await Promise.all([qcg.evaluate(input, 'human'), qcg.evaluate(input, 'webmcp')])
+    expect(first.recommendation_id).not.toBe(second.recommendation_id)
+    expect(qcg.snapshot()).toMatchObject({
+      recommendation: { recommendation_id: second.recommendation_id },
+      effects: { evaluations: 2, metadata_validations: 2 }
+    })
+  })
+
+  it('does not commit an evaluation after its manifest context is reset', async () => {
+    const qcg = services()
+    const { manifest, card } = await qcg.loadDemoArtifact('simulate-first')
+    const inspected = await qcg.inspect({ artifact_id: manifest.artifact_id })
+    const originalDigest = crypto.subtle.digest.bind(crypto.subtle)
+    let releaseDigest: () => void = () => undefined
+    let markStarted: () => void = () => undefined
+    const digestBlocked = new Promise<void>((resolve) => { releaseDigest = resolve })
+    const digestStarted = new Promise<void>((resolve) => { markStarted = resolve })
+    const digestSpy = vi.spyOn(crypto.subtle, 'digest').mockImplementationOnce(async (algorithm, data) => {
+      markStarted()
+      await digestBlocked
+      return originalDigest(algorithm, data)
+    })
+    try {
+      const pending = qcg.evaluate({
+        manifest_id: inspected.manifest_id,
+        target_profile_id: card.profileId,
+        scientific_intent: card.scientificIntent,
+        observable: card.observable,
+        parameters: {},
+        requested_limits: card.requestedLimits
+      })
+      await digestStarted
+      qcg.reset()
+      releaseDigest()
+      await expect(pending).rejects.toThrow('recommendation context changed')
+      expect(qcg.snapshot()).toMatchObject({ phase: 'empty', authority_state: 'ready' })
+      expect(qcg.snapshot().recommendation).toBeUndefined()
+    } finally {
+      releaseDigest()
+      digestSpy.mockRestore()
+    }
+  })
+
   it('does not attach an old decision or consent when state changes during receipt generation', async () => {
     const qcg = services()
     const { recommendation } = await evaluated(qcg)
@@ -462,10 +540,96 @@ describe('QCG v2 service contract', () => {
     const first = qcg.simulate({ recommendation_id: recommendation.recommendation_id }, new AbortController().signal)
     await workerStarted
     const second = qcg.simulate({ recommendation_id: recommendation.recommendation_id }, new AbortController().signal)
-    await expect(second).rejects.toThrow('unused human consent')
+    await expect(second).rejects.toThrow('already running')
     completeWorker!()
     await expect(first).resolves.toMatchObject({ simulation: { bell_invariant: true } })
     expect(qcg.snapshot().effects.local_simulations).toBe(1)
+  })
+
+  it('discards a completed Worker result when a new evaluation replaces its recommendation', async () => {
+    const blocked = blockingSimulator()
+    const qcg = new QcgServices(blocked.simulator, Date.now, new FakeAnalyzer())
+    const { manifest, card, recommendation } = await evaluated(qcg)
+    await qcg.decide({ recommendation_id: recommendation.recommendation_id, choice: 'accepted', justification: 'I approve one bounded local simulation.' })
+    const pending = qcg.simulate({ recommendation_id: recommendation.recommendation_id }, new AbortController().signal)
+    await blocked.started
+    const replacement = await qcg.evaluate({
+      manifest_id: manifest.manifest_id,
+      target_profile_id: card.profileId,
+      scientific_intent: card.scientificIntent,
+      observable: card.observable,
+      parameters: {},
+      requested_limits: card.requestedLimits
+    })
+    blocked.release()
+    await expect(pending).rejects.toThrow('stale result was discarded')
+    expect(qcg.snapshot()).toMatchObject({
+      recommendation: { recommendation_id: replacement.recommendation_id },
+      receipt: { simulation: null },
+      effects: { local_simulations: 1 }
+    })
+    const followUp = await qcg.evaluate({
+      manifest_id: manifest.manifest_id,
+      target_profile_id: card.profileId,
+      scientific_intent: card.scientificIntent,
+      observable: card.observable,
+      parameters: {},
+      requested_limits: card.requestedLimits
+    })
+    expect(followUp.decision).toBe('simulate_first')
+  })
+
+  it('discards a completed Worker result when a new artifact replaces its lease', async () => {
+    const blocked = blockingSimulator()
+    const qcg = new QcgServices(blocked.simulator, Date.now, new FakeAnalyzer())
+    const { manifest, card, recommendation } = await evaluated(qcg)
+    await qcg.decide({ recommendation_id: recommendation.recommendation_id, choice: 'accepted', justification: 'I approve one bounded local simulation.' })
+    const pending = qcg.simulate({ recommendation_id: recommendation.recommendation_id }, new AbortController().signal)
+    await blocked.started
+    const replacement = await qcg.loadDemoArtifact('reject-incompatible')
+    blocked.release()
+    await expect(pending).rejects.toThrow('stale result was discarded')
+    expect(qcg.snapshot()).toMatchObject({ manifest: { manifest_id: replacement.manifest.manifest_id } })
+    expect(qcg.snapshot().receipt).toBeUndefined()
+
+    await qcg.inspect({ artifact_id: manifest.artifact_id })
+    const followUp = await qcg.evaluate({
+      manifest_id: manifest.manifest_id,
+      target_profile_id: card.profileId,
+      scientific_intent: card.scientificIntent,
+      observable: card.observable,
+      parameters: {},
+      requested_limits: card.requestedLimits
+    })
+    expect(followUp.decision).toBe('simulate_first')
+  })
+
+  it('discards a completed Worker result after reset without rebuilding state', async () => {
+    const blocked = blockingSimulator()
+    const qcg = new QcgServices(blocked.simulator, Date.now, new FakeAnalyzer())
+    const { recommendation } = await evaluated(qcg)
+    await qcg.decide({ recommendation_id: recommendation.recommendation_id, choice: 'accepted', justification: 'I approve one bounded local simulation.' })
+    const pending = qcg.simulate({ recommendation_id: recommendation.recommendation_id }, new AbortController().signal)
+    await blocked.started
+    qcg.reset()
+    blocked.release()
+    await expect(pending).rejects.toThrow('stale result was discarded')
+    expect(qcg.snapshot()).toMatchObject({ phase: 'empty', authority_state: 'ready' })
+    expect(qcg.snapshot().receipt).toBeUndefined()
+  })
+
+  it('preserves export counters committed while a bounded Worker is running', async () => {
+    const blocked = blockingSimulator()
+    const qcg = new QcgServices(blocked.simulator, Date.now, new FakeAnalyzer())
+    const { recommendation } = await evaluated(qcg)
+    await qcg.decide({ recommendation_id: recommendation.recommendation_id, choice: 'accepted', justification: 'I approve one bounded local simulation.' })
+    const pending = qcg.simulate({ recommendation_id: recommendation.recommendation_id }, new AbortController().signal)
+    await blocked.started
+    await qcg.exportPacket({ receipt_id: qcg.snapshot().receipt!.receipt_id, format: 'json' })
+    blocked.release()
+    const completed = await pending
+    expect(completed.effects).toMatchObject({ local_simulations: 1, evidence_exports: 1 })
+    expect(qcg.snapshot().effects).toMatchObject({ local_simulations: 1, evidence_exports: 1 })
   })
 
   it.each([

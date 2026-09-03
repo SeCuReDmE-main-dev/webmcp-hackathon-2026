@@ -1,7 +1,7 @@
 {
   "name": "qcg-devtools-extension",
   "private": true,
-  "version": "0.2.4",
+  "version": "0.2.5",
   "type": "module",
   "scripts": {
     "test": "node ./validate.mjs && node ./openCompanion.test.mjs && node ./snapshotLifecycle.test.mjs && node ./lightTheme.test.mjs && node ./packageParity.test.mjs",

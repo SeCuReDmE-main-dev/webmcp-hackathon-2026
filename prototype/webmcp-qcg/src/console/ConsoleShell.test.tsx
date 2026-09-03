@@ -60,7 +60,7 @@ describe('QCG console shell', () => {
     const onClose = vi.fn()
     render(<ConsoleShell {...baseProps} companionSetupOpen onCloseCompanionSetup={onClose} onViewChange={vi.fn()} inspector={() => <p>State inspector</p>}><h1>Inspector</h1></ConsoleShell>)
     const dialog = screen.getByRole('dialog', { name: 'Install QCG Companion' })
-    expect(within(dialog).getByRole('link', { name: /Download Companion 0.2.4/ }).getAttribute('href')).toBe('/qcg-console-companion-0.2.4.zip')
+    expect(within(dialog).getByRole('link', { name: /Download Companion 0.2.5/ }).getAttribute('href')).toBe('/qcg-console-companion-0.2.5.zip')
     expect(within(dialog).getAllByRole('listitem')).toHaveLength(3)
     const retry = within(dialog).getByRole('button', { name: 'Retry connection' })
     expect(retry.getAttribute('data-qcg-open-companion')).toBe(baseProps.companionTriggerId)
@@ -72,7 +72,7 @@ describe('QCG console shell', () => {
   it('offers the localhost-enabled Companion package in development mode', () => {
     render(<ConsoleShell {...baseProps} companionSetupMode="development" companionSetupOpen onViewChange={vi.fn()} inspector={() => <p>State inspector</p>}><h1>Inspector</h1></ConsoleShell>)
     const dialog = screen.getByRole('dialog', { name: 'Install QCG Companion' })
-    expect(within(dialog).getByRole('link', { name: /Download Companion 0.2.4/ }).getAttribute('href')).toBe('/qcg-console-companion-dev-0.2.4.zip')
+    expect(within(dialog).getByRole('link', { name: /Download Companion 0.2.5/ }).getAttribute('href')).toBe('/qcg-console-companion-dev-0.2.5.zip')
     expect(within(dialog).getByText('Development · localhost and qcg.securedme.ca')).toBeTruthy()
   })
 

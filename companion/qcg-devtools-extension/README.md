@@ -1,6 +1,6 @@
 # QCG Console Companion
 
-Current package: **0.2.4**
+Current package: **0.2.5**
 
 This Manifest V3 extension provides two views of the same bounded QCG console:
 

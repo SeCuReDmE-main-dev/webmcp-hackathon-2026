@@ -28,15 +28,40 @@ assert(development.host_permissions.includes('http://localhost:5173/*') && devel
 
 const background = read('background.js')
 const pageBridge = read('pageBridge.js')
+const contentBridge = read('contentBridge.js')
 const panel = read('panel.js')
 const panelHtml = read('panel.html')
-for (const kind of ['human_review_disposition', 'human_memory_disposition', 'human_message', 'human_decision', 'gemini_manual_handoff_create', 'gemini_manual_reply_preview', 'gemini_manual_reply_import']) {
-  assert(background.includes(`'${kind}'`) && pageBridge.includes(`'${kind}'`) && panel.includes(`'${kind}'`), `command ${kind} must be allowlisted end-to-end`)
+const validCommandBody = (source, surface) => {
+  const start = source.indexOf('function validCommand(value) {')
+  const end = source.indexOf('\n}', start)
+  assert(start >= 0 && end > start, `${surface}: validCommand body must remain statically inspectable`)
+  return source.slice(start, end)
 }
-for (const forbidden of ['run_bounded_local_simulation', 'consent', 'provider_calls', 'qpu_submission']) {
+const validators = [
+  ['background', validCommandBody(background, 'background')],
+  ['isolated', validCommandBody(contentBridge, 'isolated')],
+  ['MAIN', validCommandBody(pageBridge, 'MAIN')],
+]
+const commandKinds = ['human_decision', 'human_review_disposition', 'human_memory_disposition', 'human_message', 'human_override_note', 'gemini_manual_handoff_create', 'gemini_manual_reply_preview', 'gemini_manual_reply_import', 'export_debug_handoff']
+for (const kind of commandKinds) {
+  for (const [surface, validator] of validators) assert(validator.includes(`'${kind}'`), `${surface}: validCommand must allowlist ${kind}`)
+}
+for (const [surface, validator] of validators) assert(validator.includes('validString(value.raw, 1600)'), `${surface}: manual Gemini replies must remain bounded to 1600 characters`)
+for (const kind of ['human_review_disposition', 'human_memory_disposition', 'human_message', 'human_decision', 'gemini_manual_handoff_create', 'gemini_manual_reply_preview', 'gemini_manual_reply_import']) {
+  assert(panel.includes(`'${kind}'`), `interactive panel command ${kind} must remain wired to an explicit human action`)
+}
+for (const forbidden of ['inspect_quantum_experiment', 'evaluate_quantum_call', 'run_bounded_local_simulation', 'export_quantum_evidence_report']) {
+  for (const [surface, source] of [['background', background], ['isolated', contentBridge], ['MAIN', pageBridge], ['panel', panel]]) {
+    assert(!source.includes(`'${forbidden}'`), `${surface} must not expose quantum command ${forbidden}`)
+  }
+}
+for (const forbidden of ['consent', 'provider_calls', 'qpu_submission']) {
   assert(!background.includes(forbidden), `broker must not expose ${forbidden}`)
 }
 assert(pageBridge.includes('__QCG_CONSOLE_V2__') && pageBridge.includes('executeConsoleCommand') && pageBridge.includes('queueHumanReviewDisposition'), 'bridge must prefer v2 and retain collaboration-only v1 fallback')
+const v1Fallback = pageBridge.slice(pageBridge.indexOf('async function execute(command)'), pageBridge.indexOf('function safeSnapshot()'))
+assert(v1Fallback.includes("command.kind === 'human_override_note'") && v1Fallback.includes('queued?.accepted'), 'v1 fallback must preserve human override-note rejection and acceptance')
+assert(v1Fallback.includes("command.kind === 'export_debug_handoff'") && v1Fallback.includes('requires the QCG Console v2 bridge'), 'v1 fallback must reject handoff export with an explicit v2 requirement')
 assert(background.includes("value.schema_version !== 'qcg-console-command.v1'") && background.includes("value.kind === 'human_decision'"), 'commands require the v1 console schema and human decisions')
 assert(panel.includes("kind: 'human_decision'") && panel.includes("available_commands"), 'human decisions must be explicit UI actions gated by v2 availability')
 assert(panel.includes("qcg-console-devtools.v1") && panel.includes("qcg-console-side-panel.v1"), 'DevTools and side panel must share the console transport')
@@ -44,10 +69,17 @@ assert(!panelHtml.includes('id="open-companion"') && panelHtml.includes('id="acc
 assert(panelHtml.includes('icons/inspector-q-avatar.jpg') && panelHtml.includes('Inspector Q observes bounded state; human authority remains explicit.'), 'Inspector Q must remain a decorative bounded-state observer, never an authority claim')
 assert(read('devtools.js').includes("'icons/qcg-32.png'"), 'the F12 panel must use the final QCG identity icon')
 assert(panel.includes('qcg-companion-access-v1') && panel.includes('applyAccessibility') && panel.includes('toggleAccess'), 'Companion access preferences must be local, persistent and keyboard-dismissible')
+assert(panel.includes('function requiredElement(selector)') && panel.includes('QCG Companion initialization failed: required element'), 'panel DOM dependencies must fail with a precise initialization error')
+const allPanelIds = [...panelHtml.matchAll(/\bid=["']([^"']+)["']/g)].map((match) => match[1])
+assert(new Set(allPanelIds).size === allPanelIds.length, 'panel.html IDs must be unique')
+const referencedPanelIds = [...panel.matchAll(/\$\(\s*(["'])#([^"']+)\1\s*\)/g)].map((match) => match[2])
+for (const id of new Set(referencedPanelIds)) {
+  const matches = panelHtml.match(new RegExp(`id=["']${id}["']`, 'g')) ?? []
+  assert(matches.length === 1, `panel selector #${id} must resolve to exactly one panel.html element`)
+}
 for (const profile of ['base', 'autism-calm', 'adhd-sprint', 'deep-work']) assert(panelHtml.includes(`data-access-profile="${profile}"`) && panel.includes(`'${profile}'`), `Companion Access must retain the SecuredMe ${profile} reading profile`)
 assert(read('panel.css').includes('--control-edge') && read('panel.css').includes('button:hover { border-color: var(--cyan); }'), 'every Companion button needs a persistent warm edge that changes to cyan on hover')
 assert(!panel.includes('inspectedWindow.eval') && panel.includes('QcgSnapshotSanitizer'), 'DevTools must consume the same sanitized broker snapshot as the side panel')
-const contentBridge = read('contentBridge.js')
 assert(manifest.content_scripts[1].js[0] === 'snapshotSanitizer.js' && development.content_scripts[1].js[0] === 'snapshotSanitizer.js', 'isolated content transport must load the strict snapshot sanitizer first')
 assert(read('panel.html').includes('snapshotSanitizer.js'), 'the shared panel must sanitize every broker snapshot before rendering or copying')
 assert(background.includes("importScripts('snapshotSanitizer.js')"), 'the background broker must sanitize before caching or routing')

@@ -22,13 +22,13 @@ const compactConsoleQuery = '(max-width: 1100px)'
 const isCompactConsole = (): boolean => typeof window !== 'undefined' && typeof window.matchMedia === 'function' && window.matchMedia(compactConsoleQuery).matches
 const companionPackages = {
   production: {
-    href: '/qcg-console-companion-0.2.4.zip',
-    sha256: '4C61E0DE64D8D00299CED83D2D798AE9EAC90AC8F5EDE6D6C1510A9231AC6055',
+    href: '/qcg-console-companion-0.2.5.zip',
+    sha256: 'AFE69B2D1D05B62BE38226E7A3B4120069CB0F7428FD6EABB977824869C9B5E3',
     label: 'Production · qcg.securedme.ca',
   },
   development: {
-    href: '/qcg-console-companion-dev-0.2.4.zip',
-    sha256: '6E0B543BAF9EB0BDCB20ABF1CC4DDD6B9F0AF3A58741C40880579F37F4FA3D75',
+    href: '/qcg-console-companion-dev-0.2.5.zip',
+    sha256: 'B4A19BB2B47D6F6630FF5827543615EED8D6B107FB8EBA773B7CB27D511B2864',
     label: 'Development · localhost and qcg.securedme.ca',
   },
 } as const
@@ -162,7 +162,7 @@ export function ConsoleShell({ theme, onThemeChange, view, onViewChange, childre
         <div className="companion-setup-heading"><div><span>Optional browser surface</span><h2 id="qcg-companion-setup-title" ref={companionSetupHeading} tabIndex={-1}>Install QCG Companion</h2></div><button aria-label="Close Companion setup" onClick={onCloseCompanionSetup}>Close</button></div>
         <p>QCG already works in this page. Companion adds the synchronized Chrome side panel and the QCG panel in F12.</p>
         <ol>
-          <li><b>Download and extract</b><a className="companion-download" href={companionPackage.href} download>Download Companion 0.2.4 · 73 KB</a><small>{companionPackage.label}</small><small>SHA-256 <code>{companionPackage.sha256}</code></small></li>
+          <li><b>Download and extract</b><a className="companion-download" href={companionPackage.href} download>Download Companion 0.2.5</a><small>{companionPackage.label}</small><small>SHA-256 <code>{companionPackage.sha256}</code></small></li>
           <li><b>Load it once in Chrome</b><div className="extension-address"><code>chrome://extensions</code><button onClick={() => void copyExtensionAddress()}>Copy address</button></div><small>Open that address, enable Developer mode, select Load unpacked, then choose the extracted folder containing <code>manifest.json</code>.</small>{extensionAddressStatus && <output aria-live="polite">{extensionAddressStatus}</output>}</li>
           <li><b>Reconnect QCG</b><small>Return here, reload the page, then retry. Open F12 and select QCG when you want the DevTools surface.</small></li>
         </ol>

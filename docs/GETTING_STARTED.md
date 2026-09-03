@@ -135,7 +135,7 @@ selection is retained locally without changing the DOM, tool contracts,
 decision state or evidence. Autumn, Winter, Spring and Summer describe the
 editorial history in the README and article series; they are not runtime themes.
 
-## 8. Load the optional QCG Console Companion 0.2.4
+## 8. Load the optional QCG Console Companion 0.2.5
 
 This is a manual local-development step:
 

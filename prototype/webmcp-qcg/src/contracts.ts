@@ -127,7 +127,7 @@ export const exportOutput = z.object({
   format: z.enum(['json', 'markdown']),
   digest: sha256,
   summary: z.string().max(220),
-  content: z.string().max(6000)
+  content: z.string().max(12000)
 }).strict()
 
 export type InspectInput = z.infer<typeof inspectInput>

@@ -28,9 +28,16 @@ async function execute(command) {
   if (command.kind === 'human_review_disposition') return target.queueHumanReviewDisposition(command.event_id, command.disposition)
   if (command.kind === 'human_memory_disposition') return target.queueHumanMemory(command.event_id, command.disposition, command.content)
   if (command.kind === 'human_message') return target.queueHumanMessage({ summary: command.summary })
+  if (command.kind === 'human_override_note') {
+    const queued = target.queueHumanMessage({ summary: `Override note: ${command.justification}` })
+    return queued?.accepted
+      ? { accepted: true, message: 'Human override note queued through the collaboration-only v1 bridge.' }
+      : queued
+  }
   if (command.kind === 'gemini_manual_handoff_create') return { accepted: true, handoff: target.createGeminiManualHandoff({ intent: command.intent, prompt: command.prompt }) }
   if (command.kind === 'gemini_manual_reply_preview') return target.previewGeminiManualReply(command.raw)
   if (command.kind === 'gemini_manual_reply_import') return target.queueGeminiManualReply(command.raw)
+  if (command.kind === 'export_debug_handoff') return { accepted: false, error: 'Sanitized debug handoff export requires the QCG Console v2 bridge.' }
   return { accepted: false, error: 'Unsupported companion command.' }
 }
 
@@ -70,7 +77,9 @@ function validCommand(value) {
   if (value.kind === 'human_memory_disposition') return validUuid(value.event_id) && ['remember', 'forget'].includes(value.disposition) && (value.disposition === 'forget' || validString(value.content, 400))
   if (value.kind === 'human_message') return validString(value.summary, 500)
   if (value.kind === 'human_decision') return validIdentifier(value.recommendation_id) && ['accepted', 'deferred', 'overridden'].includes(value.choice) && (value.choice !== 'overridden' || (validString(value.justification, 500) && value.justification.trim().length >= 12))
+  if (value.kind === 'human_override_note') return validString(value.justification, 500) && value.justification.trim().length >= 12
   if (value.kind === 'gemini_manual_handoff_create') return ['debug', 'search', 'find', 'brainstorm', 'decision'].includes(value.intent) && validString(value.prompt, 500)
   if (value.kind === 'gemini_manual_reply_preview' || value.kind === 'gemini_manual_reply_import') return validString(value.raw, 1600)
+  if (value.kind === 'export_debug_handoff') return true
   return false
 }

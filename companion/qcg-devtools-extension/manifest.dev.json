@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "QCG Console Companion (development)",
-  "version": "0.2.4",
+  "version": "0.2.5",
   "description": "Development companion for local WebMCP-QCG only.",
   "minimum_chrome_version": "142",
   "icons": { "16": "icons/qcg-16.png", "32": "icons/qcg-32.png", "48": "icons/qcg-48.png", "128": "icons/qcg-128.png" },

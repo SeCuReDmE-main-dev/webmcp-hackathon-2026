@@ -86,9 +86,22 @@ const schemas: Record<ToolName, JsonSchema> = {
   }
 }
 
-function bounded<T extends object>(value: T): T {
-  if (JSON.stringify(value).length <= 5000) return value
-  return { summary: 'The result exceeds the WebMCP response budget. Review the visible QCG receipt.' } as T
+export const WEBMCP_RESPONSE_BUDGET_BYTES = 5_000 as const
+
+export interface WebMcpBudgetNotice {
+  truncated: true
+  summary: string
+  budget_bytes: typeof WEBMCP_RESPONSE_BUDGET_BYTES
+}
+
+export function boundedWebMcpResponse<T extends object>(value: T): T | WebMcpBudgetNotice {
+  const byteLength = new TextEncoder().encode(JSON.stringify(value)).byteLength
+  if (byteLength <= WEBMCP_RESPONSE_BUDGET_BYTES) return value
+  return {
+    truncated: true,
+    summary: 'The result exceeds the WebMCP response budget. Review the visible QCG receipt.',
+    budget_bytes: WEBMCP_RESPONSE_BUDGET_BYTES
+  }
 }
 
 function failure(error: unknown): never {
@@ -145,7 +158,7 @@ export function useQcgWebMcp(
         try {
           const output = await services.inspect(inspectInput.parse(input), 'webmcp')
           onChange()
-          return bounded(manifestOutput.parse(output))
+          return boundedWebMcpResponse(manifestOutput.parse(output))
         } catch (error) { return failure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
       }
     },
@@ -158,7 +171,7 @@ export function useQcgWebMcp(
         try {
           const output = await services.evaluate(evaluateInput.parse(input), 'webmcp')
           onChange()
-          return bounded(recommendationOutput.parse(output))
+          return boundedWebMcpResponse(recommendationOutput.parse(output))
         } catch (error) { return failure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
       }
     },
@@ -172,7 +185,7 @@ export function useQcgWebMcp(
           const receipt = await services.simulate(simulationInput.parse(input), executionSignal(options), 'webmcp')
           onChange()
           const simulation = receipt.simulation!
-          return bounded(simulationOutput.parse({
+          return boundedWebMcpResponse(simulationOutput.parse({
             receipt_id: receipt.receipt_id, run_id: simulation.run_id, bell_invariant: simulation.bell_invariant,
             shots_requested: simulation.shots_requested, shots_returned: simulation.shots_returned,
             outcome_counts: simulation.outcome_counts, effects: receipt.effects, digest: receipt.digest,
@@ -190,7 +203,7 @@ export function useQcgWebMcp(
         try {
           const output = await services.exportPacket(exportInput.parse(input), 'webmcp')
           onChange()
-          return bounded(exportOutput.parse(output))
+          return boundedWebMcpResponse(exportOutput.parse(output))
         } catch (error) { return failure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
       }
     }

@@ -1,4 +1,9 @@
-const $ = (selector) => document.querySelector(selector)
+function requiredElement(selector) {
+  const element = document.querySelector(selector)
+  if (!element) throw new Error(`QCG Companion initialization failed: required element ${selector} is missing.`)
+  return element
+}
+const $ = requiredElement
 const query = new URLSearchParams(location.search)
 const isDevtools = query.get('surface') === 'devtools' && Boolean(chrome.devtools?.inspectedWindow)
 const surface = isDevtools ? 'DEVTOOLS PANEL' : query.get('surface') === 'companion-tab' ? 'COMPANION TAB' : 'SIDE PANEL'

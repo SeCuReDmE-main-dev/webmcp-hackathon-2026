@@ -1,8 +1,9 @@
 import { act, render, screen, waitFor } from '@testing-library/react'
 import { describe, expect, it, vi } from 'vitest'
 import { useCallback, useState } from 'react'
+import { exportOutput } from './contracts'
 import { QcgServices, type ArtifactAnalyzer, type Simulator } from './services'
-import { useQcgWebMcp } from './webmcp'
+import { boundedWebMcpResponse, useQcgWebMcp, WEBMCP_RESPONSE_BUDGET_BYTES } from './webmcp'
 import type { QcgState, ToolName } from './types'
 
 const analyzer: ArtifactAnalyzer = {
@@ -58,6 +59,40 @@ async function prepareConsentedSimulation(services: QcgServices) {
 }
 
 describe('WebMCP v2 lifecycle', () => {
+  it('measures the 5000-byte response budget in UTF-8 for accents and emoji', () => {
+    const accentWithin = { content: 'é'.repeat(2493) }
+    const accentOver = { content: 'é'.repeat(2494) }
+    const emojiWithin = { content: '🙂'.repeat(1246) }
+    const emojiOver = { content: '🙂'.repeat(1247) }
+    const bytes = (value: object) => new TextEncoder().encode(JSON.stringify(value)).byteLength
+
+    expect(bytes(accentWithin)).toBeLessThanOrEqual(WEBMCP_RESPONSE_BUDGET_BYTES)
+    expect(bytes(accentOver)).toBeGreaterThan(WEBMCP_RESPONSE_BUDGET_BYTES)
+    expect(bytes(emojiWithin)).toBeLessThanOrEqual(WEBMCP_RESPONSE_BUDGET_BYTES)
+    expect(bytes(emojiOver)).toBeGreaterThan(WEBMCP_RESPONSE_BUDGET_BYTES)
+    expect(boundedWebMcpResponse(accentWithin)).toBe(accentWithin)
+    expect(boundedWebMcpResponse(emojiWithin)).toBe(emojiWithin)
+    expect(boundedWebMcpResponse(accentOver)).toEqual({
+      truncated: true,
+      summary: 'The result exceeds the WebMCP response budget. Review the visible QCG receipt.',
+      budget_bytes: 5000
+    })
+    expect(boundedWebMcpResponse(emojiOver)).toMatchObject({ truncated: true, budget_bytes: 5000 })
+  })
+
+  it('validates a larger internal export before returning a typed WebMCP truncation notice', () => {
+    const output = exportOutput.parse({
+      export_id: 'export-large',
+      receipt_id: 'receipt-large',
+      format: 'json',
+      digest: 'a'.repeat(64),
+      summary: 'A bounded internal evidence export.',
+      content: 'é'.repeat(5500)
+    })
+    expect(output.content).toHaveLength(5500)
+    expect(boundedWebMcpResponse(output)).toMatchObject({ truncated: true, budget_bytes: 5000 })
+  })
+
   it('keeps artifact tools undiscoverable until a human loads Q#', async () => {
     const registerTool = vi.fn(async () => undefined)
     Object.defineProperty(document, 'modelContext', { configurable: true, value: { registerTool } })
