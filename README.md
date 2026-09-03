@@ -28,6 +28,52 @@ The Devpost page is public and the WebMCP Challenge entry has been submitted
 with a provisional safety video. The only remaining public replacement is the
 final sub-three-minute human-voice demo video.
 
+## Judge path — verify QCG in 60 seconds
+
+1. Open the [live QCG application](https://qcg.securedme.ca/).
+2. Confirm the header reports `WebMCP · 4` and `registered`.
+3. Select **Q# Bell**, inspect it and run the **Simulate Before Spending**
+   preflight.
+4. Review the recommendation, make the human decision, run the bounded local
+   simulation and export its evidence receipt.
+
+### Where the WebMCP code lives
+
+- [WebMCP registration and guarded execution](https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026/blob/main/prototype/webmcp-qcg/src/webmcp.ts)
+- [Registration lifecycle and boundary tests](https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026/blob/main/prototype/webmcp-qcg/src/webmcp.test.tsx)
+- [Runtime contracts](https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026/blob/main/prototype/webmcp-qcg/src/contracts.ts)
+- [Human-authority service boundary](https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026/blob/main/prototype/webmcp-qcg/src/services.ts)
+
+## Eight tools, two responsibilities
+
+### Four page-registered WebMCP tools
+
+All four are discoverable at page load. Discovery grants no authority: each
+handler independently enforces its manifest, recommendation, human-decision,
+consent and receipt preconditions.
+
+| Tool | Execution precondition | Bounded effect |
+| --- | --- | --- |
+| `inspect_quantum_experiment` | A valid human-loaded manifest exists | Returns the bounded artifact manifest. Raw source never crosses the contract. |
+| `evaluate_quantum_call` | A valid manifest exists | Returns one recommendation, reason codes, unknowns, confidence and a safer alternative. |
+| `run_bounded_local_simulation` | A valid `simulate_first` recommendation and live one-use human consent exist | Runs the approved Q# or OpenQASM Bell fixture locally in a Worker. |
+| `export_quantum_evidence_report` | An evidence receipt exists | Exports JSON or Markdown without re-evaluating or executing. |
+
+### Four collaboration tools exposed through the Companion bridge
+
+These are not registered through `document.modelContext`.
+
+| Tool | Purpose |
+| --- | --- |
+| `read_debug_context` | Read a bounded, sanitized collaboration snapshot. |
+| `post_debug_message` | Add a structured observation, hypothesis, proposal or challenge. |
+| `request_human_review` | Ask the human decision holder to review a bounded question. |
+| `export_debug_handoff` | Export a sanitized packet for another participant or manual Gemini relay. |
+
+The page exposes collaboration commands through `devtoolstooldiscovery`; the
+extension renders and transports bounded state. These commands cannot accept a
+recommendation, create consent, run simulation or authorize an external effect.
+
 ## Four seasons of one build
 
 The seasons tell the engineering story. They are editorial chapters, not
@@ -81,8 +127,8 @@ The difference is how a browser agent reaches those services.
 
 | Without WebMCP | With WebMCP |
 | --- | --- |
-| The person imports, inspects, evaluates, decides, optionally grants one-use local consent, and exports through visible controls. | An agent can discover the currently eligible typed tools, call inspect/evaluate, and receive bounded structured results without scraping the interface. |
-| The complete product remains usable in an ordinary browser. | Tool availability follows the same state gates: simulation appears only after `simulate_first` and visible human consent; export appears only when evidence exists. |
+| The person imports, inspects, evaluates, decides, optionally grants one-use local consent, and exports through visible controls. | An agent can discover all four typed capabilities at page load, while each invocation still enforces the same state and authority preconditions. |
+| The complete product remains usable in an ordinary browser. | Capability discovery is stable; guarded execution still rejects simulation without `simulate_first` plus visible human consent, and rejects export without evidence. |
 | Evidence is read from the interface or downloaded receipt. | Tool inputs and outputs exclude raw source, credentials, local paths and consent tokens. |
 
 This comparison is reproducible from the [quick start](#quick-start), the
@@ -111,31 +157,6 @@ QCG sanitized export → human copy/paste → Gemini response
 
 QCG does not claim a private Gemini API or direct access to Gemini's native
 conversation.
-
-## Eight tools, two responsibilities
-
-### Quantum-facing WebMCP tools
-
-| Tool | Availability | Bounded effect |
-| --- | --- | --- |
-| `inspect_quantum_experiment` | After a valid human-loaded manifest exists | Returns the bounded artifact manifest. Raw source never crosses the contract. |
-| `evaluate_quantum_call` | After a valid manifest exists | Returns one recommendation, reason codes, unknowns, confidence and a safer alternative. |
-| `run_bounded_local_simulation` | Only after valid `simulate_first` evaluation and live one-use human consent | Runs the approved Q# or OpenQASM Bell fixture locally in a Worker. |
-| `export_quantum_evidence_report` | After evaluation creates a receipt | Exports JSON or Markdown without re-evaluating or executing. |
-
-### Collaboration tools registered by the QCG page
-
-| Tool | Purpose |
-| --- | --- |
-| `read_debug_context` | Read a bounded, sanitized collaboration snapshot. |
-| `post_debug_message` | Add a structured observation, hypothesis, proposal or challenge. |
-| `request_human_review` | Ask the human decision holder to review a bounded question. |
-| `export_debug_handoff` | Export a sanitized packet for another participant or manual Gemini relay. |
-
-The page registers collaboration tools through `devtoolstooldiscovery`. The
-extension renders and transports bounded state. Collaboration tools cannot
-accept a recommendation, create consent, run simulation or authorize an
-external effect.
 
 ## Quantum profiles
 

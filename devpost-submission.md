@@ -10,7 +10,7 @@ Synchronized with G3, deployment-parity and Zenodo evidence: 2026-09-02
 
 Current canonical/secondary deployment evidence: 2026-09-02
 
-Candidate deployment parity: **24/24 PASS on canonical cPanel and synchronized Vercel secondary**
+Candidate deployment parity: **25/25 PASS on canonical cPanel**
 
 ## Remaining public replacement
 
@@ -27,30 +27,38 @@ Candidate deployment parity: **24/24 PASS on canonical cPanel and synchronized V
 
 ### Inspiration
 
+Agents can increasingly reach actions that are expensive, irreversible or
+otherwise consequential. The reusable problem is deciding what evidence must
+be inspected and which human authority must be present before execution. QCG
+implements that browser-native approval gate for one concrete domain: quantum
+preflight.
+
 Quantum development offers capable frameworks, simulators and hardware targets. The costly mistake often happens one step earlier: an agent prepares another run before checking whether a fresh result already answers the question, whether the target supports the artifact, or whether local evidence should come first.
 
 I built WebMCP-QCG to place that decision inside the browser interaction itself. WebMCP gives an agent a structured path to inspect the experiment, evaluate the next call and obtain an auditable result while the researcher retains consent and scientific authority.
 
 ### What it does
 
-QCG exposes four progressive WebMCP tools:
+QCG exposes four WebMCP tools at page load so compatible agents can discover
+the complete capability map. Their handlers independently enforce every
+manifest, recommendation, human-decision, consent and receipt precondition:
 
 1. `inspect_quantum_experiment` creates a versioned manifest and digest.
 2. `evaluate_quantum_call` returns one bounded decision with reason codes and a next action.
-3. `run_bounded_local_simulation` appears only after `simulate_first`, an executable profile and visible one-time consent.
+3. `run_bounded_local_simulation` executes only after `simulate_first`, an executable profile and visible one-time consent.
 4. `export_quantum_evidence_report` produces a compact JSON or Markdown receipt.
 
 Five falsifiable cards exercise the decision space: reuse a fresh result, reject an unsupported call, recompile for a target, simulate before spending, and report external readiness without granting authorization.
 
 ### How I built it
 
-The app uses React, TypeScript, strict Zod contracts and `document.modelContext.registerTool`. Human controls and WebMCP tools call one canonical service layer. Tool registration is progressive and tied to an `AbortSignal` lifecycle. Q# and OpenQASM 3 run through pinned `qsharp-lang@1.31.0` WebAssembly in a cancellable Web Worker with explicit shot, qubit and timeout limits. Eight additional ecosystem profiles expose static inspection only.
+The app uses React, TypeScript, strict Zod contracts and `document.modelContext.registerTool`. Human controls and WebMCP tools call one canonical service layer. The four page tools have stable discovery and an `AbortSignal` lifecycle; authorization remains enforced inside the canonical services. Q# and OpenQASM 3 run through pinned `qsharp-lang@1.31.0` WebAssembly in a cancellable Web Worker with explicit shot, qubit and timeout limits. Eight additional ecosystem profiles expose static inspection only.
 
-The retained browser trace invoked inspection, evaluation, bounded simulation and export. Its Worker completed 64/64 Bell-pair shots, observed only correlated pairs, passed the Bell invariant and recorded one local simulation with zero provider calls. The final local verification passes 94 application tests, all 5 Companion gates and zero audit vulnerabilities. Canonical cPanel and the synchronized Vercel secondary pass the same 24-path manifest, and Chrome decodes all eight corrected brand PNGs. The official current-runtime WebMCP smoke passes 2/2, and the final readiness pass treats the retained human-controlled consent, local simulation and evidence-export traces as the release evidence for Action 237.
+The retained browser trace invoked inspection, evaluation, bounded simulation and export. Its Worker completed 64/64 Bell-pair shots, observed only correlated pairs, passed the Bell invariant and recorded one local simulation with zero provider calls. The final local verification passes 104 application tests, all 5 Companion gates and zero audit vulnerabilities. Canonical cPanel passes its 25-path manifest, and Chrome decodes all eight corrected brand PNGs. The retained human-controlled consent, local simulation and evidence-export traces remain the release evidence for Action 237.
 
 ### Challenges
 
-The principal challenge was preserving scientific meaning while keeping the agent contract small. I designed QCG around evidence and decisions instead of claiming a universal quantum language. A second challenge was progressive authorization: the simulation tool becomes discoverable only after the policy selects it and the researcher grants consent. A third challenge was keeping every claim falsifiable, including environment failures such as an external Chrome instance where the WebMCP flag was unavailable.
+The principal challenge was preserving scientific meaning while keeping the agent contract small. I designed QCG around evidence and decisions instead of claiming a universal quantum language. A second challenge was separating discoverability from authorization: an agent may see the simulation capability, but its invocation still fails unless policy selects it and the researcher grants consent. A third challenge was keeping every claim falsifiable, including environment failures such as an external Chrome instance where the WebMCP flag was unavailable.
 
 ### Accomplishments
 
