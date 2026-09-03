@@ -4,7 +4,7 @@
   "repository": "https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026",
   "visibility": "public",
   "updated_at": "2026-09-02",
-  "phase": "release_candidate_repaired_deployed_parity_passed_human_trace_pending",
+  "phase": "post_submission_audit_hotfix_deployed_video_replacement_pending",
   "candidates": {
     "quantech_vid": "rejected_for_this_hackathon",
     "webccp": "deferred_bench",
@@ -15,24 +15,27 @@
   "selection_final": true,
   "mvp_contract_final": true,
   "source": {
-    "application_candidate": "938da498312edab8dd41c12f4b9558865993c833",
-    "runtime_candidate": "938da498312edab8dd41c12f4b9558865993c833",
-    "origin_main_exact": true,
+    "application_candidate": "b1f0e991d9bd30f67800be3b5167708329f48268",
+    "runtime_candidate": "b1f0e991d9bd30f67800be3b5167708329f48268",
+    "origin_main_exact_at_promotion": true,
+    "documentation_commits_may_follow_without_changing_runtime_bytes": true,
     "release_tag_created": true,
     "release_tag": "v0.1.0-hackathon",
     "release_tag_target": "6b669fe204b2d5f04257d8b274bc91629c183ab0",
+    "release_tag_immutable": true,
     "source_archive_created": true,
     "source_archive_sha256": "7B7198BD0FAE128ADD66725FC238DE7009E2072AFFB72066F72DBC9810663D00",
-    "software_doi_state": "reserved_unpublished_upload_blocked_by_zenodo_transport"
+    "software_doi": "10.5281/zenodo.22240306",
+    "software_doi_state": "published_immutable_hackathon_release"
   },
   "prototype": {
-    "status": "g3_clean_copy_passed_and_candidate_deployed",
+    "status": "post_submission_hotfix_clean_clone_passed_and_deployed",
     "qsharp_lang_version": "1.31.0",
     "browser_worker_proven": true,
     "historical_native_webmcp_invocation_proven": true,
     "historical_native_webmcp_environment": "codex_in_app_browser",
-    "final_fresh_public_native_agent_trace": "inspect_and_evaluate_2_of_2_pass_human_simulation_export_pending",
-    "external_chrome_environment": "official_webmcp_evals_0_0_4_live_origin_passed_current_runtime",
+    "final_fresh_public_native_agent_trace": "inspect_evaluate_2_of_2_then_human_accept_local_simulation_and_export_prepared",
+    "external_chrome_environment": "official_webmcp_evals_0_0_4_and_real_chrome_current_runtime",
     "tool_count": 4,
     "collaboration_tool_count": 4,
     "scenario_count": 5,
@@ -40,46 +43,75 @@
     "bounded_shots_completed": 64,
     "bell_invariant": true,
     "local_simulations": 1,
+    "evidence_exports": 1,
     "external_provider_calls": 0,
-    "automated_tests": 88,
+    "qpu_submissions": 0,
+    "automated_tests": 104,
     "automated_test_files": 13,
     "companion_gates": "5/5",
     "npm_audit_vulnerabilities": 0,
     "current_official_live_webmcp_smoke_steps": "2/2",
-    "current_official_live_webmcp_smoke_timestamp_utc": "2026-09-02T10:34:31Z"
+    "current_official_live_webmcp_smoke_timestamp_utc": "2026-09-03T00:50:57Z"
+  },
+  "post_submission_hotfix": {
+    "scope": [
+      "stale_worker_simulation_lease",
+      "utf8_webmcp_response_budget",
+      "nine_command_companion_parity",
+      "required_panel_dom_contract"
+    ],
+    "runtime_commit": "b1f0e991d9bd30f67800be3b5167708329f48268",
+    "receipt": "docs/evidence/QCG_POST_SUBMISSION_AUDIT_HOTFIX_2026-09-02.md",
+    "hackathon_tag_or_doi_changed": false
   },
   "deployment": {
     "production_build_ready": true,
     "stable_live_url": "https://qcg.securedme.ca/",
     "canonical_host": "cpanel",
     "secondary_live_url": "https://webmcp-qcg.vercel.app/",
-    "status": "canonical_and_secondary_24_of_24_pass",
-    "cpanel_package_sha256": "C4FE4BB205F58B52ECDC30D73855ADF16E29A62EF578A275103632E3D47C4D50",
-    "cpanel_plan_id": "e001700c1c88f9e14d7f00ce",
-    "cpanel_live_manifest": "24/24",
+    "status": "canonical_and_secondary_23_of_23_content_match_cpanel_25_of_25_package_pass",
+    "cpanel_package": "evidence/releases/qcg-console-b1f0e99-audit-hotfix-docroot.zip",
+    "cpanel_package_sha256": "6AAA54DC3FCBB0622932890027C2A8C11EFCCF22651E3B20A35B128BBA28B881",
+    "cpanel_plan_id": "55e11403697e7ff92c6f5a36",
+    "cpanel_live_manifest": "25/25",
+    "cpanel_backup": "/home/xacm7978/public_html/qcg.securedme.ca.backup-55e11403697e7ff92c6f5a36",
     "cpanel_backup_retained": true,
-    "vercel_live_manifest": "24/24",
+    "vercel_live_manifest": "23/23 public content files",
+    "cross_host_content_parity": "23/23",
+    "root_bundle": "assets/index-CGXuEnjp.js",
+    "root_styles": "assets/index-Doav2hq7.css",
     "vercel_spa_decisions_exact_root_html": true,
-    "vercel_policy_headers": "7/7",
-    "vercel_wasm_zip_mime_correct": true,
-    "vercel_htaccess_non_disclosed": true,
-    "browser_decoded_brand_pngs": "8/8 on cpanel and vercel",
+    "policy_headers": "7/7 on both hosts",
+    "wasm_zip_mime_correct": true,
     "parity_chain_closed": true
   },
   "companion_packages": {
-    "production_sha256": "D69B3DEE68C6DF5A28D526B5A8616CC0148CA58EA7B40F5159F2D193D4216916",
-    "development_sha256": "33EACB2CBD3475E86E86EFD899F2540E5FD5DD7B0F0F99E6E3726BC246BBD35B"
+    "version": "0.2.5",
+    "production_sha256": "AC69EFB5293163DF77420C7525B44D7CFD02AB3B76A8A06C8753FDD369F423CB",
+    "development_sha256": "E7FC5BCB876D325BF52E48403AE571FC45E691DD7D671D18FD487FD52369FB5A"
   },
   "paid_execution_authorized": false,
-  "public_submission_authorized": false,
+  "public_submission_authorized": true,
   "clean_clone": {
     "verified": true,
-    "verified_source_identity": "runtime_candidate_commit_with_binary_asset_repair",
-    "verified_commit": "938da498312edab8dd41c12f4b9558865993c833",
-    "automated_tests": "88/88 across 13 files",
+    "verified_source_identity": "post_submission_hotfix_runtime_candidate",
+    "verified_commit": "b1f0e991d9bd30f67800be3b5167708329f48268",
+    "automated_tests": "104/104 across 13 files",
     "companion_gates": "5/5",
     "npm_audit_vulnerabilities": 0,
-    "production_build": "passed"
+    "production_build": "passed",
+    "dist_file_count": 25
+  },
+  "real_chrome": {
+    "full_human_path": "passed",
+    "companion_first_click_open": true,
+    "companion_second_click_close": true,
+    "reload_and_reconnect": "passed",
+    "dark_light_access_and_keyboard": "passed",
+    "console_warnings_or_errors": 0,
+    "network_loading_failures": 0,
+    "export_generation": "passed_and_counter_incremented",
+    "download_event_visibility": "not_exposed_by_browser_automation_harness"
   },
   "historical_proof": {
     "day4_stable_origin_proven": true,
@@ -107,13 +139,15 @@
   },
   "devpost": {
     "project_id": 1404828,
-    "project_created": true,
-    "state": "published_project_unsubmitted_hackathon_entry",
-    "submitted": false,
-    "submitted_at": null,
+    "submission_id": 1158343,
+    "state": "submitted_video_replacement_pending",
+    "submitted": true,
+    "submitted_at": "2026-09-02T15:42:44.142-04:00",
     "project_url": "https://devpost.com/software/webmcp-qcg-quantum-call-gate",
-    "video_url": "",
-    "video_state": "missing"
+    "video_url": "https://youtu.be/WV8XMHzt84Y",
+    "video_state": "provisional_safety_video",
+    "provisional_video_duration": "00:05:57",
+    "required_replacement": "public_sub_three_minute_human_voice_demo"
   },
-  "next_gate": "retry_zenodo_after_service_recovery_and_complete_action_237_human_trace_then_video_author_review_and_submission"
+  "next_gate": "record_validate_publish_and_replace_final_sub_three_minute_human_voice_video"
 }

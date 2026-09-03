@@ -194,48 +194,51 @@ The extension has no dependency installation or build step.
 
 ## Verification snapshot
 
-Current published release-candidate verification recorded on 2026-09-02:
+Current post-submission hardening verification recorded on 2026-09-02:
 
-- repaired runtime candidate `938da498312edab8dd41c12f4b9558865993c833`
-  exactly matches `origin/main`;
-- canonical cPanel and the synchronized Vercel secondary each pass the 24-path
-  deployment manifest. Vercel also returns exact root HTML for `/decisions`,
-  seven policy headers, correct WASM/ZIP MIME types and no readable `.htaccess`;
-- the repaired cPanel package SHA-256 is
-  `C4FE4BB205F58B52ECDC30D73855ADF16E29A62EF578A275103632E3D47C4D50`;
+- validated runtime candidate `b1f0e991d9bd30f67800be3b5167708329f48268`
+  matched `origin/main` when it was promoted; later documentation-only commits
+  do not change the validated application bytes;
+- canonical cPanel and the synchronized Vercel secondary each match all 23
+  public content files. cPanel additionally verifies the complete 25-path
+  deployment package; both hosts return exact root HTML for `/decisions`, seven
+  policy headers and correct WASM/ZIP MIME types;
+- the immutable cPanel package SHA-256 is
+  `6AAA54DC3FCBB0622932890027C2A8C11EFCCF22651E3B20A35B128BBA28B881`;
 - Chrome decodes all eight published brand PNGs on both hosts; this explicitly
   closes the binary-normalization defect that a byte-only host comparison had
   initially failed to reveal;
 - TypeScript and Vite production build pass;
-- current candidate bundle: 131 modules, 389.49 kB JavaScript and 23.65 kB
+- current candidate bundle: 131 modules, 391.76 kB JavaScript and 23.65 kB
   CSS, with QDK WebAssembly tracked separately;
-- the final local verification passes 94 Vitest cases across 13 test files, all 5 Companion
+- the final clean-clone verification passes 104 Vitest cases across 13 test files, all 5 Companion
   gates and `npm audit` with zero vulnerabilities;
 - production/development Companion ZIP SHA-256 values are respectively
-  `D69B3DEE68C6DF5A28D526B5A8616CC0148CA58EA7B40F5159F2D193D4216916`
-  and `33EACB2CBD3475E86E86EFD899F2540E5FD5DD7B0F0F99E6E3726BC246BBD35B`;
+  `AC69EFB5293163DF77420C7525B44D7CFD02AB3B76A8A06C8753FDD369F423CB`
+  and `E7FC5BCB876D325BF52E48403AE571FC45E691DD7D671D18FD487FD52369FB5A`;
 - the current public runtime passes the official `webmcp-evals@0.0.4` live
   inspection/evaluation smoke 2/2 and returns `simulate_first` with high
   confidence and no external authority;
-- prior human-controlled real Chrome routes for imported Q# and OpenQASM reached
-  `simulate_first`, a declared human acceptance, a 64-shot local Bell result,
-  evidence export and zero QPU submissions;
+- a fresh human-controlled real Chrome route reached `simulate_first`, a
+  declared human acceptance, a 64-shot local Bell result, prepared a JSON
+  evidence export, counted one evidence export and retained zero QPU
+  submissions;
 - the retained-tab Companion/F12 proof, trusted open/close toggle, reconnect
   paths and responsive/accessibility matrix passed in the G2 browser receipt;
 - the public repository is licensed under MIT.
 
-The repaired G3 clean-copy and Actions 227–232 parity receipts establish the
-current source, package and hosting chain. The official current-runtime agent
-smoke is complete, and the retained human-controlled Chrome traces cover
-consent, local simulation, evidence export and zero QPU submissions. The source
-tag, hash-validated archive and Zenodo software DOI publication are complete.
+The final clean-clone and post-submission audit receipt establish the current
+source, package and hosting chain. The official current-runtime agent smoke is
+complete, and the retained human-controlled Chrome traces cover consent, local
+simulation, evidence export and zero QPU submissions. The source tag,
+hash-validated archive and Zenodo software DOI publication remain immutable.
 The WebMCP Challenge entry is submitted with a provisional safety video; the
 remaining public improvement is the final sub-three-minute human-voice demo.
 
 The repository records deterministic benchmark evidence separately from HTTP
 delivery evidence. The final cPanel package, public hashes, security headers
 and rollback boundary are captured in the
-[publication and deployment parity receipt](docs/evidence/ACTIONS_227_232_PUBLICATION_PARITY_2026-09-02.md).
+[post-submission audit-hotfix receipt](docs/evidence/QCG_POST_SUBMISSION_AUDIT_HOTFIX_2026-09-02.md).
 
 ## Security and deliberate limits
 
@@ -272,6 +275,8 @@ boundaries and residual risks.
 - [Actions 214–219 documentation receipt](docs/evidence/ACTIONS_214_219_DOCUMENTATION_2026-09-02.md)
 - [Current-runtime WebMCP smoke receipt](docs/evidence/ACTION_237A_CURRENT_RUNTIME_WEBMCP_SMOKE_2026-09-02.md)
 - [Tag, source archive and Zenodo publication receipt](docs/evidence/ACTIONS_233_236_TAG_ARCHIVE_ZENODO_2026-09-02.md)
+- [Post-submission audit-hotfix receipt](docs/evidence/QCG_POST_SUBMISSION_AUDIT_HOTFIX_2026-09-02.md)
+- [30-minute Google Vids guided tutorial](docs/hackathon-build/GOOGLE_VIDS_30_MIN_GUIDED_TUTORIAL.md)
 - [Final readiness receipt](docs/evidence/ACTION_244_FINAL_READINESS_2026-09-02.md)
 - [Author-deferred post-submission visual refinement](docs/hackathon-build/POST_SUBMISSION_VISUAL_BACKLOG_2026-09-02.md)
 

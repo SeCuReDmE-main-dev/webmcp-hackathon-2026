@@ -5,17 +5,17 @@ a hosting mutation, provider call, QPU submission, Devpost submission, or spend.
 
 The stable product address is
 [https://qcg.securedme.ca/](https://qcg.securedme.ca/). The author-approved
-2026-09-02 release candidate is served directly over HTTPS. Its immutable cPanel
-package SHA-256 is
-`C4FE4BB205F58B52ECDC30D73855ADF16E29A62EF578A275103632E3D47C4D50`.
+2026-09-02 post-submission hardening candidate is served directly over HTTPS.
+Its immutable cPanel package SHA-256 is
+`6AAA54DC3FCBB0622932890027C2A8C11EFCCF22651E3B20A35B128BBA28B881`.
 
-Repaired runtime candidate `938da498312edab8dd41c12f4b9558865993c833`
-exactly matches `origin/main`. Canonical cPanel and the synchronized
-Vercel secondary each passed the 24-path deployment manifest. This closes
-Actions 227–232. The public source tag, hash-validated archive and Zenodo
-software DOI are published. Devpost has been submitted with a provisional
-safety video; the remaining public replacement is the final sub-three-minute
-human-voice demo.
+Validated runtime candidate `b1f0e991d9bd30f67800be3b5167708329f48268`
+matched `origin/main` when promoted. Canonical cPanel and the synchronized
+Vercel secondary each match all 23 public content files; cPanel additionally
+verifies the complete 25-path package. The immutable hackathon tag, tagged
+source archive and Zenodo software DOI remain published. Devpost is submitted
+with a provisional safety video; the remaining public replacement is the final
+sub-three-minute human-voice demo.
 
 ## 1. Release inputs
 
@@ -52,10 +52,10 @@ Set-Location ../..
 git diff --check
 ```
 
-Recorded results for the 2026-09-02 G3 candidate:
+Recorded results for the 2026-09-02 post-submission hotfix candidate:
 
 - dependency installation completes from the lock file;
-- 94 application tests pass across 13 files;
+- 104 application tests pass across 13 files;
 - TypeScript validation passes;
 - Vite creates `prototype/webmcp-qcg/dist/`;
 - all 5 Companion gates pass;
@@ -104,7 +104,7 @@ The current cPanel release uses:
 
 - live document root: `public_html/qcg.securedme.ca`;
 - an operator-controlled candidate and backup boundary;
-- a package manifest that verifies the 24 expected release paths.
+- a package manifest that verifies the 25 expected release paths.
 
 Do not upload manually over the live document root. Use the SecuredMe cPanel
 Operator's explicit `plan -> confirmation -> apply` transaction with the exact
@@ -112,11 +112,12 @@ package hash and expected paths. The operator completed and verified that flow
 for this release. A destructive rollback drill remains a separate maintenance
 gate; the release procedure itself preserves a backup boundary. See the
 [hosting baseline](../evidence/hosting/README.md) and the
-[publication and deployment parity receipt](evidence/ACTIONS_227_232_PUBLICATION_PARITY_2026-09-02.md).
+[post-submission audit-hotfix receipt](evidence/QCG_POST_SUBMISSION_AUDIT_HOTFIX_2026-09-02.md).
 
-The synchronized Vercel secondary also passes 24/24 manifest checks, exact SPA
-fallback at `/decisions`, seven policy headers, correct WASM/ZIP MIME types and
-host-configuration non-disclosure. cPanel remains the canonical origin.
+The synchronized Vercel secondary matches 23/23 public content files and passes
+exact SPA fallback at `/decisions`, seven policy headers and correct WASM/ZIP
+MIME checks. The cPanel package passes 25/25 path verification and cPanel
+remains the canonical origin.
 
 ## 5. Stable-origin acceptance gate
 

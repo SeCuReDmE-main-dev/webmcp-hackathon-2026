@@ -1,0 +1,45 @@
+{
+  "schema": "webmcp-qcg.deployment-manifest.v1",
+  "generated_at": "2026-09-02T21:00:35.9094589-04:00",
+  "runtime_commit": "b1f0e991d9bd30f67800be3b5167708329f48268",
+  "package": {
+    "path": "evidence/releases/qcg-console-b1f0e99-audit-hotfix-docroot.zip",
+    "sha256": "6AAA54DC3FCBB0622932890027C2A8C11EFCCF22651E3B20A35B128BBA28B881",
+    "bytes": 3715730,
+    "entries": 25
+  },
+  "deployment": {
+    "canonical_url": "https://qcg.securedme.ca/",
+    "secondary_url": "https://webmcp-qcg.vercel.app/",
+    "cpanel_plan_id": "55e11403697e7ff92c6f5a36",
+    "cpanel_verified_paths": "25/25",
+    "cross_host_content_parity": "23/23"
+  },
+  "files": [
+    { "path": "_headers", "bytes": 150, "sha256": "9F45F4DA658FC3BADC0B735F3DC4344BDBD0979314A518D9F9182A6B508B038F" },
+    { "path": ".htaccess", "bytes": 926, "sha256": "44DF4675F24F9CAAD4D62F2D0B217E883B36EE6512CAD6C0AB511369B73830E5" },
+    { "path": "assets/index-CGXuEnjp.js", "bytes": 391766, "sha256": "6AD31F0A12C2A9D691F61E3797B8419CF7D1130CA05DC8A800760AE1AE555DB9" },
+    { "path": "assets/index-Doav2hq7.css", "bytes": 23655, "sha256": "978C2824E2FD5AEB703966B16E131FE198AEE3130473991E56C687C541E72612" },
+    { "path": "assets/qsc_wasm_bg-CCIGAYD7.wasm", "bytes": 6066574, "sha256": "5F01879BB9B00D2B75E28D14AF6B083A1BF8A92617FFAD933B0325E991D5F280" },
+    { "path": "assets/qsharp.worker-Bu8umShR.js", "bytes": 34374, "sha256": "2FC0A69A27F3C87795B6CC7DBF461D9FD8A09CD97418427D5D66E51B59E1C048" },
+    { "path": "brand/inspector-q-avatar.jpg", "bytes": 23034, "sha256": "7F705371786FA8F9B09D9EB0E54A61D07575C7F23182BC254FF4A6DCE7140467" },
+    { "path": "brand/qcg-ambient-bg.jpg", "bytes": 262360, "sha256": "0EF0A685AD9AE423A1FF0BC7D186969483E00FDDB0EF953C0A03678631FC30D6" },
+    { "path": "brand/qcg-icon-128.png", "bytes": 19651, "sha256": "4F39AB12448B103AB8C68154A005B964B136C14A46ECDBC1216FDDCABF6F1949" },
+    { "path": "brand/qcg-icon-16.png", "bytes": 675, "sha256": "72DC988346E230688872A3AD6ADE8EDFD25F3E1CDB914FEACA248F0688C2F7A1" },
+    { "path": "brand/qcg-icon-180.png", "bytes": 36335, "sha256": "937311C3BAA6DE63A1FF83B8E8DFEC2AB2B918172103783890E967B56089964B" },
+    { "path": "brand/qcg-icon-192.png", "bytes": 40823, "sha256": "D126A1A656194F0D61B7D3DEE669AF507A49D97B451A857FF51938F14295DF53" },
+    { "path": "brand/qcg-icon-32.png", "bytes": 1831, "sha256": "6E1AF3A191CE0EA94A3BD92B4616620E11FB46BFFB6A9CA662F670F49BDA6554" },
+    { "path": "brand/qcg-icon-48.png", "bytes": 3607, "sha256": "F9D2C8D8CE8FC85A1D8C25EF27FD8A302B37222AEFC4A2F8FB66653E49211823" },
+    { "path": "brand/qcg-icon-512.png", "bytes": 238651, "sha256": "6B8FAF75F0C7E0E0B1FF657D68592CD4BC0550C0B6E98B9A227D6346386B65DD" },
+    { "path": "brand/qcg-social-card.png", "bytes": 506683, "sha256": "6BC2ED5A6BFF140C78AE4256A85AE55B4E2BBB04044928F3734E47F99EFF287B" },
+    { "path": "downloads/qcg-console-companion-0.2.5.zip", "bytes": 74799, "sha256": "AC69EFB5293163DF77420C7525B44D7CFD02AB3B76A8A06C8753FDD369F423CB" },
+    { "path": "downloads/qcg-console-companion-dev-0.2.5.zip", "bytes": 74814, "sha256": "E7FC5BCB876D325BF52E48403AE571FC45E691DD7D671D18FD487FD52369FB5A" },
+    { "path": "fixtures/qcg-bell-sample.qasm", "bytes": 126, "sha256": "4FA14FE18813B8643EED4D545FB123BEB4933FB34FD993E17ADB16DD58487FC6" },
+    { "path": "fixtures/qcg-bell-sample.qs", "bytes": 236, "sha256": "602EC14B539C7AC01513B043EEDD01931894DC00B746F2C55ED22EF0305E17DF" },
+    { "path": "index.html", "bytes": 2196, "sha256": "17098223C0685B98F276B4357D8E94B3E9D795BE9EB27C1125B1B833AAB493DE" },
+    { "path": "qcg-console-companion-0.2.5.zip", "bytes": 74799, "sha256": "AC69EFB5293163DF77420C7525B44D7CFD02AB3B76A8A06C8753FDD369F423CB" },
+    { "path": "qcg-console-companion-dev-0.2.5.zip", "bytes": 74814, "sha256": "E7FC5BCB876D325BF52E48403AE571FC45E691DD7D671D18FD487FD52369FB5A" },
+    { "path": "qcg-mark.svg", "bytes": 391, "sha256": "18EB92A24AAF10C606BD56069FE985ADE9544C9E3F6EFE58357FB37FE2D1DF73" },
+    { "path": "site.webmanifest", "bytes": 574, "sha256": "4D1CC00BBE787FCDA5F06A08D069B9335568733158CD94D6468B694B0A76E5BA" }
+  ]
+}
