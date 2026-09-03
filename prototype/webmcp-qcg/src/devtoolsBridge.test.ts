@@ -90,4 +90,31 @@ describe('QCG DevTools bridge authority boundary', () => {
     expect(applied).toEqual(['overridden:Evidence contradicts this recommendation.'])
     cleanup()
   })
+
+  it('routes override notes and sanitized handoff exports through the v2 bridge', async () => {
+    Object.defineProperty(globalThis, 'window', { configurable: true, value: {} })
+    const sessionId = '11111111-1111-4111-8111-111111111111'
+    const ledger = createInMemoryDebugLedger()
+    await ledger.openSession(sessionId)
+    const cleanup = installQcgDevtoolsBridge(initialState, ledger, sessionId)
+    const bridge = globalThis.window.__QCG_CONSOLE_V2__!
+
+    const note = await bridge.executeConsoleCommand({
+      schema_version: 'qcg-console-command.v1',
+      session_id: sessionId,
+      kind: 'human_override_note',
+      justification: 'The visible evidence requires a bounded human override.'
+    })
+    expect(note).toMatchObject({ accepted: true, status: 'queued' })
+    await new Promise((resolve) => setTimeout(resolve, 0))
+    const exported = await bridge.executeConsoleCommand({
+      schema_version: 'qcg-console-command.v1',
+      session_id: sessionId,
+      kind: 'export_debug_handoff'
+    })
+    expect(exported).toMatchObject({ accepted: true, status: 'completed', message: 'Sanitized debug handoff exported.' })
+    expect(exported.handoff).toContain('Override note: The visible evidence requires a bounded human override.')
+    expect(exported.handoff).not.toContain('consent')
+    cleanup()
+  })
 })

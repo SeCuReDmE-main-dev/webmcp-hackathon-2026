@@ -3,7 +3,13 @@ function requiredElement(selector) {
   if (!element) throw new Error(`QCG Companion initialization failed: required element ${selector} is missing.`)
   return element
 }
+function requiredElements(selector) {
+  const elements = [...document.querySelectorAll(selector)]
+  if (elements.length === 0) throw new Error(`QCG Companion initialization failed: required elements ${selector} are missing.`)
+  return elements
+}
 const $ = requiredElement
+const $$ = requiredElements
 const query = new URLSearchParams(location.search)
 const isDevtools = query.get('surface') === 'devtools' && Boolean(chrome.devtools?.inspectedWindow)
 const surface = isDevtools ? 'DEVTOOLS PANEL' : query.get('surface') === 'companion-tab' ? 'COMPANION TAB' : 'SIDE PANEL'
@@ -147,20 +153,20 @@ function renderDecision(snapshot) {
 function commandAvailable(snapshot, kind) { return Array.isArray(snapshot.available_commands) && snapshot.available_commands.some((entry) => entry === kind || entry?.kind === kind || entry?.name === kind) }
 function renderList(target, items, formatter, empty) { target.replaceChildren(...(items.length ? items.map((item) => Object.assign(document.createElement('li'), { textContent: formatter(item) })) : [Object.assign(document.createElement('li'), { textContent: empty })])) }
 
-function bindNavigation() { document.querySelectorAll('.nav-item').forEach((button) => button.addEventListener('click', () => { const view = button.dataset.view; document.querySelectorAll('.nav-item').forEach((item) => item.classList.toggle('active', item === button)); document.querySelectorAll('[data-view-panel]').forEach((panel) => { panel.hidden = panel.dataset.viewPanel !== view }) })) }
+function bindNavigation() { $$('.nav-item').forEach((button) => button.addEventListener('click', () => { const view = button.dataset.view; $$('.nav-item').forEach((item) => item.classList.toggle('active', item === button)); $$('[data-view-panel]').forEach((panel) => { panel.hidden = panel.dataset.viewPanel !== view }) })) }
 function bindActions() {
   $('#theme').addEventListener('change', () => saveTheme($('#theme').value))
   $('#access-toggle').addEventListener('click', () => toggleAccess($('#access-panel').hidden))
   $('#access-close').addEventListener('click', () => toggleAccess(false))
   $('#access-reset').addEventListener('click', () => { setAccessControls(defaultAccess); applyAccessibility(defaultAccess) })
-  document.querySelectorAll('[data-access-profile]').forEach((button) => button.addEventListener('click', () => {
+  $$('[data-access-profile]').forEach((button) => button.addEventListener('click', () => {
     const current = readAccessibilityFromControls()
     const profile = accessProfiles.includes(button.dataset.accessProfile) ? button.dataset.accessProfile : 'base'
     const next = { ...current, profile }
     setAccessControls(next)
     applyAccessibility(next)
   }))
-  for (const selector of ['#access-text-scale', '#access-contrast', '#access-motion', '#access-underline']) $(selector).addEventListener('change', saveAccessibilityFromControls)
+  for (const element of [$('#access-text-scale'), $('#access-contrast'), $('#access-motion'), $('#access-underline')]) element.addEventListener('change', saveAccessibilityFromControls)
   document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !$('#access-panel').hidden) toggleAccess(false) })
   $('#send').addEventListener('click', () => { const summary = $('#message').value.trim(); if (summary) sendCommand({ kind: 'human_message', summary }) })
   $('#override').addEventListener('input', () => { $('#record-override').disabled = $('#override').value.trim().length < 12 })
@@ -189,7 +195,7 @@ function sendDecision(choice) {
 function handleResult(result) { if (result?.handoff) { const handoff = typeof result.handoff === 'string' ? result.handoff : JSON.stringify(result.handoff, null, 2); $('#handoff-preview').textContent = handoff; void navigator.clipboard.writeText(handoff).catch(() => undefined) } else if (result?.preview || result?.summary) $('#handoff-preview').textContent = result.preview || result.summary; if (result?.accepted) { $('#message').value = ''; $('#override').value = ''; $('#record-override').disabled = true; setStatus(result.message || 'Human command recorded. Quantum authority is unchanged.') } else setStatus(result?.error || result?.message || 'The companion command was rejected.', true) }
 function setStatus(message, error = false) { $('#status').textContent = message; $('#status').classList.toggle('error', error); $('.status-dot').classList.toggle('failure', error) }
 function hydrateTheme() { const theme = localStorage.getItem('qcg-console-theme') || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'); $('.console').dataset.surface = isDevtools ? 'devtools' : 'sidepanel'; $('#theme').value = theme; saveTheme(theme) }
-function saveTheme(theme) { document.querySelector('.console').dataset.theme = theme; localStorage.setItem('qcg-console-theme', theme) }
+function saveTheme(theme) { $('.console').dataset.theme = theme; localStorage.setItem('qcg-console-theme', theme) }
 function hydrateAccessibility() {
   let stored = defaultAccess
   try { stored = { ...defaultAccess, ...JSON.parse(localStorage.getItem(ACCESS_STORAGE_KEY) || '{}') } } catch {}
@@ -203,8 +209,8 @@ function hydrateAccessibility() {
   setAccessControls(preferences)
   applyAccessibility(preferences, false)
 }
-function setAccessControls(preferences) { document.querySelectorAll('[data-access-profile]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.accessProfile === preferences.profile))); $('#access-text-scale').value = preferences.textScale; $('#access-contrast').checked = preferences.highContrast; $('#access-motion').checked = preferences.reduceMotion; $('#access-underline').checked = preferences.underlineControls }
-function readAccessibilityFromControls() { return { profile: document.querySelector('[data-access-profile][aria-pressed="true"]')?.dataset.accessProfile || 'base', textScale: $('#access-text-scale').value, highContrast: $('#access-contrast').checked, reduceMotion: $('#access-motion').checked, underlineControls: $('#access-underline').checked } }
+function setAccessControls(preferences) { $$('[data-access-profile]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.accessProfile === preferences.profile))); $('#access-text-scale').value = preferences.textScale; $('#access-contrast').checked = preferences.highContrast; $('#access-motion').checked = preferences.reduceMotion; $('#access-underline').checked = preferences.underlineControls }
+function readAccessibilityFromControls() { return { profile: $('[data-access-profile][aria-pressed="true"]').dataset.accessProfile || 'base', textScale: $('#access-text-scale').value, highContrast: $('#access-contrast').checked, reduceMotion: $('#access-motion').checked, underlineControls: $('#access-underline').checked } }
 function saveAccessibilityFromControls() { applyAccessibility(readAccessibilityFromControls()) }
 function applyAccessibility(preferences, persist = true) { const root = $('.console'); const profileReducesMotion = preferences.profile === 'autism-calm' || preferences.profile === 'deep-work'; root.dataset.accessProfile = preferences.profile; root.dataset.textScale = preferences.textScale; root.dataset.contrast = preferences.highContrast ? 'high' : 'standard'; root.dataset.reduceMotion = preferences.reduceMotion || profileReducesMotion ? 'true' : 'false'; root.dataset.underlineControls = preferences.underlineControls ? 'true' : 'false'; if (persist) localStorage.setItem(ACCESS_STORAGE_KEY, JSON.stringify(preferences)) }
 function toggleAccess(open) { $('#access-panel').hidden = !open; $('#access-toggle').setAttribute('aria-expanded', String(open)); if (open) $('#access-close').focus() }

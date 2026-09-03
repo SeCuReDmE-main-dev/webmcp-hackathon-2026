@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
+import { runInNewContext } from 'node:vm'
 
 const root = new URL('.', import.meta.url)
 const read = (name) => readFileSync(new URL(name, root), 'utf8')
@@ -35,7 +36,7 @@ const validCommandBody = (source, surface) => {
   const start = source.indexOf('function validCommand(value) {')
   const end = source.indexOf('\n}', start)
   assert(start >= 0 && end > start, `${surface}: validCommand body must remain statically inspectable`)
-  return source.slice(start, end)
+  return source.slice(start, end + 2)
 }
 const validators = [
   ['background', validCommandBody(background, 'background')],
@@ -43,10 +44,35 @@ const validators = [
   ['MAIN', validCommandBody(pageBridge, 'MAIN')],
 ]
 const commandKinds = ['human_decision', 'human_review_disposition', 'human_memory_disposition', 'human_message', 'human_override_note', 'gemini_manual_handoff_create', 'gemini_manual_reply_preview', 'gemini_manual_reply_import', 'export_debug_handoff']
+const normalizedValidators = validators.map(([surface, validator]) => [surface, validator.replace(/\s+/g, ' ').trim()])
+for (const [surface, validator] of normalizedValidators.slice(1)) assert(validator === normalizedValidators[0][1], `${surface}: validCommand must remain exactly equivalent to the background validator`)
 for (const kind of commandKinds) {
   for (const [surface, validator] of validators) assert(validator.includes(`'${kind}'`), `${surface}: validCommand must allowlist ${kind}`)
 }
 for (const [surface, validator] of validators) assert(validator.includes('validString(value.raw, 1600)'), `${surface}: manual Gemini replies must remain bounded to 1600 characters`)
+const testValidString = (value, max = 1200) => typeof value === 'string' && value.length > 0 && value.length <= max
+const testValidUuid = (value) => testValidString(value, 36) && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value)
+const testValidIdentifier = (value) => testValidString(value, 64) && /^[a-z0-9][a-z0-9_-]{2,63}$/i.test(value)
+const session_id = '11111111-1111-4111-8111-111111111111'
+const event_id = '22222222-2222-4222-8222-222222222222'
+const commandFixtures = [
+  { schema_version: 'qcg-console-command.v1', session_id, kind: 'human_decision', recommendation_id: 'recommendation-abc123', choice: 'accepted' },
+  { schema_version: 'qcg-console-command.v1', session_id, kind: 'human_review_disposition', event_id, disposition: 'approve' },
+  { schema_version: 'qcg-console-command.v1', session_id, kind: 'human_memory_disposition', event_id, disposition: 'remember', content: 'Retain this bounded observation.' },
+  { schema_version: 'qcg-console-command.v1', session_id, kind: 'human_message', summary: 'A bounded human observation.' },
+  { schema_version: 'qcg-console-command.v1', session_id, kind: 'human_override_note', justification: 'The visible evidence requires a human override.' },
+  { schema_version: 'qcg-console-command.v1', session_id, kind: 'gemini_manual_handoff_create', intent: 'debug', prompt: 'Review this bounded context.' },
+  { schema_version: 'qcg-console-command.v1', session_id, kind: 'gemini_manual_reply_preview', raw: '{"summary":"bounded"}' },
+  { schema_version: 'qcg-console-command.v1', session_id, kind: 'gemini_manual_reply_import', raw: '{"summary":"bounded"}' },
+  { schema_version: 'qcg-console-command.v1', session_id, kind: 'export_debug_handoff' }
+]
+for (const [surface, validatorSource] of validators) {
+  const validate = Function('validUuid', 'validString', 'validIdentifier', `return (${validatorSource})`)(testValidUuid, testValidString, testValidIdentifier)
+  for (const command of commandFixtures) assert(validate(command), `${surface}: executable validator rejected ${command.kind}`)
+  assert(!validate({ schema_version: 'qcg-console-command.v1', session_id, kind: 'run_bounded_local_simulation' }), `${surface}: executable validator exposed a quantum command`)
+  assert(!validate({ schema_version: 'qcg-console-command.v1', session_id, kind: 'human_override_note', justification: 'too short' }), `${surface}: executable validator accepted an unjustified override note`)
+  assert(!validate({ schema_version: 'qcg-console-command.v1', session_id, kind: 'gemini_manual_reply_import', raw: 'x'.repeat(1601) }), `${surface}: executable validator exceeded the Gemini reply limit`)
+}
 for (const kind of ['human_review_disposition', 'human_memory_disposition', 'human_message', 'human_decision', 'gemini_manual_handoff_create', 'gemini_manual_reply_preview', 'gemini_manual_reply_import']) {
   assert(panel.includes(`'${kind}'`), `interactive panel command ${kind} must remain wired to an explicit human action`)
 }
@@ -62,6 +88,30 @@ assert(pageBridge.includes('__QCG_CONSOLE_V2__') && pageBridge.includes('execute
 const v1Fallback = pageBridge.slice(pageBridge.indexOf('async function execute(command)'), pageBridge.indexOf('function safeSnapshot()'))
 assert(v1Fallback.includes("command.kind === 'human_override_note'") && v1Fallback.includes('queued?.accepted'), 'v1 fallback must preserve human override-note rejection and acceptance')
 assert(v1Fallback.includes("command.kind === 'export_debug_handoff'") && v1Fallback.includes('requires the QCG Console v2 bridge'), 'v1 fallback must reject handoff export with an explicit v2 requirement')
+let overrideAccepted = true
+let overrideSummary = ''
+const bridgeContext = {
+  location: { origin: 'https://qcg.securedme.ca' },
+  window: {
+    addEventListener: () => undefined,
+    postMessage: () => undefined,
+    __QCG_DEVTOOLS_V1__: {
+      queueHumanMessage: ({ summary }) => { overrideSummary = summary; return overrideAccepted ? { accepted: true } : { accepted: false, error: 'V1 queue rejected the note.' } }
+    }
+  }
+}
+runInNewContext(`${pageBridge}\nglobalThis.__qcgBridgeContract = { execute };`, bridgeContext)
+const v1Note = await bridgeContext.__qcgBridgeContract.execute(commandFixtures.find((command) => command.kind === 'human_override_note'))
+assert(v1Note.accepted === true && overrideSummary.startsWith('Override note:'), 'V1 bridge must queue the bounded human override note')
+overrideAccepted = false
+const v1RejectedNote = await bridgeContext.__qcgBridgeContract.execute(commandFixtures.find((command) => command.kind === 'human_override_note'))
+assert(v1RejectedNote.accepted === false && v1RejectedNote.error === 'V1 queue rejected the note.', 'V1 bridge must preserve an override-note queue rejection')
+const v1Export = await bridgeContext.__qcgBridgeContract.execute(commandFixtures.find((command) => command.kind === 'export_debug_handoff'))
+assert(v1Export.accepted === false && v1Export.error.includes('v2 bridge'), 'V1 bridge must explicitly require V2 for sanitized handoff export')
+let v2Kind = ''
+bridgeContext.window.__QCG_CONSOLE_V2__ = { executeConsoleCommand: async (command) => { v2Kind = command.kind; return { accepted: true, status: 'completed' } } }
+const v2Export = await bridgeContext.__qcgBridgeContract.execute(commandFixtures.find((command) => command.kind === 'export_debug_handoff'))
+assert(v2Export.accepted === true && v2Kind === 'export_debug_handoff', 'page bridge must route sanitized handoff export to V2')
 assert(background.includes("value.schema_version !== 'qcg-console-command.v1'") && background.includes("value.kind === 'human_decision'"), 'commands require the v1 console schema and human decisions')
 assert(panel.includes("kind: 'human_decision'") && panel.includes("available_commands"), 'human decisions must be explicit UI actions gated by v2 availability')
 assert(panel.includes("qcg-console-devtools.v1") && panel.includes("qcg-console-side-panel.v1"), 'DevTools and side panel must share the console transport')
@@ -69,13 +119,36 @@ assert(!panelHtml.includes('id="open-companion"') && panelHtml.includes('id="acc
 assert(panelHtml.includes('icons/inspector-q-avatar.jpg') && panelHtml.includes('Inspector Q observes bounded state; human authority remains explicit.'), 'Inspector Q must remain a decorative bounded-state observer, never an authority claim')
 assert(read('devtools.js').includes("'icons/qcg-32.png'"), 'the F12 panel must use the final QCG identity icon')
 assert(panel.includes('qcg-companion-access-v1') && panel.includes('applyAccessibility') && panel.includes('toggleAccess'), 'Companion access preferences must be local, persistent and keyboard-dismissible')
-assert(panel.includes('function requiredElement(selector)') && panel.includes('QCG Companion initialization failed: required element'), 'panel DOM dependencies must fail with a precise initialization error')
+assert(panel.includes('function requiredElement(selector)') && panel.includes('function requiredElements(selector)') && panel.includes('QCG Companion initialization failed: required element'), 'panel DOM dependencies must fail with a precise initialization error')
+assert((panel.match(/document\.querySelector\(/g) ?? []).length === 1, 'panel singleton selectors must go through requiredElement')
+assert((panel.match(/document\.querySelectorAll\(/g) ?? []).length === 1, 'panel selector sets must go through requiredElements')
 const allPanelIds = [...panelHtml.matchAll(/\bid=["']([^"']+)["']/g)].map((match) => match[1])
 assert(new Set(allPanelIds).size === allPanelIds.length, 'panel.html IDs must be unique')
-const referencedPanelIds = [...panel.matchAll(/\$\(\s*(["'])#([^"']+)\1\s*\)/g)].map((match) => match[2])
-for (const id of new Set(referencedPanelIds)) {
-  const matches = panelHtml.match(new RegExp(`id=["']${id}["']`, 'g')) ?? []
-  assert(matches.length === 1, `panel selector #${id} must resolve to exactly one panel.html element`)
+const htmlElements = [...panelHtml.matchAll(/<([a-z][a-z0-9-]*)([^>]*)>/gi)].map((match) => match[2])
+const escapeRegex = (value) => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+const selectorCount = (selector) => {
+  if (/^#[a-z0-9_-]+$/i.test(selector)) return allPanelIds.filter((id) => `#${id}` === selector).length
+  if (/^\.[a-z0-9_-]+$/i.test(selector)) {
+    const token = selector.slice(1)
+    return htmlElements.filter((attributes) => {
+      const match = attributes.match(/\bclass=["']([^"']*)["']/i)
+      return match ? match[1].split(/\s+/).includes(token) : false
+    }).length
+  }
+  const attributes = [...selector.matchAll(/\[([a-z0-9_-]+)(?:=["']([^"']*)["'])?\]/gi)].map((match) => ({ name: match[1], value: match[2] }))
+  if (attributes.length > 0 && attributes.map(({ name, value }) => value === undefined ? `[${name}]` : `[${name}="${value}"]`).join('') === selector) {
+    return htmlElements.filter((element) => attributes.every(({ name, value }) => {
+      const match = element.match(new RegExp(`(?:^|\\s)${escapeRegex(name)}(?:=["']([^"']*)["'])?(?=\\s|$)`, 'i'))
+      return Boolean(match) && (value === undefined || match[1] === value)
+    })).length
+  }
+  throw new Error(`validate.mjs cannot verify unsupported panel selector ${selector}`)
+}
+const singletonSelectors = [...panel.matchAll(/(?<!\$)\$\(\s*(["'])([^"']+)\1\s*\)/g)].map((match) => match[2])
+const collectionSelectors = [...panel.matchAll(/\$\$\(\s*(["'])([^"']+)\1\s*\)/g)].map((match) => match[2])
+for (const selector of new Set(singletonSelectors)) assert(selectorCount(selector) === 1, `panel selector ${selector} must resolve to exactly one panel.html element`)
+for (const selector of new Set(collectionSelectors)) {
+  assert(selectorCount(selector) > 0, `panel selector set ${selector} must resolve to at least one panel.html element`)
 }
 for (const profile of ['base', 'autism-calm', 'adhd-sprint', 'deep-work']) assert(panelHtml.includes(`data-access-profile="${profile}"`) && panel.includes(`'${profile}'`), `Companion Access must retain the SecuredMe ${profile} reading profile`)
 assert(read('panel.css').includes('--control-edge') && read('panel.css').includes('button:hover { border-color: var(--cyan); }'), 'every Companion button needs a persistent warm edge that changes to cyan on hover')

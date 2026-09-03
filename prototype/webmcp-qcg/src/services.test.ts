@@ -604,6 +604,25 @@ describe('QCG v2 service contract', () => {
     expect(followUp.decision).toBe('simulate_first')
   })
 
+  it('discards a completed Worker result when a new inspection clears its lease context', async () => {
+    const blocked = blockingSimulator()
+    const qcg = new QcgServices(blocked.simulator, Date.now, new FakeAnalyzer())
+    const { manifest, recommendation } = await evaluated(qcg)
+    await qcg.decide({ recommendation_id: recommendation.recommendation_id, choice: 'accepted', justification: 'I approve one bounded local simulation.' })
+    const pending = qcg.simulate({ recommendation_id: recommendation.recommendation_id }, new AbortController().signal)
+    await blocked.started
+    await qcg.inspect({ artifact_id: manifest.artifact_id })
+    blocked.release()
+    await expect(pending).rejects.toThrow('stale result was discarded')
+    expect(qcg.snapshot()).toMatchObject({
+      phase: 'partial',
+      manifest: { manifest_id: manifest.manifest_id },
+      recommendation: undefined,
+      receipt: undefined,
+      effects: { inspections: 2, local_simulations: 1 }
+    })
+  })
+
   it('discards a completed Worker result after reset without rebuilding state', async () => {
     const blocked = blockingSimulator()
     const qcg = new QcgServices(blocked.simulator, Date.now, new FakeAnalyzer())

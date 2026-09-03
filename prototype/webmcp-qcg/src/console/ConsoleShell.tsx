@@ -23,12 +23,12 @@ const isCompactConsole = (): boolean => typeof window !== 'undefined' && typeof 
 const companionPackages = {
   production: {
     href: '/qcg-console-companion-0.2.5.zip',
-    sha256: 'AFE69B2D1D05B62BE38226E7A3B4120069CB0F7428FD6EABB977824869C9B5E3',
+    sha256: 'AC69EFB5293163DF77420C7525B44D7CFD02AB3B76A8A06C8753FDD369F423CB',
     label: 'Production · qcg.securedme.ca',
   },
   development: {
     href: '/qcg-console-companion-dev-0.2.5.zip',
-    sha256: 'B4A19BB2B47D6F6630FF5827543615EED8D6B107FB8EBA773B7CB27D511B2864',
+    sha256: 'E7FC5BCB876D325BF52E48403AE571FC45E691DD7D671D18FD487FD52369FB5A',
     label: 'Development · localhost and qcg.securedme.ca',
   },
 } as const
