@@ -1,0 +1,124 @@
+{
+  "schema_version": "webmcp-qcg.evidence-receipt.v3",
+  "receipt_id": "receipt-recommendationc89f38b5c0f8616b17",
+  "manifest": {
+    "schema_version": "webmcp-qcg.artifact-manifest.v2",
+    "manifest_id": "manifest-c88be57cffca7fa84552e1ec628a37e2",
+    "artifact_id": "simulate-first-c88be57cffca7fa84552e1ec628a37e2",
+    "file_name": "simulate-first.qs",
+    "artifact_digest": "c88be57cffca7fa8bce95d05b8331e617176d3f2562dc2f14552e1ec628a37e2",
+    "byte_size": 235,
+    "format": "qsharp",
+    "artifact_profile": "qsharp-qdk",
+    "capabilities": {
+      "inspect": true,
+      "compile": true,
+      "simulate": true,
+      "static_only": false
+    },
+    "provenance": "demo_fixture",
+    "compiler": {
+      "name": "qsharp-lang",
+      "version": "1.31.0",
+      "status": "compiled",
+      "diagnostic_count": 0,
+      "diagnostics": [],
+      "profile_digest": "qsharp-lang-1-31-0-local-wasm",
+      "bounded_entrypoint": true,
+      "estimated_qubits": 2
+    },
+    "created_at": "2026-09-03T00:43:20.860Z"
+  },
+  "target_profile": {
+    "schema_version": "webmcp-qcg.target-profile.v2",
+    "profile_id": "qsharp-local-wasm-1310",
+    "label": "Q# 1.31 local WebAssembly simulator",
+    "source": "https://www.npmjs.com/package/qsharp-lang/v/1.31.0",
+    "captured_at": "2026-09-01T21:45:37-04:00",
+    "expires_at": "2026-09-24T23:59:59-04:00",
+    "execution_surface": "local_wasm",
+    "max_qubits": 8,
+    "compiler_profile_digest": "qsharp-lang-1-31-0-local-wasm",
+    "source_digest": "25561eb5cafbc02c28cdb5f94ef09cc87b9b17d84b602ea82d77380d75fb129d",
+    "evidence_state": "known",
+    "submission_enabled": false
+  },
+  "recommendation": {
+    "schema_version": "webmcp-qcg.recommendation.v2",
+    "recommendation_id": "recommendation-c88be57cffca7fa89f38b5c0f8616b17",
+    "manifest_id": "manifest-c88be57cffca7fa84552e1ec628a37e2",
+    "target_profile_id": "qsharp-local-wasm-1310",
+    "scientific_intent": "Measure the Bell correlation through one bounded local Q# simulation.",
+    "observable": "bell_correlation",
+    "parameters_digest": "44136fa355b3678a1146ad16f7e8649e94fb4fc21fe77e8310c060f61caaff8a",
+    "requested_limits": {
+      "shots": 64,
+      "timeout_ms": 10000,
+      "max_qubits": 2,
+      "target": "local_simulator"
+    },
+    "reuse_key": "c855463e712205fe1e44e859d10f38d88ca4210d544e2ed6ae64915e6a3c416d",
+    "expires_at": "2026-09-03T00:48:20.873Z",
+    "valid": true,
+    "decision": "simulate_first",
+    "reason_codes": [
+      "BOUNDED_LOCAL_EVIDENCE_REQUIRED"
+    ],
+    "unknowns": [],
+    "confidence": "high",
+    "safer_alternative": "Request one-time human consent for a bounded local Q# simulation."
+  },
+  "human_decision": {
+    "schema_version": "webmcp-qcg.human-decision.v2",
+    "human_decision_id": "human-decision-recommendationc88fcced0f74afc38b",
+    "recommendation_id": "recommendation-c88be57cffca7fa89f38b5c0f8616b17",
+    "choice": "accepted",
+    "justification": "Accepted after visible review.",
+    "override": false,
+    "decided_at": "2026-09-03T00:43:40.078Z"
+  },
+  "simulation": {
+    "run_id": "run-recommendationc89da92bd4fb9f4827",
+    "bell_invariant": true,
+    "shots_requested": 64,
+    "shots_returned": 64,
+    "outcome_counts": {
+      "[One, One]": 33,
+      "[Zero, Zero]": 31
+    },
+    "completed_at": "2026-09-03T00:44:10.196Z"
+  },
+  "effects": {
+    "inspections": 1,
+    "evaluations": 1,
+    "local_simulations": 1,
+    "metadata_validations": 1,
+    "qpu_submissions": 0,
+    "evidence_exports": 1
+  },
+  "format": "qsharp",
+  "artifact_profile": {
+    "id": "qsharp-qdk",
+    "label": "Q# / QDK WASM",
+    "format": "qsharp",
+    "capabilities": {
+      "inspect": true,
+      "compile": true,
+      "simulate": true,
+      "static_only": false
+    }
+  },
+  "compiler_facts": {
+    "name": "qsharp-lang",
+    "version": "1.31.0",
+    "status": "compiled",
+    "diagnostic_count": 0,
+    "diagnostics": [],
+    "profile_digest": "qsharp-lang-1-31-0-local-wasm",
+    "bounded_entrypoint": true,
+    "estimated_qubits": 2
+  },
+  "digest": "f81a103fc2409b8d38305594b203f16781641c53b964e66240e3daa79c961bec",
+  "created_at": "2026-09-03T00:43:20.873Z",
+  "updated_at": "2026-09-03T00:44:27.721Z"
+}
