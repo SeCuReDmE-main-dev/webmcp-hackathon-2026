@@ -133,9 +133,11 @@ export function useQcgWebMcp(
     useState<'unavailable' | 'registering' | 'registered' | 'error'>(supported ? 'registering' : 'unavailable')
   const consentIsValid = state.authority_state === 'authorized' && state.humanDecision?.choice === 'accepted'
   const toolNames = useMemo(() => {
-    const names: ToolName[] = []
+    // Keep one bounded, read-only discovery surface available at page load.
+    // Execution still requires an artifact that the human loaded locally.
+    const names: ToolName[] = ['inspect_quantum_experiment']
     if (state.manifest) {
-      names.push('inspect_quantum_experiment', 'evaluate_quantum_call')
+      names.push('evaluate_quantum_call')
     }
     if (state.recommendation?.decision === 'simulate_first' && consentIsValid) {
       names.push('run_bounded_local_simulation')
@@ -151,7 +153,7 @@ export function useQcgWebMcp(
   const tools = useMemo<Record<ToolName, WebMcpTool>>(() => ({
     inspect_quantum_experiment: {
       name: 'inspect_quantum_experiment', title: 'Inspect quantum experiment',
-      description: 'Verify the manifest of a human-selected quantum artifact already loaded locally. Raw source never crosses this tool contract.',
+      description: 'Discover and verify the manifest of a human-selected quantum artifact already loaded locally. The tool is read-only, grants no authority, and never returns raw source.',
       inputSchema: schemas.inspect_quantum_experiment,
       annotations: { readOnlyHint: true, untrustedContentHint: true, destructiveHint: false },
       execute: async (input, options) => {
