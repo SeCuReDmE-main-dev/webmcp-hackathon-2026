@@ -121,7 +121,7 @@ function executionSignal(options?: { signal?: AbortSignal }): AbortSignal {
 
 export function useQcgWebMcp(
   services: QcgServices,
-  state: QcgState,
+  _state: QcgState,
   onChange: () => void
 ): {
   supported: boolean
@@ -131,20 +131,15 @@ export function useQcgWebMcp(
   const supported = Boolean(document.modelContext?.registerTool)
   const [registrationStatus, setRegistrationStatus] =
     useState<'unavailable' | 'registering' | 'registered' | 'error'>(supported ? 'registering' : 'unavailable')
-  const consentIsValid = state.authority_state === 'authorized' && state.humanDecision?.choice === 'accepted'
-  const toolNames = useMemo(() => {
-    // Keep one bounded, read-only discovery surface available at page load.
-    // Execution still requires an artifact that the human loaded locally.
-    const names: ToolName[] = ['inspect_quantum_experiment']
-    if (state.manifest) {
-      names.push('evaluate_quantum_call')
-    }
-    if (state.recommendation?.decision === 'simulate_first' && consentIsValid) {
-      names.push('run_bounded_local_simulation')
-    }
-    if (state.receipt) names.push('export_quantum_evidence_report')
-    return names
-  }, [state.manifest?.manifest_id, state.recommendation?.decision, state.receipt?.receipt_id, consentIsValid])
+  // Discovery is stable at page load so agents and directory scanners can map
+  // the complete QCG capability surface. Each service still enforces its own
+  // manifest, recommendation, human-decision, consent and receipt preconditions.
+  const toolNames = useMemo<ToolName[]>(() => [
+    'inspect_quantum_experiment',
+    'evaluate_quantum_call',
+    'run_bounded_local_simulation',
+    'export_quantum_evidence_report'
+  ], [])
 
   const registrations = useRef(new Map<ToolName, { controller: AbortController; pending: boolean }>())
   const registrationFailures = useRef(new Set<ToolName>())
