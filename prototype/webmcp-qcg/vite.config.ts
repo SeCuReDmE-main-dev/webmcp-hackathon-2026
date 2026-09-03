@@ -1,8 +1,15 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import { existsSync } from 'node:fs'
+
+const sharedEnvDirectory = process.env.QCG_SHARED_ENV_DIR
+  ?? (process.platform === 'win32' ? 'Z:\\SecuredMe Education suite' : process.cwd())
 
 export default defineConfig({
   root: process.cwd(),
+  // The publishing key stays outside the repository. CI/Vercel can provide the
+  // same VITE_AGENTLANE_PUBLISHING_KEY through their environment settings.
+  envDir: existsSync(sharedEnvDirectory) ? sharedEnvDirectory : process.cwd(),
   resolve: { preserveSymlinks: true },
   server: {
     // The hackathon checkout lives on a mapped Windows volume. Native file

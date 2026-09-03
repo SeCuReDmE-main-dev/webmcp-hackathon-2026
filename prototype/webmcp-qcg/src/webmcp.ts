@@ -27,6 +27,11 @@ interface ModelContext {
   registerTool(tool: WebMcpTool, options: { signal: AbortSignal }): void | Promise<void>
 }
 
+const agentLaneExecutionSignal = Symbol('qcg-agentlane-execution-signal')
+type AgentLaneInput = Record<string, unknown> & {
+  [agentLaneExecutionSignal]?: AbortSignal
+}
+
 declare global {
   interface Document { modelContext?: ModelContext }
 }
@@ -163,6 +168,19 @@ function executionSignal(options?: { signal?: AbortSignal }): AbortSignal {
   return options?.signal ?? new AbortController().signal
 }
 
+function unwrapAgentLaneResult(value: unknown): unknown {
+  if (!value || typeof value !== 'object') return value
+  const content = (value as { content?: unknown }).content
+  if (!Array.isArray(content) || content.length !== 1) return value
+  const block = content[0] as { type?: unknown; text?: unknown }
+  if (block?.type !== 'text' || typeof block.text !== 'string') return value
+  try {
+    return JSON.parse(block.text)
+  } catch {
+    return block.text
+  }
+}
+
 export function useQcgWebMcp(
   services: QcgServices,
   _state: QcgState,
@@ -259,6 +277,9 @@ export function useQcgWebMcp(
     }
   }), [onChange, services])
 
+  const agentLanePublishingKey = String(import.meta.env.VITE_AGENTLANE_PUBLISHING_KEY ?? '').trim()
+  const agentLaneEnabled = /^wmk_[A-Za-z0-9_-]{20,}$/.test(agentLanePublishingKey)
+
   useEffect(() => {
     const modelContext = document.modelContext
     if (!modelContext?.registerTool) {
@@ -302,7 +323,56 @@ export function useQcgWebMcp(
     for (const { name, registration } of additions) {
       let registrationResult: void | Promise<void>
       try {
-        registrationResult = modelContext.registerTool(tools[name], { signal: registration.controller.signal })
+        if (!agentLaneEnabled) {
+          registrationResult = modelContext.registerTool(tools[name], { signal: registration.controller.signal })
+        } else {
+          registrationResult = import('@nekuda/webmcp-sdk').then(async ({ defineTool, registerTools }) => {
+            if (registration.controller.signal.aborted) return
+            const sourceTool = tools[name]
+            const trackedTool = defineTool<AgentLaneInput>({
+              stableKey: `qcg.${name}`,
+              name: sourceTool.name,
+              title: sourceTool.title,
+              description: sourceTool.description,
+              inputSchema: sourceTool.inputSchema,
+              annotations: sourceTool.annotations,
+              version: '0.1.0-hackathon',
+              source: 'merchant_authored',
+              intent: name === 'run_bounded_local_simulation' ? 'act' : 'answer',
+              execute: (input) => sourceTool.execute(input, {
+                signal: input[agentLaneExecutionSignal]
+              })
+            })
+            const trackedRegistration = registerTools([trackedTool], {
+              signal: registration.controller.signal,
+              // AgentLane's authenticated channel can include verbatim inputs and
+              // responses. QCG disables that channel and keeps only the keyed,
+              // derived usage telemetry needed for tool discovery and metrics.
+              tracking: { apiKey: agentLanePublishingKey, disabled: true },
+              telemetry: true,
+              modelContext: {
+                registerTool: (sdkTool, sdkOptions) => {
+                  const signal = sdkOptions?.signal ?? registration.controller.signal
+                  return Promise.resolve(modelContext.registerTool({
+                    ...sourceTool,
+                    execute: async (input, options) => {
+                      const trackedInput = { ...input } as AgentLaneInput
+                      Object.defineProperty(trackedInput, agentLaneExecutionSignal, {
+                        value: options?.signal,
+                        enumerable: false
+                      })
+                      return unwrapAgentLaneResult(await sdkTool.execute(trackedInput))
+                    }
+                  }, { signal }))
+                }
+              }
+            })
+            const [outcome] = await trackedRegistration.ready
+            if (!outcome || outcome.state !== 'registered') {
+              throw new Error('AgentLane could not register the QCG tool.')
+            }
+          })
+        }
       } catch {
         registration.controller.abort()
         registrations.current.delete(name)
@@ -323,7 +393,7 @@ export function useQcgWebMcp(
       })
     }
   }, [
-    supported, toolNames, tools
+    agentLaneEnabled, agentLanePublishingKey, supported, toolNames, tools
   ])
 
   useEffect(() => () => {

@@ -62,6 +62,53 @@ async function prepareConsentedSimulation(services: QcgServices) {
 }
 
 describe('WebMCP v2 lifecycle', () => {
+  it('registers AgentLane metrics without sending verbatim QCG tool input', async () => {
+    vi.stubEnv('VITE_AGENTLANE_PUBLISHING_KEY', 'wmk_test_agentlane_key_12345678901234567890')
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response(null, { status: 202 }))
+    const registrations: RegisteredTool[] = []
+    Object.defineProperty(document, 'modelContext', {
+      configurable: true,
+      value: { registerTool: vi.fn(async (tool: RegisteredTool) => { registrations.push(tool) }) }
+    })
+    const services = new QcgServices(simulator, Date.now, analyzer)
+    const { manifest, card } = await services.loadDemoArtifact('simulate-first')
+    const view = render(<Harness services={services} />)
+    await waitFor(() => expect(registrations).toHaveLength(4))
+
+    for (const tool of registrations) {
+      expect(tool.outputSchema).toMatchObject({ anyOf: expect.any(Array) })
+    }
+    let inspected: { manifest_id: string } | undefined
+    await act(async () => {
+      inspected = await registrations[0].execute(
+        { artifact_id: manifest.artifact_id },
+        { signal: new AbortController().signal }
+      ) as { manifest_id: string }
+    })
+    const privacyCanary = 'private-human-intent-must-not-leave-qcg'
+    await act(async () => {
+      await registrations[1].execute({
+        manifest_id: inspected!.manifest_id,
+        target_profile_id: card.profileId,
+        scientific_intent: privacyCanary,
+        observable: card.observable,
+        parameters: {},
+        requested_limits: card.requestedLimits
+      }, { signal: new AbortController().signal })
+    })
+    await waitFor(() => expect(fetchSpy).toHaveBeenCalled())
+    const emittedBodies = fetchSpy.mock.calls
+      .map(([, init]) => typeof init?.body === 'string' ? init.body : '')
+      .join('\n')
+    expect(emittedBodies).not.toContain(privacyCanary)
+    expect(fetchSpy.mock.calls.every(([url]) => String(url).includes('/v1/telemetry'))).toBe(true)
+
+    view.unmount()
+    delete (document as Document & { modelContext?: unknown }).modelContext
+    fetchSpy.mockRestore()
+    vi.unstubAllEnvs()
+  })
+
   it('measures the 5000-byte response budget in UTF-8 for accents and emoji', () => {
     const accentWithin = { content: 'é'.repeat(2493) }
     const accentOver = { content: 'é'.repeat(2494) }
