@@ -37,6 +37,9 @@ function SnapshotHarness({ services, state }: { services: QcgServices; state: Qc
 
 interface RegisteredTool {
   name: ToolName
+  description: string
+  inputSchema: Record<string, unknown>
+  outputSchema: Record<string, unknown>
   execute: (input: object, options: { signal: AbortSignal }) => Promise<unknown>
 }
 
@@ -108,6 +111,41 @@ describe('WebMCP v2 lifecycle', () => {
     expect(registerTool.mock.calls[0]?.[0]).toMatchObject({ annotations: {
       readOnlyHint: true, destructiveHint: false, untrustedContentHint: true
     } })
+    for (const [tool] of registerTool.mock.calls) {
+      expect(tool.outputSchema).toMatchObject({ anyOf: expect.any(Array) })
+      expect(JSON.stringify(tool.outputSchema)).toContain('required')
+    }
+    expect(registerTool.mock.calls[0]?.[0].description).toContain('manifest_id for evaluate_quantum_call')
+    expect(registerTool.mock.calls[1]?.[0].description).toContain('recommendation_id')
+    expect(registerTool.mock.calls[3]?.[0].description).toContain('receipt_id')
+    expect(registerTool.mock.calls[0]?.[0].inputSchema).toMatchObject({ required: [] })
+    view.unmount()
+    delete (document as Document & { modelContext?: unknown }).modelContext
+  })
+
+  it('supports identifier-free inspection and returns every downstream chaining identifier', async () => {
+    const registrations: RegisteredTool[] = []
+    Object.defineProperty(document, 'modelContext', {
+      configurable: true,
+      value: { registerTool: vi.fn((tool: RegisteredTool) => { registrations.push(tool) }) }
+    })
+    const services = new QcgServices(simulator, Date.now, analyzer)
+    const { card } = await services.loadDemoArtifact('simulate-first')
+    const view = render(<Harness services={services} />)
+    await waitFor(() => expect(registrations).toHaveLength(4))
+
+    const inspected = await registrations[0].execute({}, { signal: new AbortController().signal }) as { manifest_id: string }
+    const evaluated = await registrations[1].execute({
+      manifest_id: inspected.manifest_id,
+      target_profile_id: card.profileId,
+      scientific_intent: card.scientificIntent,
+      observable: card.observable,
+      parameters: {},
+      requested_limits: card.requestedLimits
+    }, { signal: new AbortController().signal }) as { recommendation_id: string; receipt_id: string }
+
+    expect(evaluated.recommendation_id).toMatch(/^recommendation-/)
+    expect(evaluated.receipt_id).toMatch(/^receipt-/)
     view.unmount()
     delete (document as Document & { modelContext?: unknown }).modelContext
   })

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { ZodError } from 'zod'
+import { toJSONSchema, z, ZodError, type ZodType } from 'zod'
 import {
   evaluateInput,
   exportInput,
@@ -19,6 +19,7 @@ interface WebMcpTool {
   title: string
   description: string
   inputSchema: JsonSchema
+  outputSchema: JsonSchema
   annotations: { readOnlyHint?: boolean; untrustedContentHint?: boolean; destructiveHint?: boolean }
   execute: (input: object, options?: { signal?: AbortSignal }) => Promise<unknown>
 }
@@ -35,9 +36,9 @@ const schemas: Record<ToolName, JsonSchema> = {
   inspect_quantum_experiment: {
     type: 'object',
     additionalProperties: false,
-    required: ['artifact_id'],
+    required: [],
     properties: {
-      artifact_id: { ...identifier, description: 'Identifier of the human-selected quantum artifact already loaded locally.' }
+      artifact_id: { ...identifier, description: 'Optional identifier shown by the current QCG session. Omit it to inspect the quantum file the person already loaded in this browser.' }
     }
   },
   evaluate_quantum_call: {
@@ -45,10 +46,10 @@ const schemas: Record<ToolName, JsonSchema> = {
     additionalProperties: false,
     required: ['manifest_id', 'target_profile_id', 'scientific_intent', 'observable', 'parameters', 'requested_limits'],
     properties: {
-      manifest_id: { ...identifier, description: 'Current byte-derived manifest identifier.' },
-      target_profile_id: { ...identifier, description: 'Frozen target-profile identifier selected in the visible UI.' },
-      scientific_intent: { type: 'string', minLength: 12, maxLength: 320 },
-      observable: { type: 'string', minLength: 3, maxLength: 80 },
+      manifest_id: { ...identifier, description: 'Use manifest_id returned by inspect_quantum_experiment.' },
+      target_profile_id: { ...identifier, description: 'Use the target profile selected in the visible QCG decision card.' },
+      scientific_intent: { type: 'string', minLength: 12, maxLength: 320, description: 'Plain-language purpose of the proposed quantum call.' },
+      observable: { type: 'string', minLength: 3, maxLength: 80, description: 'Measurement or result the proposed call is expected to produce.' },
       parameters: {
         type: 'object',
         additionalProperties: { anyOf: [{ type: 'string', maxLength: 120 }, { type: 'number' }, { type: 'boolean' }] },
@@ -72,7 +73,7 @@ const schemas: Record<ToolName, JsonSchema> = {
     additionalProperties: false,
     required: ['recommendation_id'],
     properties: {
-      recommendation_id: { ...identifier, description: 'Current simulate_first recommendation. The private consent token stays inside QCG.' }
+      recommendation_id: { ...identifier, description: 'Use recommendation_id returned by evaluate_quantum_call. The page separately verifies one-time human consent.' }
     }
   },
   export_quantum_evidence_report: {
@@ -80,10 +81,53 @@ const schemas: Record<ToolName, JsonSchema> = {
     additionalProperties: false,
     required: ['receipt_id', 'format'],
     properties: {
-      receipt_id: { ...identifier, description: 'Current v3 evidence receipt.' },
-      format: { type: 'string', enum: ['json', 'markdown'] }
+      receipt_id: { ...identifier, description: 'Use receipt_id returned by evaluate_quantum_call or run_bounded_local_simulation.' },
+      format: { type: 'string', enum: ['json', 'markdown'], description: 'Choose machine-readable JSON or human-readable Markdown.' }
     }
   }
+}
+
+const budgetNoticeSchema: JsonSchema = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['truncated', 'summary', 'budget_bytes'],
+  properties: {
+    truncated: { const: true },
+    summary: { type: 'string' },
+    budget_bytes: { const: 5000 }
+  }
+}
+
+const outputIdentifier = z.string().regex(/^[a-z0-9][a-z0-9_-]{2,63}$/)
+const inspectToolOutput = manifestOutput.extend({
+  manifest_id: outputIdentifier.describe('Pass this identifier to evaluate_quantum_call.'),
+  artifact_id: outputIdentifier.describe('Identifies the human-loaded file inside the current browser session.')
+})
+const evaluateToolOutput = recommendationOutput.extend({
+  recommendation_id: outputIdentifier.describe('Pass this identifier to run_bounded_local_simulation when local simulation is recommended.'),
+  manifest_id: outputIdentifier.describe('The manifest identifier received from inspect_quantum_experiment.'),
+  receipt_id: outputIdentifier.describe('Pass this identifier to export_quantum_evidence_report.')
+})
+const simulationToolOutput = simulationOutput.extend({
+  receipt_id: outputIdentifier.describe('Pass this updated evidence receipt identifier to export_quantum_evidence_report.'),
+  run_id: outputIdentifier.describe('Identifies this bounded local simulation run.')
+})
+const exportToolOutput = exportOutput.extend({
+  receipt_id: outputIdentifier.describe('The evidence receipt that was exported.'),
+  export_id: outputIdentifier.describe('Identifies this export operation.')
+})
+
+function boundedOutputSchema(schema: ZodType): JsonSchema {
+  const output = toJSONSchema(schema, { target: 'draft-7' }) as JsonSchema
+  delete output.$schema
+  return { anyOf: [output, budgetNoticeSchema] }
+}
+
+const outputSchemas: Record<ToolName, JsonSchema> = {
+  inspect_quantum_experiment: boundedOutputSchema(inspectToolOutput),
+  evaluate_quantum_call: boundedOutputSchema(evaluateToolOutput),
+  run_bounded_local_simulation: boundedOutputSchema(simulationToolOutput),
+  export_quantum_evidence_report: boundedOutputSchema(exportToolOutput)
 }
 
 export const WEBMCP_RESPONSE_BUDGET_BYTES = 5_000 as const
@@ -148,41 +192,49 @@ export function useQcgWebMcp(
   const tools = useMemo<Record<ToolName, WebMcpTool>>(() => ({
     inspect_quantum_experiment: {
       name: 'inspect_quantum_experiment', title: 'Inspect quantum experiment',
-      description: 'Discover and verify the manifest of a human-selected quantum artifact already loaded locally. The tool is read-only, grants no authority, and never returns raw source.',
+      description: 'Return metadata for the quantum file the person loaded in this browser. The result includes manifest_id for evaluate_quantum_call and never includes the file contents.',
       inputSchema: schemas.inspect_quantum_experiment,
+      outputSchema: outputSchemas.inspect_quantum_experiment,
       annotations: { readOnlyHint: true, untrustedContentHint: true, destructiveHint: false },
       execute: async (input, options) => {
         try {
-          const output = await services.inspect(inspectInput.parse(input), 'webmcp')
+          const rawInput = input as Record<string, unknown>
+          const requestedId = typeof rawInput.artifact_id === 'string' ? rawInput.artifact_id : services.snapshot().manifest?.artifact_id
+          if (!requestedId) throw new Error('The artifact must be loaded by a person before inspection.')
+          const output = await services.inspect(inspectInput.parse({ artifact_id: requestedId }), 'webmcp')
           onChange()
-          return boundedWebMcpResponse(manifestOutput.parse(output))
+          return boundedWebMcpResponse(inspectToolOutput.parse(output))
         } catch (error) { return failure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
       }
     },
     evaluate_quantum_call: {
       name: 'evaluate_quantum_call', title: 'Evaluate quantum call',
-      description: 'Recommend a safe next action from the manifest, target snapshot and bounded intent. This tool grants no execution authority.',
+      description: 'Review the inspected file against a selected target and return one recommended next step. Use manifest_id from inspect_quantum_experiment. The result includes recommendation_id for an approved local simulation.',
       inputSchema: schemas.evaluate_quantum_call,
+      outputSchema: outputSchemas.evaluate_quantum_call,
       annotations: { readOnlyHint: true, destructiveHint: false },
       execute: async (input, options) => {
         try {
           const output = await services.evaluate(evaluateInput.parse(input), 'webmcp')
           onChange()
-          return boundedWebMcpResponse(recommendationOutput.parse(output))
+          const receiptId = services.snapshot().receipt?.receipt_id
+          if (!receiptId) throw new Error('receipt_id was not created for the current recommendation.')
+          return boundedWebMcpResponse(evaluateToolOutput.parse({ ...output, receipt_id: receiptId }))
         } catch (error) { return failure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
       }
     },
     run_bounded_local_simulation: {
       name: 'run_bounded_local_simulation', title: 'Run bounded local simulation',
-      description: 'Consume private visible-human consent and run the approved Q# or OpenQASM Bell fixture locally in a Worker. No provider or QPU call occurs.',
+      description: 'Run the approved two-qubit Bell example in this browser after the person accepts the recommendation. Use recommendation_id from evaluate_quantum_call. Requires one-time human consent and makes no hardware or provider call.',
       inputSchema: schemas.run_bounded_local_simulation,
+      outputSchema: outputSchemas.run_bounded_local_simulation,
       annotations: { readOnlyHint: false, destructiveHint: false },
       execute: async (input, options) => {
         try {
           const receipt = await services.simulate(simulationInput.parse(input), executionSignal(options), 'webmcp')
           onChange()
           const simulation = receipt.simulation!
-          return boundedWebMcpResponse(simulationOutput.parse({
+          return boundedWebMcpResponse(simulationToolOutput.parse({
             receipt_id: receipt.receipt_id, run_id: simulation.run_id, bell_invariant: simulation.bell_invariant,
             shots_requested: simulation.shots_requested, shots_returned: simulation.shots_returned,
             outcome_counts: simulation.outcome_counts, effects: receipt.effects, digest: receipt.digest,
@@ -193,14 +245,15 @@ export function useQcgWebMcp(
     },
     export_quantum_evidence_report: {
       name: 'export_quantum_evidence_report', title: 'Export quantum evidence report',
-      description: 'Export the current v3 receipt without re-evaluating or executing the experiment.',
+      description: 'Export an existing evidence receipt as JSON or Markdown. Use receipt_id returned by evaluate_quantum_call or run_bounded_local_simulation. This does not evaluate or run the experiment again.',
       inputSchema: schemas.export_quantum_evidence_report,
+      outputSchema: outputSchemas.export_quantum_evidence_report,
       annotations: { readOnlyHint: true, destructiveHint: false },
       execute: async (input, options) => {
         try {
           const output = await services.exportPacket(exportInput.parse(input), 'webmcp')
           onChange()
-          return boundedWebMcpResponse(exportOutput.parse(output))
+          return boundedWebMcpResponse(exportToolOutput.parse(output))
         } catch (error) { return failure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
       }
     }
