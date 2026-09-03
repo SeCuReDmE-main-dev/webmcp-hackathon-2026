@@ -23,7 +23,7 @@ interface WebMcpTool {
   execute: (input: object, options?: { signal?: AbortSignal }) => Promise<unknown>
 }
 interface ModelContext {
-  registerTool(tool: WebMcpTool, options: { signal: AbortSignal }): Promise<void>
+  registerTool(tool: WebMcpTool, options: { signal: AbortSignal }): void | Promise<void>
 }
 
 declare global {
@@ -247,7 +247,17 @@ export function useQcgWebMcp(
     }
     setRegistrationStatus('registering')
     for (const { name, registration } of additions) {
-      void modelContext.registerTool(tools[name], { signal: registration.controller.signal }).then(() => {
+      let registrationResult: void | Promise<void>
+      try {
+        registrationResult = modelContext.registerTool(tools[name], { signal: registration.controller.signal })
+      } catch {
+        registration.controller.abort()
+        registrations.current.delete(name)
+        registrationFailures.current.add(name)
+        setRegistrationStatus('error')
+        continue
+      }
+      void Promise.resolve(registrationResult).then(() => {
         if (registrations.current.get(name) !== registration || registration.controller.signal.aborted) return
         registration.pending = false
         refreshStatus()

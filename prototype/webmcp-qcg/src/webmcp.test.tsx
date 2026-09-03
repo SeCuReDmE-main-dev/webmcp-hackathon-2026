@@ -93,8 +93,8 @@ describe('WebMCP v2 lifecycle', () => {
     expect(boundedWebMcpResponse(output)).toMatchObject({ truncated: true, budget_bytes: 5000 })
   })
 
-  it('registers all four guarded quantum tools for discovery before a human loads Q#', async () => {
-    const registerTool = vi.fn(async (_tool: RegisteredTool) => undefined)
+  it('registers all four guarded quantum tools when the native API returns void', async () => {
+    const registerTool = vi.fn((_tool: RegisteredTool) => undefined)
     Object.defineProperty(document, 'modelContext', { configurable: true, value: { registerTool } })
     const services = new QcgServices(simulator, Date.now, analyzer)
     const view = render(<Harness services={services} />)
