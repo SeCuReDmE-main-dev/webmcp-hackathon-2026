@@ -2,7 +2,11 @@
 
 Date: 2026-09-02
 
-Status: `PASS - 70/71 DONE`
+Status: `HISTORICAL PASS - SUPERSEDED BY 2026-09-03 FREEZE RECEIPT`
+
+> Final author disposition: the replacement-video action was declined on
+> 2026-09-03. See
+> `docs/evidence/QCG_DISCOVERABILITY_AND_FREEZE_RECEIPT_2026-09-03.md`.
 
 ## Ground
 

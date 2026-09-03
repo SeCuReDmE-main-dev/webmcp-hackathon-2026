@@ -42,7 +42,7 @@
     "final_submission_requires_author_approval": true,
     "qpu_or_paid_provider_execution_allowed": false
   },
-  "current_stage": "submitted_video_replacement_pending",
+  "current_stage": "submitted_frozen_author_retains_current_video",
   "submission": {
     "status": "submitted",
     "submission_id": 1158343,
@@ -50,10 +50,11 @@
     "submitted_at": "2026-09-02T15:42:44.142-04:00",
     "provisional_video_url": "https://youtu.be/WV8XMHzt84Y",
     "provisional_video_duration": "00:05:57",
-    "video_compliance_note": "Replace with a public YouTube demo of 3:00 maximum before the submission deadline."
+    "video_compliance_note": "The submitted 00:05:57 safety video exceeds the stated 3:00 maximum. On 2026-09-03 the author decided to retain it and explicitly accepted that compliance risk."
   },
   "completed_stages": [
-    "submit-project"
+    "submit-project",
+    "author-decision-retain-current-video"
   ],
-  "next_command": "replace provisional video with final sub-three-minute human-voice demo"
+  "next_command": null
 }

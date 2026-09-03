@@ -3,8 +3,8 @@
   "project": "WebMCP Quantum Call Gate",
   "repository": "https://github.com/SeCuReDmE-main-dev/webmcp-hackathon-2026",
   "visibility": "public",
-  "updated_at": "2026-09-02",
-  "phase": "post_submission_audit_hotfix_deployed_video_replacement_pending",
+  "updated_at": "2026-09-03",
+  "phase": "post_submission_discoverability_hardening_validated_freeze_pending",
   "candidates": {
     "quantech_vid": "rejected_for_this_hackathon",
     "webccp": "deferred_bench",
@@ -15,8 +15,8 @@
   "selection_final": true,
   "mvp_contract_final": true,
   "source": {
-    "application_candidate": "b1f0e991d9bd30f67800be3b5167708329f48268",
-    "runtime_candidate": "b1f0e991d9bd30f67800be3b5167708329f48268",
+    "application_candidate": "bdf1d653cf48bb5aa543c139ea64a25b67e6a2aa",
+    "runtime_candidate": "bdf1d653cf48bb5aa543c139ea64a25b67e6a2aa",
     "origin_main_exact_at_promotion": true,
     "documentation_commits_may_follow_without_changing_runtime_bytes": true,
     "release_tag_created": true,
@@ -29,7 +29,7 @@
     "software_doi_state": "published_immutable_hackathon_release"
   },
   "prototype": {
-    "status": "post_submission_hotfix_clean_clone_passed_and_deployed",
+    "status": "post_submission_discoverability_hardening_clean_clone_passed_and_deployed",
     "qsharp_lang_version": "1.31.0",
     "browser_worker_proven": true,
     "historical_native_webmcp_invocation_proven": true,
@@ -46,7 +46,7 @@
     "evidence_exports": 1,
     "external_provider_calls": 0,
     "qpu_submissions": 0,
-    "automated_tests": 104,
+    "automated_tests": 106,
     "automated_test_files": 13,
     "companion_gates": "5/5",
     "npm_audit_vulnerabilities": 0,
@@ -58,32 +58,62 @@
       "stale_worker_simulation_lease",
       "utf8_webmcp_response_budget",
       "nine_command_companion_parity",
-      "required_panel_dom_contract"
+      "required_panel_dom_contract",
+      "synchronous_native_webmcp_registration",
+      "four_tool_initial_discovery",
+      "typed_webmcp_output_contracts",
+      "downstream_identifier_provenance",
+      "identifier_free_current_artifact_inspection",
+      "privacy_bounded_agentlane_registration"
     ],
-    "runtime_commit": "b1f0e991d9bd30f67800be3b5167708329f48268",
-    "receipt": "docs/evidence/QCG_POST_SUBMISSION_AUDIT_HOTFIX_2026-09-02.md",
+    "runtime_commit": "bdf1d653cf48bb5aa543c139ea64a25b67e6a2aa",
+    "receipt": "docs/evidence/QCG_DISCOVERABILITY_AND_FREEZE_RECEIPT_2026-09-03.md",
     "hackathon_tag_or_doi_changed": false
+  },
+  "webmcp_directory": {
+    "host": "qcg.securedme.ca",
+    "tools_detected": 4,
+    "pages_scanned": 1,
+    "grade": "B+",
+    "grade_label": "Good",
+    "listing_state": "underway",
+    "confirmed_strengths": [
+      "precise constrained input and output schemas",
+      "clear chained identifier handoff",
+      "explicit consent and no-hardware guarantees"
+    ],
+    "remaining_observation": "narrow scope and one bounded Bell simulation fixture",
+    "live_journey_disposition": "expected controlled refusal when the external runner opens a fresh session without the required human-loaded artifact",
+    "agentlane_project_created": true,
+    "agentlane_sdk_installed": true,
+    "agentlane_sdk_version": "0.5.0",
+    "agentlane_tools_detected": 4,
+    "agentlane_authenticated_verbatim_tracking": false,
+    "agentlane_derived_usage_telemetry": true,
+    "agentlane_journey_runs": "2 inconclusive infrastructure failures before browser start; zero steps and zero calls",
+    "agentlane_journey_disposition": "external runner incident; no QCG mutation justified"
   },
   "deployment": {
     "production_build_ready": true,
     "stable_live_url": "https://qcg.securedme.ca/",
     "canonical_host": "cpanel",
     "secondary_live_url": "https://webmcp-qcg.vercel.app/",
-    "status": "canonical_and_secondary_23_of_23_content_match_cpanel_25_of_25_package_pass",
-    "cpanel_package": "evidence/releases/qcg-console-b1f0e99-audit-hotfix-docroot.zip",
-    "cpanel_package_sha256": "6AAA54DC3FCBB0622932890027C2A8C11EFCCF22651E3B20A35B128BBA28B881",
-    "cpanel_plan_id": "55e11403697e7ff92c6f5a36",
-    "cpanel_live_manifest": "25/25",
-    "cpanel_backup": "/home/xacm7978/public_html/qcg.securedme.ca.backup-55e11403697e7ff92c6f5a36",
+    "status": "canonical_agentlane_build_27_of_27_pass_secondary_source_updated_without_agentlane_environment",
+    "cpanel_package": "evidence/releases/qcg-console-bdf1d65-agentlane-docroot-r2.zip",
+    "cpanel_package_sha256": "54D2C8E501B221A555B8D8347AAD5E27BE1D16422021B798BD4AE193B66EDA9A",
+    "cpanel_plan_id": "bd7cba0fac2308d9b2ae9254",
+    "cpanel_live_manifest": "27/27",
+    "cpanel_backup": "/home/xacm7978/public_html/qcg.securedme.ca.backup-bd7cba0fac2308d9b2ae9254",
     "cpanel_backup_retained": true,
-    "vercel_live_manifest": "23/23 public content files",
-    "cross_host_content_parity": "23/23",
-    "root_bundle": "assets/index-CGXuEnjp.js",
+    "vercel_live_manifest": "source commit deployed; AgentLane publishing environment not configured",
+    "cross_host_content_parity": "functional QCG parity; intentional AgentLane telemetry divergence recorded",
+    "root_bundle": "assets/index-rNzhcItW.js",
     "root_styles": "assets/index-Doav2hq7.css",
     "vercel_spa_decisions_exact_root_html": true,
     "policy_headers": "7/7 on both hosts",
     "wasm_zip_mime_correct": true,
-    "parity_chain_closed": true
+    "parity_chain_closed": false,
+    "parity_exception": "Vercel does not receive AgentLane telemetry until separate secret transmission is authorized"
   },
   "companion_packages": {
     "version": "0.2.5",
@@ -95,12 +125,12 @@
   "clean_clone": {
     "verified": true,
     "verified_source_identity": "post_submission_hotfix_runtime_candidate",
-    "verified_commit": "b1f0e991d9bd30f67800be3b5167708329f48268",
-    "automated_tests": "104/104 across 13 files",
+    "verified_commit": "bdf1d653cf48bb5aa543c139ea64a25b67e6a2aa",
+    "automated_tests": "106/106 across 13 files",
     "companion_gates": "5/5",
     "npm_audit_vulnerabilities": 0,
     "production_build": "passed",
-    "dist_file_count": 25
+    "dist_file_count": 27
   },
   "real_chrome": {
     "full_human_path": "passed",
@@ -140,14 +170,16 @@
   "devpost": {
     "project_id": 1404828,
     "submission_id": 1158343,
-    "state": "submitted_video_replacement_pending",
+    "state": "submitted_author_retains_current_video",
     "submitted": true,
     "submitted_at": "2026-09-02T15:42:44.142-04:00",
     "project_url": "https://devpost.com/software/webmcp-qcg-quantum-call-gate",
     "video_url": "https://youtu.be/WV8XMHzt84Y",
-    "video_state": "provisional_safety_video",
+    "video_state": "submitted_safety_video_retained_by_author_decision",
     "provisional_video_duration": "00:05:57",
-    "required_replacement": "public_sub_three_minute_human_voice_demo"
+    "required_replacement": false,
+    "author_decision": "No replacement video will be produced; freeze the validated project as submitted.",
+    "known_compliance_risk": "The retained 00:05:57 video exceeds the stated three-minute demo requirement. The author explicitly accepts this risk."
   },
-  "next_gate": "record_validate_publish_and_replace_final_sub_three_minute_human_voice_video"
+  "next_gate": "publish_final_freeze_receipt_and_stop_product_mutations"
 }

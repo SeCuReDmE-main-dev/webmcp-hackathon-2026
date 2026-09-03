@@ -10,12 +10,14 @@ Synchronized with G3, deployment-parity and Zenodo evidence: 2026-09-02
 
 Current canonical/secondary deployment evidence: 2026-09-02
 
-Candidate deployment parity: **25/25 PASS on canonical cPanel**
+Candidate deployment integrity: **27/27 PASS on canonical cPanel**
 
-## Remaining public replacement
+## Final video disposition
 
-- Replace the provisional safety video with the final public YouTube demo under
-  three minutes, using Jean-Sébastien's human voice.
+- On 2026-09-03, Jean-Sébastien decided not to produce a replacement video.
+- The submitted 00:05:57 safety video remains attached to the entry.
+- This exceeds the stated three-minute demo limit. The risk is explicit and
+  author-accepted; this document does not claim video compliance.
 
 ## Project identity
 
@@ -54,7 +56,7 @@ Five falsifiable cards exercise the decision space: reuse a fresh result, reject
 
 The app uses React, TypeScript, strict Zod contracts and `document.modelContext.registerTool`. Human controls and WebMCP tools call one canonical service layer. The four page tools have stable discovery and an `AbortSignal` lifecycle; authorization remains enforced inside the canonical services. Q# and OpenQASM 3 run through pinned `qsharp-lang@1.31.0` WebAssembly in a cancellable Web Worker with explicit shot, qubit and timeout limits. Eight additional ecosystem profiles expose static inspection only.
 
-The retained browser trace invoked inspection, evaluation, bounded simulation and export. Its Worker completed 64/64 Bell-pair shots, observed only correlated pairs, passed the Bell invariant and recorded one local simulation with zero provider calls. The final local verification passes 104 application tests, all 5 Companion gates and zero audit vulnerabilities. Canonical cPanel passes its 25-path manifest, and Chrome decodes all eight corrected brand PNGs. The retained human-controlled consent, local simulation and evidence-export traces remain the release evidence for Action 237.
+The retained browser trace invoked inspection, evaluation, bounded simulation and export. Its Worker completed 64/64 Bell-pair shots, observed only correlated pairs, passed the Bell invariant and recorded one local simulation with zero provider calls. The final local verification passes 106 application tests, all 5 Companion gates and zero audit vulnerabilities. Canonical cPanel passes its 27-path manifest, and Chrome decodes all eight corrected brand PNGs. The retained human-controlled consent, local simulation and evidence-export traces remain the release evidence for Action 237.
 
 ### Challenges
 
@@ -86,7 +88,7 @@ WebMCP is strongest here as a decision surface. The agent gains precise capabili
 
 ### What's next
 
-The repaired G3 source candidate keeps Q#/OpenQASM fixture execution, eight static profiles and the F12/Companion collaboration surfaces while preserving declared identities and read-only collaboration authority. Its clean-copy, package and cPanel/Vercel parity gates pass. The official public WebMCP inspect/evaluate smoke is 2/2. Native Gemini DevTools remains a human-mediated export/preview/import lane because no documented conversation-write API is used. The public release tag, hash-validated source archive and software DOI are complete. The Devpost entry is submitted with a provisional safety video; the immediate remaining public replacement is the final sub-three-minute demo video. External execution remains a separate, explicitly authorized product surface.
+The hardened public candidate keeps Q#/OpenQASM fixture execution, eight static profiles and the F12/Companion collaboration surfaces while preserving declared identities and read-only collaboration authority. Its clean-clone, package and canonical cPanel integrity gates pass; Vercel runs the same source without the optional AgentLane telemetry environment. All four WebMCP tools are discoverable at page load with typed output schemas and explicit identifier handoffs. Native Gemini DevTools remains a human-mediated export/preview/import lane because no documented conversation-write API is used. The public release tag, hash-validated source archive and software DOI are complete. The Devpost entry remains submitted with the 00:05:57 safety video; the author has declined a replacement and accepts the stated duration risk. External execution remains a separate, explicitly authorized product surface.
 
 ## Required custom-field draft
 
@@ -119,15 +121,16 @@ The repaired G3 source candidate keeps Q#/OpenQASM fixture execution, eight stat
 - [x] Day 7/G2 local F12, Companion and reconnect proof
 - [x] Two reproducible 100-sandbox million-operation engine passes
 - [x] Immutable candidate packaged and clean-copy QA passed
-- [x] GitHub, Companion ZIPs, Vercel and cPanel candidate parity proven
+- [x] GitHub, Companion ZIPs and canonical cPanel integrity proven; Vercel source parity retained with AgentLane telemetry intentionally absent
 - [x] Official current-runtime WebMCP inspection/evaluation smoke (2/2)
 - [x] Human consent, local simulation and evidence export covered by retained release traces
 - [x] Final author authorization to submit
 - [x] Devpost submission recorded
-- [ ] Final public demo video under three minutes with human voice
+- [ ] Final public demo video under three minutes with human voice — not pursued
+  by author decision; the submitted safety video is retained with known risk
 
 ### Submitted state
 
-The WebMCP Challenge entry has been submitted. The current YouTube link is a
-provisional safety video and should be replaced by the final demo before the
-deadline.
+The WebMCP Challenge entry has been submitted. The current YouTube link is the
+retained safety video. It exceeds the stated three-minute maximum; this is a
+recorded author decision, not a claim of compliance.

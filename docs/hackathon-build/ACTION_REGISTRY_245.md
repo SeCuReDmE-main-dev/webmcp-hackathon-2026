@@ -68,16 +68,18 @@ This registry preserves Actions 1–148 and the historical redesign work. It rec
 | 236 | Luna | DONE | Synchronize citation and resolve DOI badge | `README.md` and `CITATION.cff` point to the published software DOI |
 | 237 | Luna | DONE | Capture final product path | Current official inspect/evaluate smoke `2/2`; retained human Chrome traces cover consent, simulation, export and zero QPU submissions |
 | 238 | Sol + Jean-Sébastien | DONE | Rehearse sub-three-minute storyboard | `docs/hackathon-build/VIDEO_SCRIPT_AND_STORYBOARD_2026-08-29.md` and submitted safety-video fallback |
-| 239 | Jean-Sébastien + Sol | BLOCKED_BY_AUTHOR | Record, edit and publish human-voice video | Public video URL |
+| 239 | Jean-Sébastien + Sol | NOT_PURSUED_BY_AUTHOR | Record, edit and publish human-voice video | Author decision of 2026-09-03 retains the submitted safety video and accepts its duration risk |
 | 240 | Sol | DONE | Complete Devpost fields and record submission | Devpost project `1404828`, submission `1158343`, provisional video `https://youtu.be/WV8XMHzt84Y` |
 | 241 | Sol + Jean-Sébastien | DONE | Finalize Summer article and traces | Published article DOI `10.5281/zenodo.22240281`; Drive PDFs retained |
 | 242 | Terra | DONE | Prove separate FNP-QNN Companion adapter | `docs/evidence/ACTIONS_242_243_ADJACENT_ADAPTER_PROOFS_2026-09-02.md`; local commit `4d544e2` |
 | 243 | Terra | DONE | Prove separate Gateway snapshot producer | Same receipt; local commit `878846a` |
-| 244 | Sol + Luna | DONE | Audit first 70 actions | Final readiness receipt records `70/71 DONE`; only the final video replacement remains |
-| 245 | Jean-Sébastien | DONE | Decide submission and freeze public surfaces | Devpost submission `1158343` recorded; future update is video replacement only |
+| 244 | Sol + Luna | DONE | Audit the executable release scope | Final freeze receipt records 70 completed actions and one author-declined video action without calling it complete |
+| 245 | Jean-Sébastien | DONE | Decide submission and freeze public surfaces | Devpost submission `1158343` and the decision to retain its current video are recorded |
 
 ## Status rule
 
-`BLOCKED_BY_AUTHOR` is not a defect. At this checkpoint it marks the remaining
-human-voice final video, which Jean-Sébastien records and publishes. Devpost
-submission authority has already been exercised and recorded.
+Action 239 is intentionally not reported as `DONE`: no compliant replacement
+video was produced. Jean-Sébastien exercised final authority on 2026-09-03 and
+decided to retain the submitted 00:05:57 safety video while accepting the stated
+three-minute requirement risk. Every code, evidence, deployment and publication
+action in the accepted scope is complete; the product can now be frozen.
