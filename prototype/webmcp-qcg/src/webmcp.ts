@@ -57,7 +57,15 @@ const schemas: Record<ToolName, JsonSchema> = {
       observable: { type: 'string', minLength: 3, maxLength: 80, description: 'Measurement or result the proposed call is expected to produce.' },
       parameters: {
         type: 'object',
-        additionalProperties: { anyOf: [{ type: 'string', maxLength: 120 }, { type: 'number' }, { type: 'boolean' }] },
+        description: 'Optional bounded experiment metadata. Use lower_snake_case keys; values must be short strings, finite bounded numbers, or booleans. Source code, credentials, paths and URLs are not accepted here.',
+        propertyNames: { pattern: '^[a-z][a-z0-9_]{0,47}$' },
+        additionalProperties: {
+          anyOf: [
+            { type: 'string', maxLength: 120, description: 'Short non-sensitive metadata value.' },
+            { type: 'number', minimum: -1_000_000_000_000, maximum: 1_000_000_000_000, description: 'Finite bounded numeric metadata value.' },
+            { type: 'boolean', description: 'Boolean experiment metadata value.' }
+          ]
+        },
         maxProperties: 12
       },
       requested_limits: {
@@ -103,6 +111,36 @@ const budgetNoticeSchema: JsonSchema = {
   }
 }
 
+const failureCodes = [
+  'execution_cancelled',
+  'invalid_arguments',
+  'human_input_required',
+  'human_consent_required',
+  'stale_context',
+  'unsupported_request',
+  'internal_failure'
+] as const
+
+const failureNoticeSchema: JsonSchema = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['ok', 'error'],
+  properties: {
+    ok: { const: false },
+    error: {
+      type: 'object',
+      additionalProperties: false,
+      required: ['code', 'message', 'retryable', 'next_step'],
+      properties: {
+        code: { type: 'string', enum: failureCodes },
+        message: { type: 'string', maxLength: 260 },
+        retryable: { type: 'boolean', description: 'True only when retrying after the stated next step can succeed.' },
+        next_step: { type: 'string', maxLength: 220, description: 'The exact recovery action for the agent or person.' }
+      }
+    }
+  }
+}
+
 const outputIdentifier = z.string().regex(/^[a-z0-9][a-z0-9_-]{2,63}$/)
 const inspectToolOutput = manifestOutput.extend({
   manifest_id: outputIdentifier.describe('Pass this identifier to evaluate_quantum_call.'),
@@ -125,7 +163,7 @@ const exportToolOutput = exportOutput.extend({
 function boundedOutputSchema(schema: ZodType): JsonSchema {
   const output = toJSONSchema(schema, { target: 'draft-7' }) as JsonSchema
   delete output.$schema
-  return { anyOf: [output, budgetNoticeSchema] }
+  return { anyOf: [output, budgetNoticeSchema, failureNoticeSchema] }
 }
 
 const outputSchemas: Record<ToolName, JsonSchema> = {
@@ -143,6 +181,16 @@ export interface WebMcpBudgetNotice {
   budget_bytes: typeof WEBMCP_RESPONSE_BUDGET_BYTES
 }
 
+export interface WebMcpFailure {
+  ok: false
+  error: {
+    code: (typeof failureCodes)[number]
+    message: string
+    retryable: boolean
+    next_step: string
+  }
+}
+
 export function boundedWebMcpResponse<T extends object>(value: T): T | WebMcpBudgetNotice {
   const byteLength = new TextEncoder().encode(JSON.stringify(value)).byteLength
   if (byteLength <= WEBMCP_RESPONSE_BUDGET_BYTES) return value
@@ -153,7 +201,7 @@ export function boundedWebMcpResponse<T extends object>(value: T): T | WebMcpBud
   }
 }
 
-function failure(error: unknown): never {
+export function webMcpFailure(error: unknown): WebMcpFailure {
   const message = error instanceof DOMException && error.name === 'AbortError'
     ? 'Tool execution cancelled.'
     : error instanceof ZodError
@@ -161,7 +209,21 @@ function failure(error: unknown): never {
       : error instanceof Error && /^(artifact_id|manifest_id|recommendation_id|receipt_id|The artifact|The recommendation|A valid|The bounded|Local Q#|Local QDK|Only Q#)/.test(error.message)
         ? error.message
         : 'QCG request could not be completed.'
-  throw new Error(message.slice(0, 260))
+  const normalized = message.toLowerCase()
+  const detail: WebMcpFailure['error'] = error instanceof DOMException && error.name === 'AbortError'
+    ? { code: 'execution_cancelled', message, retryable: true, next_step: 'Retry only if the person still wants this operation.' }
+    : error instanceof ZodError
+      ? { code: 'invalid_arguments', message, retryable: true, next_step: 'Retry with values that satisfy this tool inputSchema.' }
+      : /loaded by a person|artifact must be loaded/.test(normalized)
+        ? { code: 'human_input_required', message, retryable: true, next_step: 'Ask the person to load a bounded artifact, then call inspect_quantum_experiment.' }
+        : /consent|human decision|accepted recommendation/.test(normalized)
+          ? { code: 'human_consent_required', message, retryable: true, next_step: 'Ask the person to review and accept the recommendation in QCG, then retry once.' }
+          : /artifact_id|manifest_id|recommendation_id|receipt_id|changed|expired|stale/.test(normalized)
+            ? { code: 'stale_context', message, retryable: true, next_step: 'Restart at inspect_quantum_experiment and use only identifiers returned by the current session.' }
+            : /bounded|only q#|local q#|local qdk|unsupported/.test(normalized)
+              ? { code: 'unsupported_request', message, retryable: false, next_step: 'Use a supported bounded profile or stop and report the unsupported request.' }
+              : { code: 'internal_failure', message, retryable: false, next_step: 'Stop this tool chain and let the person review the visible QCG state.' }
+  return { ok: false, error: { ...detail, message: detail.message.slice(0, 260) } }
 }
 
 function executionSignal(options?: { signal?: AbortSignal }): AbortSignal {
@@ -222,7 +284,7 @@ export function useQcgWebMcp(
           const output = await services.inspect(inspectInput.parse({ artifact_id: requestedId }), 'webmcp')
           onChange()
           return boundedWebMcpResponse(inspectToolOutput.parse(output))
-        } catch (error) { return failure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
+        } catch (error) { return webMcpFailure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
       }
     },
     evaluate_quantum_call: {
@@ -238,7 +300,7 @@ export function useQcgWebMcp(
           const receiptId = services.snapshot().receipt?.receipt_id
           if (!receiptId) throw new Error('receipt_id was not created for the current recommendation.')
           return boundedWebMcpResponse(evaluateToolOutput.parse({ ...output, receipt_id: receiptId }))
-        } catch (error) { return failure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
+        } catch (error) { return webMcpFailure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
       }
     },
     run_bounded_local_simulation: {
@@ -258,7 +320,7 @@ export function useQcgWebMcp(
             outcome_counts: simulation.outcome_counts, effects: receipt.effects, digest: receipt.digest,
             summary: 'Bounded local Bell simulation completed after one-time human consent.'
           }))
-        } catch (error) { onChange(); return failure(error) }
+        } catch (error) { onChange(); return webMcpFailure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
       }
     },
     export_quantum_evidence_report: {
@@ -272,7 +334,7 @@ export function useQcgWebMcp(
           const output = await services.exportPacket(exportInput.parse(input), 'webmcp')
           onChange()
           return boundedWebMcpResponse(exportToolOutput.parse(output))
-        } catch (error) { return failure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
+        } catch (error) { return webMcpFailure(executionSignal(options).aborted ? new DOMException('', 'AbortError') : error) }
       }
     }
   }), [onChange, services])

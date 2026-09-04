@@ -161,11 +161,53 @@ describe('WebMCP v2 lifecycle', () => {
     for (const [tool] of registerTool.mock.calls) {
       expect(tool.outputSchema).toMatchObject({ anyOf: expect.any(Array) })
       expect(JSON.stringify(tool.outputSchema)).toContain('required')
+      expect(JSON.stringify(tool.outputSchema)).toContain('human_consent_required')
+      expect(JSON.stringify(tool.outputSchema)).toContain('next_step')
     }
     expect(registerTool.mock.calls[0]?.[0].description).toContain('manifest_id for evaluate_quantum_call')
     expect(registerTool.mock.calls[1]?.[0].description).toContain('recommendation_id')
     expect(registerTool.mock.calls[3]?.[0].description).toContain('receipt_id')
     expect(registerTool.mock.calls[0]?.[0].inputSchema).toMatchObject({ required: [] })
+    view.unmount()
+    delete (document as Document & { modelContext?: unknown }).modelContext
+  })
+
+  it('returns explicit bounded recovery results for missing human input and invalid parameters', async () => {
+    const registrations: RegisteredTool[] = []
+    Object.defineProperty(document, 'modelContext', {
+      configurable: true,
+      value: { registerTool: vi.fn((tool: RegisteredTool) => { registrations.push(tool) }) }
+    })
+    const services = new QcgServices(simulator, Date.now, analyzer)
+    const view = render(<Harness services={services} />)
+    await waitFor(() => expect(registrations).toHaveLength(4))
+
+    const missingArtifact = await registrations[0].execute({}, { signal: new AbortController().signal })
+    expect(missingArtifact).toEqual({
+      ok: false,
+      error: {
+        code: 'human_input_required',
+        message: 'The artifact must be loaded by a person before inspection.',
+        retryable: true,
+        next_step: 'Ask the person to load a bounded artifact, then call inspect_quantum_experiment.'
+      }
+    })
+
+    const evaluateSchema = registrations.find((tool) => tool.name === 'evaluate_quantum_call')!.inputSchema
+    expect(evaluateSchema).toMatchObject({
+      properties: {
+        parameters: {
+          maxProperties: 12,
+          propertyNames: { pattern: '^[a-z][a-z0-9_]{0,47}$' }
+        }
+      }
+    })
+    const invalidParameters = await registrations[1].execute({ parameters: { 'unsafe key': 1 } }, { signal: new AbortController().signal })
+    expect(invalidParameters).toMatchObject({
+      ok: false,
+      error: { code: 'invalid_arguments', retryable: true }
+    })
+
     view.unmount()
     delete (document as Document & { modelContext?: unknown }).modelContext
   })

@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="WebMCP-QCG">
+  <rect width="64" height="64" rx="14" fill="#001537"/>
+  <circle cx="50" cy="14" r="5" fill="#f3bd5b"/>
+  <path d="M41 42c-3 3-7 5-12 5-10 0-17-7-17-16s7-16 17-16 17 7 17 16c0 4-1 7-3 10l8 7-6 6-8-8c-2 1-5 1-8 1v-8c5 0 8-3 8-8s-3-8-8-8-8 3-8 8 3 8 8 8c2 0 4 0 5-1l7 4Z" fill="#23b8ff"/>
+</svg>

@@ -5,6 +5,12 @@ import { quantumProfileIds } from './quantumAdapters'
 const identifier = z.string().regex(/^[a-z0-9][a-z0-9_-]{2,63}$/)
 const sha256 = z.string().regex(/^[a-f0-9]{64}$/)
 const isoDate = z.string().datetime({ offset: true })
+const parameterKey = z.string().regex(/^[a-z][a-z0-9_]{0,47}$/)
+const parameterValue = z.union([
+  z.string().max(120),
+  z.number().min(-1_000_000_000_000).max(1_000_000_000_000),
+  z.boolean()
+])
 
 export const inspectInput = z.object({ artifact_id: identifier }).strict()
 export const limits = z.object({
@@ -18,7 +24,7 @@ export const evaluateInput = z.object({
   target_profile_id: identifier,
   scientific_intent: z.string().trim().min(12).max(320),
   observable: z.string().trim().min(3).max(80),
-  parameters: z.record(z.string().max(48), z.union([z.string().max(120), z.number(), z.boolean()]))
+  parameters: z.record(parameterKey, parameterValue)
     .refine((value) => Object.keys(value).length <= 12, 'At most 12 parameters are allowed.'),
   requested_limits: limits
 }).strict()
